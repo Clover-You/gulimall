@@ -10,12 +10,25 @@ import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
+
 /**
+ * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
+ * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
+ * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
+ * ░▓█▒  ░▓▓█  ░██░▒▓▓▄ ▄██▒▓██ █▄      ██╔══██╗██║   ██║██║   ██║
+ * ░▒█░   ▒▒█████▓ ▒ ▓███▀ ░▒██▒ █▄     ██████╔╝╚██████╔╝╚██████╔╝
+ * ▒ ░   ░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░▒ ▒▒ ▓▒     ╚═════╝  ╚═════╝  ╚═════╝
+ * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
+ * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
+ * ░     ░ ░      ░  ░
+ * Copyright ${year} Clover You.
+ * <p>
  * ${comments}
- * 
- * @author ${author}
+ * </p>
+ *
+ * @author Clover You
  * @email ${email}
- * @date ${datetime}
+ * @create ${datetime}
  */
 @Data
 @TableName("${tableName}")

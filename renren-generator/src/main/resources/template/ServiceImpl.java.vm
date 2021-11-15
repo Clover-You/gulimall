@@ -13,6 +13,25 @@ import ${package}.${moduleName}.entity.${className}Entity;
 import ${package}.${moduleName}.service.${className}Service;
 
 
+/**
+ * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
+ * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
+ * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
+ * ░▓█▒  ░▓▓█  ░██░▒▓▓▄ ▄██▒▓██ █▄      ██╔══██╗██║   ██║██║   ██║
+ * ░▒█░   ▒▒█████▓ ▒ ▓███▀ ░▒██▒ █▄     ██████╔╝╚██████╔╝╚██████╔╝
+ * ▒ ░   ░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░▒ ▒▒ ▓▒     ╚═════╝  ╚═════╝  ╚═════╝
+ * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
+ * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
+ * ░     ░ ░      ░  ░
+ * Copyright ${year} Clover You.
+ * <p>
+ * ${comments}
+ * </p>
+ *
+ * @author Clover You
+ * @email ${email}
+ * @create ${datetime}
+ */
 @Service("${classname}Service")
 public class ${className}ServiceImpl extends ServiceImpl<${className}Dao, ${className}Entity> implements ${className}Service {
 

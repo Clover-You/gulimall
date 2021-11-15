@@ -6,12 +6,25 @@ import ${package}.${moduleName}.entity.${className}Entity;
 
 import java.util.Map;
 
+
 /**
+ * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
+ * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
+ * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
+ * ░▓█▒  ░▓▓█  ░██░▒▓▓▄ ▄██▒▓██ █▄      ██╔══██╗██║   ██║██║   ██║
+ * ░▒█░   ▒▒█████▓ ▒ ▓███▀ ░▒██▒ █▄     ██████╔╝╚██████╔╝╚██████╔╝
+ * ▒ ░   ░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░▒ ▒▒ ▓▒     ╚═════╝  ╚═════╝  ╚═════╝
+ * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
+ * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
+ * ░     ░ ░      ░  ░
+ * Copyright ${year} Clover You.
+ * <p>
  * ${comments}
+ * </p>
  *
- * @author ${author}
+ * @author Clover You
  * @email ${email}
- * @date ${datetime}
+ * @create ${datetime}
  */
 public interface ${className}Service extends IService<${className}Entity> {
 

@@ -14,12 +14,25 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
+
 /**
+ * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
+ * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
+ * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
+ * ░▓█▒  ░▓▓█  ░██░▒▓▓▄ ▄██▒▓██ █▄      ██╔══██╗██║   ██║██║   ██║
+ * ░▒█░   ▒▒█████▓ ▒ ▓███▀ ░▒██▒ █▄     ██████╔╝╚██████╔╝╚██████╔╝
+ * ▒ ░   ░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░▒ ▒▒ ▓▒     ╚═════╝  ╚═════╝  ╚═════╝
+ * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
+ * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
+ * ░     ░ ░      ░  ░
+ * Copyright ${year} Clover You.
+ * <p>
  * ${comments}
- * 
- * @author ${author}
+ * </p>
+ *
+ * @author Clover You
  * @email ${email}
- * @date ${datetime}
+ * @create ${datetime}
  */
 @Data
 @Document(collection = "${tableName}")
