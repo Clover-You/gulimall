@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.renren</groupId>
+	<groupId>top.ctong.gulimall</groupId>
 	<artifactId>renren-fast</artifactId>
 	<version>3.0.0</version>
 	<packaging>jar</packaging>
@@ -12,6 +12,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.2.4.RELEASE</version>
+		<relativePath/>
 	</parent>
 
 	<properties>
@@ -20,8 +21,10 @@
 		<java.version>1.8</java.version>
 		<mybatisplus.version>3.3.1</mybatisplus.version>
 		<mysql.version>8.0.17</mysql.version>
-		<mssql.version>4.0</mssql.version>
-		<oracle.version>11.2.0.3</oracle.version>
+		<mssql.version>unknown</mssql.version>
+<!--		<mssql.version>4.0</mssql.version>-->
+		<oracle.version>19.12.0.0</oracle.version>
+<!--		<oracle.version>11.2.0.3</oracle.version>-->
 		<druid.version>1.1.13</druid.version>
 		<quartz.version>2.3.0</quartz.version>
 		<commons.lang.version>2.6</commons.lang.version>
@@ -99,17 +102,25 @@
 			<version>${mysql.version}</version>
 		</dependency>
 		 <!--oracle驱动-->
+<!--		<dependency>-->
+<!--&lt;!&ndash;			<groupId>com.oracle</groupId>&ndash;&gt;-->
+<!--			<groupId>com.oracle.database.jdbc</groupId>-->
+<!--			<artifactId>ojdbc6</artifactId>-->
+<!--			<version>${oracle.version}</version>-->
+<!--		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc10 -->
 		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>${oracle.version}</version>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc10</artifactId>
+			<version>19.12.0.0</version>
 		</dependency>
-		 <!--mssql驱动-->
-		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>sqljdbc4</artifactId>
-			<version>${mssql.version}</version>
-		</dependency>
+
+		<!--mssql驱动-->
+<!--		<dependency>-->
+<!--			<groupId>com.microsoft.sqlserver</groupId>-->
+<!--			<artifactId>sqljdbc4</artifactId>-->
+<!--			<version>${mssql.version}</version>-->
+<!--		</dependency>-->
 		 <!--postgresql驱动-->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -247,6 +258,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.2.4.RELEASE</version>
 				<configuration>
 					<fork>true</fork>
 				</configuration>
@@ -255,6 +267,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
 				<configuration>
 					<skipTests>true</skipTests>
 				</configuration>
@@ -307,28 +320,28 @@
 		</plugins>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>public</id>
-			<name>aliyun nexus</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>public</id>
-			<name>aliyun nexus</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+<!--	<repositories>-->
+<!--		<repository>-->
+<!--			<id>public</id>-->
+<!--			<name>aliyun nexus</name>-->
+<!--			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+<!--			<releases>-->
+<!--				<enabled>true</enabled>-->
+<!--			</releases>-->
+<!--		</repository>-->
+<!--	</repositories>-->
+<!--	<pluginRepositories>-->
+<!--		<pluginRepository>-->
+<!--			<id>public</id>-->
+<!--			<name>aliyun nexus</name>-->
+<!--			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+<!--			<releases>-->
+<!--				<enabled>true</enabled>-->
+<!--			</releases>-->
+<!--			<snapshots>-->
+<!--				<enabled>false</enabled>-->
+<!--			</snapshots>-->
+<!--		</pluginRepository>-->
+<!--	</pluginRepositories>-->
 
 </project>
