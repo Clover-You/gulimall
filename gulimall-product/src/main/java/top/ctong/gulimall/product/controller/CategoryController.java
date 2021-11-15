@@ -13,17 +13,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import top.ctong.gulimall.product.entity.CategoryEntity;
 import top.ctong.gulimall.product.service.CategoryService;
-import top.ctong.common.utils.PageUtils;
-import top.ctong.common.utils.R;
-
+import top.ctong.gulimall.common.utils.PageUtils;
+import top.ctong.gulimall.common.utils.R;
 
 
 /**
+ * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
+ * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
+ * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
+ * ░▓█▒  ░▓▓█  ░██░▒▓▓▄ ▄██▒▓██ █▄      ██╔══██╗██║   ██║██║   ██║
+ * ░▒█░   ▒▒█████▓ ▒ ▓███▀ ░▒██▒ █▄     ██████╔╝╚██████╔╝╚██████╔╝
+ * ▒ ░   ░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░▒ ▒▒ ▓▒     ╚═════╝  ╚═════╝  ╚═════╝
+ * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
+ * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
+ * ░     ░ ░      ░  ░
+ * Copyright 2021 Clover You.
+ * <p>
  * 商品三级分类
+ * </p>
  *
  * @author Clover You
  * @email 2621869236@qq.com
- * @date 2021-11-15 09:33:32
+ * @create 2021-11-15 09:51:26
  */
 @RestController
 @RequestMapping("product/category")
