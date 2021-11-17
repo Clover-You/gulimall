@@ -9,6 +9,13 @@ spring:
     url: jdbc:mysql://localhost:3306/gulimall_oms?useSSH=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: gulimall-order
+
 mybatis-plus:
   # 全局配置id类型自增
   global-config:

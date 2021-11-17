@@ -5,9 +5,18 @@ spring:
     password: 123
     url: jdbc:mysql://localhost:3306/gulimall_sms
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        # 配置nacos服务中心地址
+        server-addr: 127.0.0.1:8848
+
+  application:
+    # 注册nacos需要指定服务名
+    name: gulimall-coupon
 
 server:
-  port: 7000
+  port: 7500
 
 mybatis-plus:
   # 全局配置id类型为自增

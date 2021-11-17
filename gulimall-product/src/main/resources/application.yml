@@ -6,6 +6,13 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/gulimall_pms?useSSH=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: gulimall-product
+
 server:
   port: 10000
 

@@ -1,9 +1,9 @@
 package top.ctong.gulimall.member.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import top.ctong.gulimall.common.feign.CouponFeignService;
 import top.ctong.gulimall.member.entity.MemberEntity;
 import top.ctong.gulimall.member.service.MemberService;
 import top.ctong.gulimall.common.utils.PageUtils;
@@ -31,7 +32,6 @@ import top.ctong.gulimall.common.utils.R;
  * <p>
  * 会员
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-16 15:59:12
@@ -39,15 +39,28 @@ import top.ctong.gulimall.common.utils.R;
 @RestController
 @RequestMapping("member/member")
 public class MemberController {
+
+    private final CouponFeignService couponFeignService;
+
+    private final MemberService memberService;
+
     @Autowired
-    private MemberService memberService;
+    public MemberController(CouponFeignService couponFeignService, MemberService memberService) {
+        this.couponFeignService = couponFeignService;
+        this.memberService = memberService;
+    }
+
+    @RequestMapping("/testFeignInvoke")
+    public R testFeignInvoke() {
+        Map<String, Object> parem = new HashMap<>(10);
+        return couponFeignService.list(parem);
+    }
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("member:member:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = memberService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -58,9 +71,8 @@ public class MemberController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("member:member:info")
-    public R info(@PathVariable("id") Long id){
-		MemberEntity member = memberService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        MemberEntity member = memberService.getById(id);
 
         return R.ok().put("member", member);
     }
@@ -69,9 +81,8 @@ public class MemberController {
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("member:member:save")
-    public R save(@RequestBody MemberEntity member){
-		memberService.save(member);
+    public R save(@RequestBody MemberEntity member) {
+        memberService.save(member);
 
         return R.ok();
     }
@@ -80,9 +91,8 @@ public class MemberController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("member:member:update")
-    public R update(@RequestBody MemberEntity member){
-		memberService.updateById(member);
+    public R update(@RequestBody MemberEntity member) {
+        memberService.updateById(member);
 
         return R.ok();
     }
@@ -91,9 +101,8 @@ public class MemberController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("member:member:delete")
-    public R delete(@RequestBody Long[] ids){
-		memberService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        memberService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

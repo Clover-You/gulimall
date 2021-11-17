@@ -1,9 +1,11 @@
-package top.ctong.gulimall.product;
+package top.ctong.gulimall.common.feign;
 
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import top.ctong.gulimall.common.utils.R;
+
+import java.util.Map;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -17,19 +19,24 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品服务
+ * coupon远程调用接口
  * </p>
- *
+ * <p>
+ * [@FeignClient] 告诉spring cloud这个接口是个远程客户端
  * @author Clover You
- * @create 2021/11/16 15:56
+ * @create 2021-11-17 09:00
  */
-@EnableDiscoveryClient
-@MapperScan("top.ctong.gulimall.product.dao")
-@SpringBootApplication
-public class GulimallProductApplication {
+@FeignClient("gulimall-coupon")
+@RequestMapping("/coupon/coupon")
+public interface CouponFeignService {
 
-    public static void main(String[] args) {
-        SpringApplication.run(GulimallProductApplication.class, args);
-    }
-
+    /**
+     * 通过自定义参数查询列表
+     * @param params 自定义参数
+     * @return R
+     * @author Clover You
+     * @date 2021/11/17 09:11
+     */
+    @RequestMapping("/list")
+    R list(@RequestParam Map<String, Object> params);
 }
