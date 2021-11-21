@@ -22,6 +22,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *
  * [@EnableDiscoveryClient]: 将服务注册到服务中心
  *
+ * Nacos作为配置中心的细节
+ * 1）、命名空间
+ *
  * @author Clover You
  * @create 2021/11/16 15:55
  */

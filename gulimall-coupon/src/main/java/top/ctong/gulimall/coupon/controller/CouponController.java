@@ -45,11 +45,14 @@ public class CouponController {
     @Autowired
     private CouponService couponService;
 
+    @Value("${author.name}")
+    private String name;
+
     /**
      * 列表
      */
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params, @Value("${hello.name}") String name){
+    public R list(@RequestParam Map<String, Object> params){
         PageUtils page = couponService.queryPage(params);
         System.out.println("name: ====>> " + name);
         return R.ok().put("page", page);

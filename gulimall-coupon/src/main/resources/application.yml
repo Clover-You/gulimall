@@ -1,27 +1,28 @@
-spring:
-  # 配置数据源
-  datasource:
-    username: root
-    password: 123
-    url: jdbc:mysql://localhost:3306/gulimall_sms
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  cloud:
-    nacos:
-      discovery:
-        # 配置nacos服务中心地址
-        server-addr: 127.0.0.1:8848
+#spring:
+#  # 配置数据源
+#  datasource:
+#    username: root
+#    password: 123
+#    url: jdbc:mysql://localhost:3306/gulimall_sms
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  cloud:
+#    nacos:
+#      discovery:
+#        # 配置nacos服务中心地址
+#        server-addr: 127.0.0.1:8848
+#
+#  application:
+#    # 注册nacos需要指定服务名
+#    name: gulimall-coupon
+#
+#server:
+#  port: 7500
+#
+#mybatis-plus:
+#  # 全局配置id类型为自增
+#  global-config:
+#    db-config:
+#      id-type: auto
+#  # 告诉mybatis-plus sql映射文件所在
+#  mapper-locations: classpath:/mapper/**/*Dao.xml
 
-  application:
-    # 注册nacos需要指定服务名
-    name: gulimall-coupon
-
-server:
-  port: 7500
-
-mybatis-plus:
-  # 全局配置id类型为自增
-  global-config:
-    db-config:
-      id-type: auto
-  # 告诉mybatis-plus sql映射文件所在
-  mapper-locations: classpath:/mapper/**/*Dao.xml

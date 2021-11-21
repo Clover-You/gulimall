@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: gulimall-coupon
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: 6f264ca2-0021-404d-88e7-b5491bce73e8
+        extension-configs:
+          - dataId: application.yaml
+            group: ${spring.profiles.active}
+            refresh: true
+          - dataId: mybatis.yaml
+            group: ${spring.profiles.active}
+            refresh: true
+          - dataId: datasource.yaml
+            group: ${spring.profiles.active}
+            refresh: true
