@@ -1,7 +1,12 @@
 package top.ctong.gulimall.gateway.config;
 
+import com.alibaba.nacos.api.naming.pojo.healthcheck.impl.Http;
+import org.apache.http.HttpRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.HttpRequestHandler;
+import org.springframework.web.context.support.HttpRequestHandlerServlet;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -24,15 +29,21 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
  * @create 2021-11-22 10:20
  */
 @Configuration
-public class CorsConfiguration {
+public class GulimallCorsConfiguration {
 
     @Bean
     public CorsWebFilter corsWebFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        org.springframework.web.cors.CorsConfiguration corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
+        corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
+//        corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
+        corsConfiguration.addAllowedOriginPattern(CorsConfiguration.ALL);
+        // 是否允许携带cookie跨域
+        corsConfiguration.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsWebFilter(source);
     }
 
 }
+

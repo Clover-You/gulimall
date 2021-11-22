@@ -7,14 +7,14 @@ spring:
         server-addr: 127.0.0.1:8848
     gateway:
       routes:
-        - id: test_route
-          uri: https://example.org
+        - id: admin_route
+          uri: lb://renren-fast
           predicates:
-            - Query=url
-        - id: qq_test
-          uri: https://example.org
-          predicates:
-            - Query=url, qq
+            # 路径匹配
+            - Path=/api/**
+          filters:
+            # 路径重写
+            - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
 
 
 server:
