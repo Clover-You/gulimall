@@ -83,6 +83,18 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
+     * 通过菜单id删除菜单
+     * @param asList id列表
+     * @author Clover You
+     * @date 2021/11/22 14:48
+     */
+    @Override
+    public void removeMenuByIds(List<Long> asList) {
+        // TODO 检查当前菜单是否有子菜单
+        baseMapper.deleteBatchIds(asList);
+    }
+
+    /**
      * 找到指定菜单的子菜单
      * @param root 当前指定菜单
      * @param all 全部菜单

@@ -45,5 +45,13 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @date 2021/11/21 20:36
      */
     List<CategoryEntity> listWithTree();
+
+    /**
+     * 通过菜单id删除菜单
+     * @param asList id列表
+     * @author Clover You
+     * @date 2021/11/22 14:48
+     */
+    void removeMenuByIds(List<Long> asList);
 }
 

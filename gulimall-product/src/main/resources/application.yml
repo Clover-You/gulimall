@@ -23,3 +23,11 @@ mybatis-plus:
     db-config:
       # 全局配置id自增
       id-type: auto
+      # 配置逻辑删除标识
+      logic-delete-value: 1
+      # 逻辑不删除
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    top.ctong.gulimall: debug
