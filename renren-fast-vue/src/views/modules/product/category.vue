@@ -1,11 +1,22 @@
 <template>
   <div>
-    <el-switch
-      v-model="draggable"
-      active-text="开启拖拽"
-      inactive-text="关闭拖拽"
-    />
-    <el-button @click="batchSave">批量保存</el-button>
+    <el-row>
+      开启拖拽
+      <el-switch v-model="draggable" />
+      <el-button
+        type="success"
+        icon="el-icon-check"
+        circle
+        title="批量保存"
+        @click="batchSave"
+      />
+      <el-button
+        type="danger"
+        icon="el-icon-delete"
+        circle
+        @click="batchDelete"
+      ></el-button>
+    </el-row>
     <div style="height: 20px" />
     <el-tree
       :data="menus"
@@ -17,6 +28,7 @@
       node-key="catId"
       :default-expanded-keys="expandedKey"
       @node-drop="nodeDrop"
+      ref="menuTree"
     >
       <span
         style="
@@ -122,13 +134,37 @@ export default {
     };
   },
   methods: {
+    // 批量删除
+    batchDelete() {
+      const nodes = this.$refs.menuTree.getCheckedNodes();
+      const ids = nodes.map((node) => {
+        return node.catId;
+      });
+      this.$confirm(`是否删除选中的${ids.length}个菜单？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          // 删除
+          this.$http
+            .post(this.$http.adornUrl("/product/category/delete"), ids)
+            .then(({ data }) => {
+              this.getMenus();
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+            });
+        })
+        .catch(() => {});
+    },
     // 批量保存
     batchSave() {
       const map = new Map();
       for (const item of this.batchList) {
-        map.set(item.catId, item)
+        map.set(item.catId, item);
       }
-
       this.$http
         .post(
           this.$http.adornUrl("/product/category/update/sort"),
