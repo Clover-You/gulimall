@@ -1,21 +1,15 @@
 package top.ctong.gulimall.product.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.product.entity.CategoryEntity;
 import top.ctong.gulimall.product.service.CategoryService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.common.utils.R;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -70,7 +64,6 @@ public class CategoryController {
         categoryService.updateBatchById(Arrays.asList(category));
         return R.ok();
     }
-
 
     /**
      * 信息
