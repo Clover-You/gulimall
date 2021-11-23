@@ -1,11 +1,18 @@
 <template>
   <div>
+    <el-switch
+      v-model="draggable"
+      active-text="开启拖拽"
+      inactive-text="关闭拖拽"
+    />
+    <el-button @click="batchSave">批量保存</el-button>
+    <div style="height: 20px" />
     <el-tree
       :data="menus"
       :expand-on-click-node="false"
       :props="defaultProps"
       :show-checkbox="true"
-      :draggable="true"
+      :draggable="draggable"
       :allow-drop="allowDrop"
       node-key="catId"
       :default-expanded-keys="expandedKey"
@@ -82,6 +89,7 @@
 export default {
   data() {
     return {
+      draggable: false,
       menus: [],
       dialogVisible: false,
       dialogTitle: "",
@@ -91,6 +99,7 @@ export default {
         children: "children",
         label: "name",
       },
+      batchList: [],
       category: {
         name: "",
         parentCid: 0,
@@ -113,6 +122,34 @@ export default {
     };
   },
   methods: {
+    // 批量保存
+    batchSave() {
+      const map = new Map();
+      for (const item of this.batchList) {
+        map.set(item.catId, item)
+      }
+
+      this.$http
+        .post(
+          this.$http.adornUrl("/product/category/update/sort"),
+          Array.from(map.values()).flat()
+        )
+        .then(({ data: r }) => {
+          if (Number(r.code) !== 0) {
+            this.$message({ type: "error", message: "修改失败" });
+            return;
+          }
+          this.$message({ type: "success", message: "修改成功" });
+          this.getMenus();
+          this.$nextTick(() => {
+            this.expandedKey = [pCid];
+          });
+        })
+        .catch((e) => {
+          console.error("拖拽修改节点：", e);
+          this.$message({ type: "error", message: "系统异常" });
+        });
+    },
     // 表单提交
     async submit() {
       if (this.dialogType === "add") this.addCategory();
@@ -215,7 +252,7 @@ export default {
       // console.log(draggingNode, dropNode, type);
       // 被拖动的当前节点以及所在的父节点总层数不能大于3
       const maxLevel = this.countNodeLevel(draggingNode.data, 0);
-      const deep = maxLevel - draggingNode.data.catLevel + 1;
+      const deep = Math.abs(maxLevel - draggingNode.data.catLevel + 1);
       if (type === "inner") {
         return dropNode.level != deep && dropNode.level + deep <= 3;
       } else {
@@ -253,24 +290,7 @@ export default {
       }
       // 找节点信息，顺序、节点、层级
       list = this.findCurrentInTarget(pCid, childNodes);
-
-      this.$http
-        .post(this.$http.adornUrl("/product/category/update/sort"), list)
-        .then(({ data: r }) => {
-          if (Number(r.code) !== 0) {
-            this.$message({ type: "error", message: "修改失败" });
-            return;
-          }
-          this.$message({ type: "success", message: "修改成功" });
-          this.getMenus();
-          this.$nextTick(() => {
-            this.expandedKey = [pCid];
-          });
-        })
-        .catch((e) => {
-          console.error("拖拽修改节点：", e);
-          this.$message({ type: "error", message: "系统异常" });
-        });
+      this.batchList = [...this.batchList, ...list];
     },
     // 查找当前元素在目标数据集中的位置
     findCurrentInTarget(pCid = 0, list = []) {
