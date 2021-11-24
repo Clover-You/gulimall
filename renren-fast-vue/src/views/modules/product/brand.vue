@@ -179,7 +179,7 @@ export default {
       this.$http
         .post(this.$http.adornUrl("/product/brand/update"), {
           brandId: row.brandId,
-          showStatus: row.showStatus
+          showStatus: row.showStatus,
         })
         .then(({ data: r }) => {
           if (r.code != 0) {

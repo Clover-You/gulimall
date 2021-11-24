@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.ctong.gulimall.common.utils.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,8 +53,8 @@ public class OssController {
         this.ossClient = ossClient;
     }
 
-    @RequestMapping("/police")
-    public Map<String, String> aliOssPolice() {
+    @RequestMapping("/policy")
+    public R aliOssPolice() {
         // 请填写您的 bucketname 。
         String bucket = "clover-gulimall";
         // host的格式为 bucketname.endpoint
@@ -96,13 +97,13 @@ public class OssController {
             String base64CallbackBody = BinaryUtil.toBase64String(jasonCallback.toString().getBytes());
             respMap.put("callback", base64CallbackBody);
 
-            return respMap;
         } catch (Exception e) {
             // Assert.fail(e.getMessage());
             System.out.println(e.getMessage());
+            return  R.error();
         } finally {
             ossClient.shutdown();
         }
-        return respMap;
+        return R.ok().put("data", respMap);
     }
 }
