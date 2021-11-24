@@ -16,7 +16,10 @@
       </el-form-item>
       <el-form-item label="品牌logo地址" prop="logo">
         <!-- <el-input v-model="dataForm.logo" placeholder="品牌logo地址"></el-input> -->
-        <single-upload v-model="dataForm.logo" action="http://clover-gulimall.oss-cn-guangzhou.aliyuncs.com"/>
+        <single-upload
+          v-model="dataForm.logo"
+          action="http://clover-gulimall.oss-cn-guangzhou.aliyuncs.com"
+        />
       </el-form-item>
       <el-form-item label="介绍" prop="descript">
         <el-input v-model="dataForm.descript" placeholder="介绍"></el-input>
@@ -24,6 +27,8 @@
       <el-form-item label="显示状态" prop="showStatus">
         <el-switch
           v-model="dataForm.showStatus"
+          :active-value="1"
+          :inactive-value="0"
           active-color="#13ce66"
           inactive-color="#ff4949"
         />
@@ -78,9 +83,33 @@ export default {
           },
         ],
         firstLetter: [
-          { required: true, message: "检索首字母不能为空", trigger: "blur" },
+          {
+            required: true,
+            validator: (rule, value, allback) => {
+              if (value.trim() == "") {
+                allback(new Error("首字母不能为空"));
+              } else if (!/^[a-zA-Z]$/.test(value)) {
+                allback(new Error("只能是一位字母，不允许其它符号"));
+              }
+              allback();
+            },
+            trigger: "blur",
+          },
         ],
-        sort: [{ required: true, message: "排序不能为空", trigger: "blur" }],
+        sort: [
+          {
+            required: true,
+            validator: (rule, value, allback) => {
+              if (value.trim() == "") {
+                allback(new Error("排序不能为空"));
+              } else if (!Number.isInteger(value)) {
+                allback(new Error("只能是整数"));
+              }
+              allback()
+            },
+            trigger: "blur",
+          },
+        ],
       },
     };
   },

@@ -65,7 +65,6 @@ public class OssController {
         // 用户上传文件时指定的前缀。
         String dir = nowDate + "/";
         Map<String, String> respMap = new LinkedHashMap<>();
-
         try {
             long expireTime = 30;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
