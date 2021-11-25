@@ -59,7 +59,7 @@ public class GulimallExceptionControllerAdvice {
      * @date 2021/11/25 08:59
      */
     @ExceptionHandler(Throwable.class)
-    public R handleUnhandledException() {
+    public R handleUnhandledException(Throwable e) {
         return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.getCode(), BizCodeEnum.UNKNOWN_EXCEPTION.getMsg());
     }
 }

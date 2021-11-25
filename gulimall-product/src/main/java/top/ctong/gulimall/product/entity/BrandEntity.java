@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
+import top.ctong.gulimall.common.valid.ListValue;
 import top.ctong.gulimall.common.valid.group.InsertGroup;
 import top.ctong.gulimall.common.valid.group.AggregationGroup;
 import top.ctong.gulimall.common.valid.group.UpdateGroup;
@@ -62,6 +63,7 @@ public class BrandEntity implements Serializable {
     /**
      * 显示状态[0-不显示；1-显示]
      */
+    @ListValue(value = {1, 0}, groups = {InsertGroup.class})
     private Integer showStatus;
     /**
      * 检索首字母
