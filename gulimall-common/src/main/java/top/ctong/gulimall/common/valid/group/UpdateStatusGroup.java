@@ -1,4 +1,4 @@
-package top.ctong.gulimall.product.valid;
+package top.ctong.gulimall.common.valid.group;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗

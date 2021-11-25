@@ -11,6 +11,7 @@ import top.ctong.gulimall.common.valid.ListValue;
 import top.ctong.gulimall.common.valid.group.InsertGroup;
 import top.ctong.gulimall.common.valid.group.AggregationGroup;
 import top.ctong.gulimall.common.valid.group.UpdateGroup;
+import top.ctong.gulimall.common.valid.group.UpdateStatusGroup;
 
 import javax.validation.constraints.*;
 
@@ -63,7 +64,8 @@ public class BrandEntity implements Serializable {
     /**
      * 显示状态[0-不显示；1-显示]
      */
-    @ListValue(value = {1, 0}, groups = {InsertGroup.class})
+    @ListValue(value = {1, 0}, groups = {InsertGroup.class, UpdateStatusGroup.class})
+    @NotNull(groups = {UpdateStatusGroup.class, InsertGroup.class}, message = "显示状态不能为空")
     private Integer showStatus;
     /**
      * 检索首字母
