@@ -1,9 +1,4 @@
-package top.ctong.gulimall.product.dao;
-
-import top.ctong.gulimall.product.entity.SkuImagesEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
-
+package top.ctong.gulimall.common.valid.group;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -17,14 +12,10 @@ import org.apache.ibatis.annotations.Mapper;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * sku图片
+ * 聚合分组
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-11-25 09:25
  */
-@Mapper
-public interface SkuImagesDao extends BaseMapper<SkuImagesEntity> {
-	
+public interface AggregationGroup extends InsertGroup, UpdateGroup {
 }
