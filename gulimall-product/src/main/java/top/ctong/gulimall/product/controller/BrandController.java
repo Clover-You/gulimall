@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.common.valid.group.AggregationGroup;
+import top.ctong.gulimall.common.valid.group.InsertGroup;
 import top.ctong.gulimall.product.entity.BrandEntity;
 import top.ctong.gulimall.product.service.BrandService;
 
@@ -64,8 +65,8 @@ public class BrandController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@Validated({AggregationGroup.class}) @RequestBody BrandEntity brand) {
-//        brandService.save(brand);
+    public R save(@Validated({InsertGroup.class}) @RequestBody BrandEntity brand) {
+        brandService.save(brand);
 
         return R.ok();
     }

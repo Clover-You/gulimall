@@ -102,7 +102,7 @@ export default {
             validator: (rule, value, allback) => {
               if (value.trim() == "") {
                 allback(new Error("排序不能为空"));
-              } else if (!Number.isInteger(value)) {
+              } else if (!Number.isInteger(Number(value))) {
                 allback(new Error("只能是整数"));
               }
               allback()
