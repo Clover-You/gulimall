@@ -177,7 +177,7 @@ export default {
     updateBrandStatus(row) {
       console.log(row);
       this.$http
-        .post(this.$http.adornUrl("/product/brand/update"), {
+        .post(this.$http.adornUrl("/product/brand/update/status"), {
           brandId: row.brandId,
           showStatus: row.showStatus,
         })
