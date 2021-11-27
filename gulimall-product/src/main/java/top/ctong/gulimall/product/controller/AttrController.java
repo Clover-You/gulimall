@@ -15,6 +15,7 @@ import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.service.AttrService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.product.vo.AttrVo;
 
 
 /**
@@ -68,8 +69,8 @@ public class AttrController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:attr:save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
+    public R save(@RequestBody AttrVo attr){
+		attrService.saveAttr(attr);
 
         return R.ok();
     }

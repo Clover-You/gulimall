@@ -62,7 +62,7 @@ public class GulimallExceptionControllerAdvice {
      */
     @ExceptionHandler(Throwable.class)
     public R handleUnhandledException(Throwable e) {
-        log.error(e.getMessage());
+        e.printStackTrace();
         return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.getCode(), BizCodeEnum.UNKNOWN_EXCEPTION.getMsg());
     }
 }
