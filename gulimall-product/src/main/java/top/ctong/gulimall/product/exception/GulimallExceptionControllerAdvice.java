@@ -1,5 +1,6 @@
 package top.ctong.gulimall.product.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @author Clover You
  * @create 2021-11-25 08:14
  */
+@Slf4j
 @RestControllerAdvice(basePackages = "top.ctong.gulimall.product.controller")
 public class GulimallExceptionControllerAdvice {
 
@@ -60,6 +62,7 @@ public class GulimallExceptionControllerAdvice {
      */
     @ExceptionHandler(Throwable.class)
     public R handleUnhandledException(Throwable e) {
+        log.error(e.getMessage());
         return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.getCode(), BizCodeEnum.UNKNOWN_EXCEPTION.getMsg());
     }
 }

@@ -60,7 +60,7 @@
               添加
             </el-button>
             <el-button
-              v-if="data.children.length == 0"
+              v-if="node.childNodes.length == 0"
               style="font-size: 12px"
               type="text"
               @click="() => remove(node, data)"
@@ -109,7 +109,7 @@ export default {
       formLabelWidth: "120px",
       defaultProps: {
         children: "children",
-        label: "name",
+        label: "name"
       },
       batchList: [],
       category: {

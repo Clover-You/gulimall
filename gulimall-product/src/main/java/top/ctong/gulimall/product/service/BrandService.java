@@ -29,5 +29,13 @@ import java.util.Map;
 public interface BrandService extends IService<BrandEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /** 
+     * 更新品牌表和品牌分类关联信息
+     * @param brand 品牌信息
+     * @author Clover You
+     * @date 2021/11/27 10:41
+     */
+    void updateDetail(BrandEntity brand);
 }
 

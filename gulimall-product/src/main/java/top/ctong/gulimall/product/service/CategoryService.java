@@ -62,5 +62,13 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @date 2021/11/27 08:52
      */
     Long[] findCategoryPath(Long catelogId);
+
+    /**
+     * 集联更新分类
+     * @param category 分类信息
+     * @author Clover You
+     * @date 2021/11/27 11:00
+     */
+    void updateCascade(CategoryEntity category);
 }
 

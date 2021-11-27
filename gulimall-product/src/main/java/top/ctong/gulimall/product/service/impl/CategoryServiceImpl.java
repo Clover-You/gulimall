@@ -3,11 +3,15 @@ package top.ctong.gulimall.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.product.dao.CategoryDao;
 import top.ctong.gulimall.product.entity.CategoryEntity;
+import top.ctong.gulimall.product.service.CategoryBrandRelationService;
 import top.ctong.gulimall.product.service.CategoryService;
 
 import java.util.ArrayList;
@@ -37,6 +41,9 @@ import java.util.stream.Collectors;
  */
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     /**
      * 查询叶
@@ -144,6 +151,21 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             findParentPath(byId.getParentCid(), path);
         }
         return path;
+    }
+
+    /**
+     * 集联更新分类
+     * @param category 分类信息
+     * @author Clover You
+     * @date 2021/11/27 11:00
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+        if (StringUtils.hasText(category.getName())) {
+            categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
+        }
     }
 
 }
