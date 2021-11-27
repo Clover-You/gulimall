@@ -32,7 +32,6 @@ import top.ctong.gulimall.product.vo.AttrVo;
  * <p>
  * 商品属性
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
@@ -47,8 +46,25 @@ public class AttrController {
      * 列表
      */
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = attrService.queryPage(params);
+
+        return R.ok().put("page", page);
+    }
+
+    /**
+     * 查询所有基本属性
+     * @param params 自定义查询参数
+     * @param catelogId 分类id
+     * @return R
+     * @author Clover You
+     * @date 2021/11/27 15:51
+     */
+    @RequestMapping("/base/list/{catelogId}")
+    public R baseList(@RequestParam Map<String, Object> params,
+                      @PathVariable("catelogId") Long catelogId) {
+        PageUtils page = attrService.queryBaseAttrPage(params, catelogId);
+//        PageUtils page = attrService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -58,8 +74,8 @@ public class AttrController {
      * 信息
      */
     @RequestMapping("/info/{attrId}")
-    public R info(@PathVariable("attrId") Long attrId){
-		AttrEntity attr = attrService.getById(attrId);
+    public R info(@PathVariable("attrId") Long attrId) {
+        AttrEntity attr = attrService.getById(attrId);
 
         return R.ok().put("attr", attr);
     }
@@ -69,8 +85,8 @@ public class AttrController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:attr:save")
-    public R save(@RequestBody AttrVo attr){
-		attrService.saveAttr(attr);
+    public R save(@RequestBody AttrVo attr) {
+        attrService.saveAttr(attr);
 
         return R.ok();
     }
@@ -80,8 +96,8 @@ public class AttrController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:attr:update")
-    public R update(@RequestBody AttrEntity attr){
-		attrService.updateById(attr);
+    public R update(@RequestBody AttrEntity attr) {
+        attrService.updateById(attr);
 
         return R.ok();
     }
@@ -91,8 +107,8 @@ public class AttrController {
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("product:attr:delete")
-    public R delete(@RequestBody Long[] attrIds){
-		attrService.removeByIds(Arrays.asList(attrIds));
+    public R delete(@RequestBody Long[] attrIds) {
+        attrService.removeByIds(Arrays.asList(attrIds));
 
         return R.ok();
     }

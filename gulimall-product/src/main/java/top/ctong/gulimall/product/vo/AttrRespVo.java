@@ -1,12 +1,9 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.product.vo;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.AttrEntity;
-import top.ctong.gulimall.product.vo.AttrVo;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Map;
-
+import java.io.Serializable;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,32 +17,23 @@ import java.util.Map;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品属性
+ * 属性响应vo
  * </p>
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-11-27 16:16
  */
-public interface AttrService extends IService<AttrEntity> {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class AttrRespVo extends AttrVo {
 
-    PageUtils queryPage(Map<String, Object> params);
+    private static final long serialVersionUID = 2542827493222395003L;
+    /**
+     * 分类名称
+     */
+    private String catelogName;
 
     /**
-     * 保存属性
-     * @param attr 属性信息
-     * @author Clover You
-     * @date 2021/11/27 15:21
+     * 分组名称
      */
-    void saveAttr(AttrVo attr);
-
-    /**
-     * 查询属性基础信息
-     * @param params 自定义查询参数
-     * @param catelogId 分类id
-     * @return PageUtils
-     * @author Clover You
-     * @date 2021/11/27 15:55
-     */
-    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId);
+    private String groupName;
 }
-
