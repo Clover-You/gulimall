@@ -21,13 +21,29 @@ import java.util.Map;
  * <p>
  * 属性分组
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
  */
 public interface AttrGroupService extends IService<AttrGroupEntity> {
 
+    /**
+     * 分页查询分组信息
+     * @param params 自定义规则
+     * @return PageUtils
+     * @author Clover You
+     * @date 2021/11/25 16:32
+     */
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 通过分类id分页查询分组信息
+     * @param params 自定义查询规则
+     * @param catalogId 分类id
+     * @return PageUtils
+     * @author Clover You
+     * @date 2021/11/25 16:31
+     */
+    PageUtils queryPage(Map<String, Object> params, Long catalogId);
 }
 

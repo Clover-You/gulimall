@@ -1,20 +1,20 @@
 package top.ctong.gulimall.product.service.impl;
 
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
-
 import top.ctong.gulimall.product.dao.CategoryDao;
 import top.ctong.gulimall.product.entity.CategoryEntity;
 import top.ctong.gulimall.product.service.CategoryService;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -113,6 +113,37 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return (m1.getSort() == null ? 0 : m1.getSort()) - (m2.getSort() == null ? 0 : m2.getSort());
         }).collect(Collectors.toList());
         return children;
+    }
+
+    /**
+     * 通过分组id查找分组路径[父/子/孙]
+     * @param catelogId 分组id
+     * @return Long
+     * @author Clover You
+     * @date 2021/11/27 08:52
+     */
+    @Override
+    public Long[] findCategoryPath(Long catelogId) {
+        List<Long> path = findParentPath(catelogId, new ArrayList<>(3));
+        Collections.reverse(path);
+        return path.toArray(new Long[0]);
+    }
+
+    /**
+     * 通过子孙节点找所有父节点
+     * @param catelogId 要查找的子孙节点id
+     * @param path 节点集合
+     * @return List<Long>
+     * @author Clover You
+     * @date 2021/11/27 09:03
+     */
+    private List<Long> findParentPath(Long catelogId, List<Long> path) {
+        path.add(catelogId);
+        CategoryEntity byId = this.getById(catelogId);
+        if (byId.getParentCid() != 0) {
+            findParentPath(byId.getParentCid(), path);
+        }
+        return path;
     }
 
 }
