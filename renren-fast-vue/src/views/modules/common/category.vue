@@ -32,8 +32,8 @@ export default {
           this.menus = data.data;
         });
     },
-    nodeClick(node) {
-      this.$emit('click', node)
+    nodeClick(data, node, vueNode) {
+      this.$emit('click', data, node, vueNode)
     }
   }
 };

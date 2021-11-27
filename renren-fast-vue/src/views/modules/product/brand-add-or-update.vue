@@ -86,7 +86,7 @@ export default {
           {
             required: true,
             validator: (rule, value, allback) => {
-              if (value == void 0 || value.trim() == "") {
+              if (value == void 0 || String(value).trim() == "") {
                 allback(new Error("首字母不能为空"));
               } else if (!/^[a-zA-Z]$/.test(value)) {
                 allback(new Error("只能是一位字母，不允许其它符号"));
@@ -100,7 +100,8 @@ export default {
           {
             required: true,
             validator: (rule, value, allback) => {
-              if (value == void 0 || value.trim() == "") {
+              console.log(value);
+              if (value == void 0 || String(value).trim() == "") {
                 allback(new Error("排序不能为空"));
               } else if (!Number.isInteger(Number(value))) {
                 allback(new Error("只能是整数"));
