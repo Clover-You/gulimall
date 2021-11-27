@@ -12,6 +12,8 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.product.dao.AttrAttrgroupRelationDao;
 import top.ctong.gulimall.product.dao.AttrDao;
+import top.ctong.gulimall.product.dao.AttrGroupDao;
+import top.ctong.gulimall.product.dao.CategoryDao;
 import top.ctong.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.entity.AttrGroupEntity;
@@ -53,7 +55,10 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
 
     @Autowired
-    private AttrGroupService attrGroupService;
+    private AttrGroupDao attrGroupDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Autowired
     private CategoryService categoryService;
@@ -62,7 +67,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(
                 new Query<AttrEntity>().getPage(params),
-                new QueryWrapper<AttrEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -126,11 +131,11 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             if (attrId != null) {
                 // 获取分组名称
                 Long attrGroupId = attrId.getAttrGroupId();
-                AttrGroupEntity group = attrGroupService.getById(attrGroupId);
+                AttrGroupEntity group = attrGroupDao.selectById(attrGroupId);
                 resp.setGroupName(group.getAttrGroupName());
                 // 获取分类名称
                 Long attrCatelogId = attr.getCatelogId();
-                CategoryEntity category = categoryService.getById(attrCatelogId);
+                CategoryEntity category = categoryDao.selectById(attrCatelogId);
                 resp.setCatelogName(category.getName());
             }
             return resp;
@@ -138,6 +143,45 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         PageUtils pageUtils = new PageUtils(page);
         pageUtils.setList(stream.collect(Collectors.toList()));
         return pageUtils;
+    }
+
+    /**
+     * 根据属性id查询属性信息
+     * @param attrId 属性id
+     * @return AttrRespVo
+     * @author Clover You
+     * @date 2021/11/27 16:57
+     */
+    @Override
+    public AttrRespVo getAttrInfo(Long attrId) {
+        AttrEntity byId = this.getById(attrId);
+        AttrRespVo respVo = new AttrRespVo();
+        BeanUtils.copyProperties(byId, respVo);
+        // select * from pms_attr_attrgroup_relation where attr_id =?
+        // 获取分组信息
+        AttrAttrgroupRelationEntity groupRelation = attrAttrgroupRelationDao.selectOne(
+                new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrId)
+        );
+
+        if (groupRelation != null) {
+            AttrGroupEntity groupEntity = attrGroupDao.selectById(groupRelation.getAttrGroupId());
+            if (groupEntity != null) {
+                respVo.setGroupName(groupEntity.getAttrGroupName());
+            }
+
+            respVo.setAttrGroupId(groupRelation.getAttrGroupId());
+
+        }
+
+        Long[] categoryPath = categoryService.findCategoryPath(byId.getCatelogId());
+        respVo.setCatelogPath(categoryPath);
+
+        CategoryEntity categoryEntity = categoryDao.selectById(byId.getCatelogId());
+        if (categoryEntity != null) {
+            respVo.setCatelogName(categoryEntity.getName());
+        }
+
+        return respVo;
     }
 
 }

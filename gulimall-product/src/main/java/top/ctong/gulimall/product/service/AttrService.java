@@ -3,6 +3,7 @@ package top.ctong.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.product.entity.AttrEntity;
+import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
 import java.util.Map;
@@ -47,5 +48,14 @@ public interface AttrService extends IService<AttrEntity> {
      * @date 2021/11/27 15:55
      */
     PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId);
+
+    /**
+     * 根据属性id查询属性信息
+     * @param attrId 属性id
+     * @return AttrRespVo
+     * @author Clover You
+     * @date 2021/11/27 16:57
+     */
+    AttrRespVo getAttrInfo(Long attrId);
 }
 

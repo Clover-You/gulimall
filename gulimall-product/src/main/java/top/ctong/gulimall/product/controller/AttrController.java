@@ -15,6 +15,7 @@ import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.service.AttrService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
 
@@ -75,9 +76,10 @@ public class AttrController {
      */
     @RequestMapping("/info/{attrId}")
     public R info(@PathVariable("attrId") Long attrId) {
-        AttrEntity attr = attrService.getById(attrId);
+        AttrRespVo respVo = attrService.getAttrInfo(attrId);
+//        AttrEntity attr = attrService.getById(attrId);
 
-        return R.ok().put("attr", attr);
+        return R.ok().put("attr", respVo);
     }
 
     /**
