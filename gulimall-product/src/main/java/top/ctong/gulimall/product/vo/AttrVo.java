@@ -65,4 +65,9 @@ public class AttrVo implements Serializable {
      * 属性分组信息
      */
     private Long attrGroupId;
+
+    /**
+     * 值信息
+     */
+    private Integer valueType;
 }

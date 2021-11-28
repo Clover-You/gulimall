@@ -70,4 +70,8 @@ public class AttrEntity implements Serializable {
 	 */
 	private Integer showDesc;
 
+	/**
+	 * 值信息
+	 */
+	private Integer valueType;
 }

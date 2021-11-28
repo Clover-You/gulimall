@@ -57,5 +57,13 @@ public interface AttrService extends IService<AttrEntity> {
      * @date 2021/11/27 16:57
      */
     AttrRespVo getAttrInfo(Long attrId);
+
+    /**
+     * 保存属性修改后的信息
+     * @param attr 属性信息
+     * @author Clover You
+     * @date 2021/11/28 10:32
+     */
+    void updateAttr(AttrVo attr);
 }
 

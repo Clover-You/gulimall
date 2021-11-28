@@ -14,16 +14,13 @@ import top.ctong.gulimall.product.dao.AttrAttrgroupRelationDao;
 import top.ctong.gulimall.product.dao.AttrDao;
 import top.ctong.gulimall.product.dao.AttrGroupDao;
 import top.ctong.gulimall.product.dao.CategoryDao;
-import top.ctong.gulimall.product.entity.AttrAttrgroupRelationEntity;
-import top.ctong.gulimall.product.entity.AttrEntity;
-import top.ctong.gulimall.product.entity.AttrGroupEntity;
-import top.ctong.gulimall.product.entity.CategoryEntity;
-import top.ctong.gulimall.product.service.AttrGroupService;
+import top.ctong.gulimall.product.entity.*;
 import top.ctong.gulimall.product.service.AttrService;
 import top.ctong.gulimall.product.service.CategoryService;
 import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -131,12 +128,21 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             if (attrId != null) {
                 // 获取分组名称
                 Long attrGroupId = attrId.getAttrGroupId();
-                AttrGroupEntity group = attrGroupDao.selectById(attrGroupId);
-                resp.setGroupName(group.getAttrGroupName());
+                if (attrGroupId != null) {
+                    AttrGroupEntity group = attrGroupDao.selectById(attrGroupId);
+                    if (group != null) {
+                        resp.setGroupName(group.getAttrGroupName());
+                    }
+                }
+
                 // 获取分类名称
                 Long attrCatelogId = attr.getCatelogId();
-                CategoryEntity category = categoryDao.selectById(attrCatelogId);
-                resp.setCatelogName(category.getName());
+                if (attrCatelogId != null) {
+                    CategoryEntity category = categoryDao.selectById(attrCatelogId);
+                    if (category != null) {
+                        resp.setCatelogName(category.getName());
+                    }
+                }
             }
             return resp;
         });
@@ -168,9 +174,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             if (groupEntity != null) {
                 respVo.setGroupName(groupEntity.getAttrGroupName());
             }
-
             respVo.setAttrGroupId(groupRelation.getAttrGroupId());
-
         }
 
         Long[] categoryPath = categoryService.findCategoryPath(byId.getCatelogId());
@@ -182,6 +186,39 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }
 
         return respVo;
+    }
+
+    /**
+     * 保存属性修改后的信息
+     * @param attr 属性信息
+     * @author Clover You
+     * @date 2021/11/28 10:32
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateAttr(AttrVo attr) {
+        AttrEntity attrEntity = new AttrEntity();
+        BeanUtils.copyProperties(attr, attrEntity);
+        // 先保存修改后的属性信息
+        this.updateById(attrEntity);
+
+        Long attrGroupId = attr.getAttrGroupId();
+        if (attrGroupId != null) {
+            QueryWrapper<AttrAttrgroupRelationEntity> updateWrapper = new QueryWrapper<>();
+            updateWrapper.eq("attr_id", attr.getAttrId());
+
+            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+            relationEntity.setAttrGroupId(attrGroupId);
+            // 检查当前数据库中是否有对应属性关联信息
+            Long count = attrAttrgroupRelationDao.selectCount(updateWrapper);
+            // 如果大于0代表有对应关联信息
+            if (count > 0) {
+                attrAttrgroupRelationDao.update(relationEntity, updateWrapper);
+            } else {
+                // 不存在关联信息时新增
+                attrAttrgroupRelationDao.insert(relationEntity);
+            }
+        }
     }
 
 }
