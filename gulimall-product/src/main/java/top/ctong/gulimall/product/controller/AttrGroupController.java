@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import top.ctong.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.entity.AttrGroupEntity;
 import top.ctong.gulimall.product.service.AttrGroupService;
@@ -14,6 +15,7 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.product.service.AttrService;
 import top.ctong.gulimall.product.service.CategoryService;
+import top.ctong.gulimall.product.vo.AttrGroupRelationVo;
 
 
 /**
@@ -117,5 +119,18 @@ public class AttrGroupController {
     public R attrRelation(@PathVariable("attrGroupId") Long attrGroupId) {
         List<AttrEntity> lists = attrService.getRelationAttr(attrGroupId);
         return R.ok().put("data", lists);
+    }
+
+    /** 
+     * 删除属性与分组的关联关系
+     * @param vos 关联信息
+     * @return R
+     * @author Clover You
+     * @date 2021/11/28 19:04
+     */
+    @RequestMapping("/attr/relation/delete")
+    public R relationDelete(@RequestBody AttrGroupRelationVo[] vos) {
+        attrService.deleteRelation(vos);
+        return R.ok();
     }
 }

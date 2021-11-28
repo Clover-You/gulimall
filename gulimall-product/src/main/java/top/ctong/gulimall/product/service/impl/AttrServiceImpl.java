@@ -18,9 +18,11 @@ import top.ctong.gulimall.product.dao.CategoryDao;
 import top.ctong.gulimall.product.entity.*;
 import top.ctong.gulimall.product.service.AttrService;
 import top.ctong.gulimall.product.service.CategoryService;
+import top.ctong.gulimall.product.vo.AttrGroupRelationVo;
 import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -254,5 +256,23 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             return attr.getAttrId();
         }).collect(Collectors.toList());
         return this.listByIds(attrIds);
+    }
+
+    /**
+     * 删除属性与属性分组关联信息
+     * @param vos 关联信息列表
+     * @author Clover You
+     * @date 2021/11/28 19:09
+     */
+    @Override
+    public void deleteRelation(AttrGroupRelationVo[] vos) {
+        if (vos.length > 0) {
+            List<AttrAttrgroupRelationEntity> list = Arrays.stream(vos).map(vo -> {
+                AttrAttrgroupRelationEntity entity = new AttrAttrgroupRelationEntity();
+                BeanUtils.copyProperties(vo, entity);
+                return entity;
+            }).collect(Collectors.toList());
+            attrAttrgroupRelationDao.deleteBatchRelation(list);
+        }
     }
 }

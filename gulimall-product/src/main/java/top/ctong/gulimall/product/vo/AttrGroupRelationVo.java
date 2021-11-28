@@ -1,12 +1,8 @@
-package top.ctong.gulimall.product.dao;
+package top.ctong.gulimall.product.vo;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.product.entity.AttrAttrgroupRelationEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.Data;
 
-import java.util.List;
-
+import java.io.Serializable;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,21 +16,23 @@ import java.util.List;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 属性&属性分组关联
+ * 属性分组管关联关系
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-11-28 19:05
  */
-@Mapper
-public interface AttrAttrgroupRelationDao extends BaseMapper<AttrAttrgroupRelationEntity> {
+@Data
+public class AttrGroupRelationVo implements Serializable {
+
+    private static final long serialVersionUID = -2355541459604218800L;
 
     /**
-     * 删除属性与属性分组关联关系
-     * @param list 关联关系列表
-     * @author Clover You
-     * @date 2021/11/28 19:19
+     * 属性id
      */
-    void deleteBatchRelation(@Param("es") List<AttrAttrgroupRelationEntity> list);
+    private Long attrId;
+
+    /**
+     * 属性分组id
+     */
+    private  Long attrGroupId;
 }

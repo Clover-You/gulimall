@@ -3,6 +3,7 @@ package top.ctong.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.product.entity.AttrEntity;
+import top.ctong.gulimall.product.vo.AttrGroupRelationVo;
 import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
@@ -76,5 +77,13 @@ public interface AttrService extends IService<AttrEntity> {
      * @date 2021/11/28 15:09
      */
     List<AttrEntity> getRelationAttr(Long attrGroupId);
+
+    /**
+     * 删除属性与属性分组关联信息
+     * @param vos 关联信息列表
+     * @author Clover You
+     * @date 2021/11/28 19:09
+     */
+    void deleteRelation(AttrGroupRelationVo[] vos);
 }
 
