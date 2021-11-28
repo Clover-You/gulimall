@@ -43,11 +43,12 @@ public interface AttrService extends IService<AttrEntity> {
      * 查询属性基础信息
      * @param params 自定义查询参数
      * @param catelogId 分类id
+     * @param attrType 属性类型
      * @return PageUtils
      * @author Clover You
      * @date 2021/11/27 15:55
      */
-    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId);
+    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType);
 
     /**
      * 根据属性id查询属性信息

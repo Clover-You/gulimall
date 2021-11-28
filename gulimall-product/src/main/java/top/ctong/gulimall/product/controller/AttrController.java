@@ -54,10 +54,12 @@ public class AttrController {
      * @author Clover You
      * @date 2021/11/27 15:51
      */
-    @RequestMapping("/base/list/{catelogId}")
+    @RequestMapping("/{attrType}/list/{catelogId}")
     public R baseList(@RequestParam Map<String, Object> params,
-                      @PathVariable("catelogId") Long catelogId) {
-        PageUtils page = attrService.queryBaseAttrPage(params, catelogId);
+                      @PathVariable("catelogId") Long catelogId,
+                      @PathVariable("attrType") String attrType) {
+        //base
+        PageUtils page = attrService.queryBaseAttrPage(params, catelogId, attrType);
         return R.ok().put("page", page);
     }
 
