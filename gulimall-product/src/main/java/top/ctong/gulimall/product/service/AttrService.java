@@ -6,6 +6,7 @@ import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -66,5 +67,14 @@ public interface AttrService extends IService<AttrEntity> {
      * @date 2021/11/28 10:32
      */
     void updateAttr(AttrVo attr);
+
+    /** 
+     * 通过属性分组查询所有属性信息
+     * @param attrGroupId 属性分组id
+     * @return List<AttrEntity>
+     * @author Clover You
+     * @date 2021/11/28 15:09
+     */
+    List<AttrEntity> getRelationAttr(Long attrGroupId);
 }
 

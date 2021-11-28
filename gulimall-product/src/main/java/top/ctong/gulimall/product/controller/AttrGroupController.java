@@ -1,18 +1,18 @@
 package top.ctong.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.entity.AttrGroupEntity;
 import top.ctong.gulimall.product.service.AttrGroupService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.product.service.AttrService;
 import top.ctong.gulimall.product.service.CategoryService;
 
 
@@ -38,14 +38,14 @@ import top.ctong.gulimall.product.service.CategoryService;
 @RequestMapping("product/attrgroup")
 public class AttrGroupController {
 
-    private final AttrGroupService attrGroupService;
+    @Autowired
+    private AttrGroupService attrGroupService;
 
-    private final CategoryService categoryService;
+    @Autowired
+    private CategoryService categoryService;
 
-    public AttrGroupController(AttrGroupService attrGroupService, CategoryService categoryService) {
-        this.attrGroupService = attrGroupService;
-        this.categoryService = categoryService;
-    }
+    @Autowired
+    private AttrService attrService;
 
     /**
      * 根据分类id获取属性分组信息
@@ -80,7 +80,6 @@ public class AttrGroupController {
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("product:attrgroup:save")
     public R save(@RequestBody AttrGroupEntity attrGroup) {
         attrGroupService.save(attrGroup);
 
@@ -91,7 +90,6 @@ public class AttrGroupController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("product:attrgroup:update")
     public R update(@RequestBody AttrGroupEntity attrGroup) {
         attrGroupService.updateById(attrGroup);
 
@@ -102,11 +100,22 @@ public class AttrGroupController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("product:attrgroup:delete")
     public R delete(@RequestBody Long[] attrGroupIds) {
         attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
 
         return R.ok();
     }
 
+    /**
+     * 获取所有分组和属性关联信息
+     * @param attrGroupId 分组id
+     * @return R
+     * @author Clover You
+     * @date 2021/11/28 15:05
+     */
+    @GetMapping("/{attrGroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrGroupId") Long attrGroupId) {
+        List<AttrEntity> lists = attrService.getRelationAttr(attrGroupId);
+        return R.ok().put("data", lists);
+    }
 }

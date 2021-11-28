@@ -236,4 +236,23 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }
     }
 
+    /**
+     * 通过属性分组查询所有属性信息
+     * @param attrGroupId 属性分组id
+     * @return List<AttrEntity>
+     * @author Clover You
+     * @date 2021/11/28 15:09
+     */
+    @Override
+    public List<AttrEntity> getRelationAttr(Long attrGroupId) {
+        QueryWrapper<AttrAttrgroupRelationEntity> relationWrapper = new QueryWrapper<>();
+        relationWrapper.eq("attr_group_id", attrGroupId);
+        // 查询属性和属性分组关联信息
+        List<AttrAttrgroupRelationEntity> groupRelationEntity = attrAttrgroupRelationDao.selectList(relationWrapper);
+        // 收集属性分组id
+        List<Long> attrIds = groupRelationEntity.stream().map(attr -> {
+            return attr.getAttrId();
+        }).collect(Collectors.toList());
+        return this.listByIds(attrIds);
+    }
 }
