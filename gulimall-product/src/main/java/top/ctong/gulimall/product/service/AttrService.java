@@ -85,5 +85,15 @@ public interface AttrService extends IService<AttrEntity> {
      * @date 2021/11/28 19:09
      */
     void deleteRelation(AttrGroupRelationVo[] vos);
+
+    /**
+     * 根据指定分组id获取未关联本分组的所有属性「分页」
+     * @param params 其他参数
+     * @param attrGroupId 分组id
+     * @return PageUtils
+     * @author Clover You
+     * @date 2021/11/28 20:02
+     */
+    PageUtils getNoRelationAttr(Map<String, Object> params, Long attrGroupId);
 }
 

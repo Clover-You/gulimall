@@ -1,7 +1,12 @@
 package top.ctong.gulimall.product.service.impl;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +16,7 @@ import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.product.dao.AttrAttrgroupRelationDao;
 import top.ctong.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import top.ctong.gulimall.product.service.AttrAttrgroupRelationService;
+import top.ctong.gulimall.product.vo.AttrGroupRelationVo;
 
 
 /**
@@ -43,6 +49,22 @@ public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupR
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 批量保存属性与属性分组的关联关系
+     * @param vos 关联关系列表
+     * @author Clover You
+     * @date 2021/11/29 08:34
+     */
+    @Override
+    public void saveBatch(List<AttrGroupRelationVo> vos) {
+        List<AttrAttrgroupRelationEntity> attrList = vos.stream().map(vo -> {
+            AttrAttrgroupRelationEntity entity = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(vo, entity);
+            return entity;
+        }).collect(Collectors.toList());
+        this.saveBatch(attrList);
     }
 
 }

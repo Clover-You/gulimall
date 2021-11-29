@@ -3,13 +3,16 @@ package top.ctong.gulimall.product.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import top.ctong.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.entity.AttrGroupEntity;
+import top.ctong.gulimall.product.service.AttrAttrgroupRelationService;
 import top.ctong.gulimall.product.service.AttrGroupService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
@@ -48,6 +51,9 @@ public class AttrGroupController {
 
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private AttrAttrgroupRelationService relationService;
 
     /**
      * 根据分类id获取属性分组信息
@@ -121,7 +127,7 @@ public class AttrGroupController {
         return R.ok().put("data", lists);
     }
 
-    /** 
+    /**
      * 删除属性与分组的关联关系
      * @param vos 关联信息
      * @return R
@@ -131,6 +137,33 @@ public class AttrGroupController {
     @RequestMapping("/attr/relation/delete")
     public R relationDelete(@RequestBody AttrGroupRelationVo[] vos) {
         attrService.deleteRelation(vos);
+        return R.ok();
+    }
+
+    /**
+     * 获取属性分组没有关联的其他属性
+     * @param attrGroupId 分组id
+     * @return R
+     * @author Clover You
+     * @date 2021/11/28 19:58
+     */
+    @GetMapping("/{attrGroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrGroupId") Long attrGroupId,
+                            @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getNoRelationAttr(params, attrGroupId);
+        return R.ok().put("page", page);
+    }
+
+    /** 
+     * 添加属性与分组关联关系
+     * @param vos 关联关系列表
+     * @return R
+     * @author Clover You
+     * @date 2021/11/29 08:27
+     */
+    @PostMapping("/attr/relation")
+    public R addAttrRelation(@RequestBody List<AttrGroupRelationVo> vos) {
+        relationService.saveBatch(vos);
         return R.ok();
     }
 }
