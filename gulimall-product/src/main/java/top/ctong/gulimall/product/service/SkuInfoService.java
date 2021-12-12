@@ -37,5 +37,14 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
      * @date 2021/12/9 16:32
      */
     void saveSkuInfo(SkuInfoEntity skuInfoEntity);
+
+    /**
+     * 根据自定义条件通过sku信息查询商品信息
+     * @param params 自定义条件
+     * @return PageUtils
+     * @author Clover You
+     * @date 2021/12/12 09:03
+     */
+    PageUtils queryPageByCondition(Map<String, Object> params);
 }
 

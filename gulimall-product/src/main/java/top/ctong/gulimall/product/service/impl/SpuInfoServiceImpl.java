@@ -213,7 +213,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         this.baseMapper.insert(spuInfo);
     }
 
-
     /**
      * 根据条件查询SPU信息
      * @param params 自定义条件
@@ -237,12 +236,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             wrapper.eq("publish_status", status);
         }
         String brandId = (String) params.get("brandId");
-        if (StringUtils.hasText(brandId)) {
+        if (StringUtils.hasText(brandId) && !"0".equalsIgnoreCase(brandId)) {
             // select ... where brand_id = ?
             wrapper.eq("brand_id", brandId);
         }
         String catelogId = (String) params.get("catelogId");
-        if (StringUtils.hasText(catelogId)) {
+        if (StringUtils.hasText(catelogId) && !"0".equalsIgnoreCase(catelogId)) {
             // select ... where catalog_id = ?
             wrapper.eq("catalog_id", catelogId);
         }
