@@ -1,11 +1,12 @@
 server:
   port: 11000
 
+
 spring:
   datasource:
     username: root
     password: 123
-    url: jdbc:mysql://localhost:3306/gulimall_oms?useSSH=false
+    url: jdbc:mysql://localhost:3306/gulimall_wms?useSSH=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   cloud:
@@ -20,3 +21,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+logging:
+  level:
+    top.ctong.gulimall.ware: debug

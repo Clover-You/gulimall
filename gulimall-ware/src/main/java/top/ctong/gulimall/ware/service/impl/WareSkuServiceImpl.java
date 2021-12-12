@@ -5,6 +5,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.util.StringUtils;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
@@ -37,9 +38,18 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<WareSkuEntity> queryWrapper = new QueryWrapper<>();
+        String skuId = (String) params.get("skuId");
+        if (StringUtils.hasText(skuId) && !"0".equalsIgnoreCase(skuId)) {
+            queryWrapper.eq("sku_id", skuId);
+        }
+        String wareId = (String) params.get("wareId");
+        if (StringUtils.hasText(wareId) && !"0".equalsIgnoreCase(wareId)) {
+            queryWrapper.eq("ware_id", wareId);
+        }
         IPage<WareSkuEntity> page = this.page(
                 new Query<WareSkuEntity>().getPage(params),
-                new QueryWrapper<WareSkuEntity>()
+                queryWrapper
         );
 
         return new PageUtils(page);
