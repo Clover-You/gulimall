@@ -47,5 +47,14 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
      * @date 2021/12/9 10:36
      */
     void saveBaseSpuInfo(SpuInfoEntity spuInfo);
+
+    /** 
+     * 根据条件查询SPU信息
+     * @param params 自定义条件
+     * @return PageUtils
+     * @author Clover You
+     * @date 2021/12/12 08:28
+     */
+    PageUtils queryPageByCondition(Map<String, Object> params);
 }
 
