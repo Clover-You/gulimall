@@ -45,4 +45,15 @@ public class SpuInfoDescServiceImpl extends ServiceImpl<SpuInfoDescDao, SpuInfoD
         return new PageUtils(page);
     }
 
+    /**
+     * 保存SPU描述信息
+     * @param descEntity SPU描述信息
+     * @author Clover You
+     * @date 2021/12/9 10:45
+     */
+    @Override
+    public void saveSpuInfoDesc(SpuInfoDescEntity descEntity) {
+        this.baseMapper.insert(descEntity);
+    }
+
 }

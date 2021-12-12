@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Service;
 import top.ctong.gulimall.common.utils.PageUtils;
+import top.ctong.gulimall.product.entity.BrandEntity;
 import top.ctong.gulimall.product.entity.CategoryBrandRelationEntity;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -64,5 +66,14 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
      * @date 2021/11/27 11:04
      */
     void updateCategory(Long catId, String name);
+
+    /** 
+     * 获取分类关联的品牌
+     * @param catId 分类id
+     * @return List<BrandEntity>
+     * @author Clover You
+     * @date 2021/11/29 10:01
+     */
+    List<BrandEntity> getBrandsByCatId(Long catId);
 }
 

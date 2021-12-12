@@ -1,7 +1,11 @@
 package top.ctong.gulimall.product.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,6 +47,27 @@ public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEnt
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 保存spu图片
+     * @param spuId spuId
+     * @param images 图片路径
+     * @author Clover You
+     * @date 2021/12/9 10:54
+     */
+    @Override
+    public void saveImagesByUrl(Long spuId, List<String> images) {
+        if (images == null || images.isEmpty()) {
+            return;
+        }
+        List<SpuImagesEntity> imagesEntityList = images.stream().map(image -> {
+            SpuImagesEntity spuImagesEntity = new SpuImagesEntity();
+            spuImagesEntity.setImgUrl(image);
+            spuImagesEntity.setSpuId(spuId);
+            return spuImagesEntity;
+        }).collect(Collectors.toList());
+        this.saveBatch(imagesEntityList);
     }
 
 }

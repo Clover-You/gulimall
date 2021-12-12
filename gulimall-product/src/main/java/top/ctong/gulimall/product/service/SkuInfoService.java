@@ -29,5 +29,13 @@ import java.util.Map;
 public interface SkuInfoService extends IService<SkuInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 保存sku信息
+     * @param skuInfoEntity sku信息
+     * @author Clover You
+     * @date 2021/12/9 16:32
+     */
+    void saveSkuInfo(SkuInfoEntity skuInfoEntity);
 }
 

@@ -55,7 +55,7 @@ public class SpuInfoEntity implements Serializable {
 	 */
 	private Long brandId;
 	/**
-	 * 
+	 * 重量
 	 */
 	private BigDecimal weight;
 	/**
@@ -63,11 +63,11 @@ public class SpuInfoEntity implements Serializable {
 	 */
 	private Integer publishStatus;
 	/**
-	 * 
+	 * 创建时间
 	 */
 	private Date createTime;
 	/**
-	 * 
+	 * 修改时间
 	 */
 	private Date updateTime;
 

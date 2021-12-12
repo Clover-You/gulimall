@@ -2,7 +2,9 @@ package top.ctong.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
+import top.ctong.gulimall.product.entity.SpuInfoDescEntity;
 import top.ctong.gulimall.product.entity.SpuInfoEntity;
+import top.ctong.gulimall.product.vo.SpuSaveVo;
 
 import java.util.Map;
 
@@ -29,5 +31,21 @@ import java.util.Map;
 public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /** 
+     * 保存spu信息
+     * @param vo spu信息
+     * @author Clover You
+     * @date 2021/12/9 10:08
+     */
+    void saveSpuInfo(SpuSaveVo vo);
+
+    /**
+     * 保存SPU基本信息
+     * @param spuInfo spu信息
+     * @author Clover You
+     * @date 2021/12/9 10:36
+     */
+    void saveBaseSpuInfo(SpuInfoEntity spuInfo);
 }
 

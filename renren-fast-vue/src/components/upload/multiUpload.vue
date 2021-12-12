@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://gulimall-clouds.oss-cn-beijing.aliyuncs.com"
+      :action="action"
       :data="dataObj"
       :list-type="listType"
       :file-list="fileList"
@@ -33,6 +33,7 @@ export default {
       type: Number,
       default: 30
     },
+    action: String,
     listType:{
       type: String,
       default: "picture-card"

@@ -1,8 +1,12 @@
 package top.ctong.gulimall.product.service.impl;
 
+import org.checkerframework.checker.units.qual.C;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,8 +16,11 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
 import top.ctong.gulimall.product.dao.AttrGroupDao;
+import top.ctong.gulimall.product.entity.AttrEntity;
 import top.ctong.gulimall.product.entity.AttrGroupEntity;
 import top.ctong.gulimall.product.service.AttrGroupService;
+import top.ctong.gulimall.product.service.AttrService;
+import top.ctong.gulimall.product.vo.AttrGroupWithAttrsVo;
 
 
 /**
@@ -36,6 +43,9 @@ import top.ctong.gulimall.product.service.AttrGroupService;
  */
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+
+    @Autowired
+    private AttrService attrService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -75,6 +85,28 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             page = this.page(new Query<AttrGroupEntity>().getPage(params), wrapper);
         }
         return new PageUtils(page);
+    }
+
+    /**
+     * 获取分类下所有分组&关联属性
+     * @param catelogId 分类Id
+     * @return List<AttrGroupWithAttrsVo>
+     * @author Clover You
+     * @date 2021/12/7 11:03
+     */
+    @Override
+    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId) {
+        QueryWrapper<AttrGroupEntity> attrGroupQueryWrapper = new QueryWrapper<>();
+        attrGroupQueryWrapper.eq("catelog_id", catelogId);
+        List<AttrGroupEntity> attrGroupResult = this.list(attrGroupQueryWrapper);
+        return Optional.of(attrGroupResult).orElse(new ArrayList<>())
+                .stream().map(item -> {
+                    List<AttrEntity> attrs = attrService.getRelationAttr(item.getAttrGroupId());
+                    AttrGroupWithAttrsVo attrGroupWithAttrsVo = new AttrGroupWithAttrsVo();
+                    BeanUtils.copyProperties(item, attrGroupWithAttrsVo);
+                    attrGroupWithAttrsVo.setAttrs(attrs);
+                    return attrGroupWithAttrsVo;
+                }).collect(Collectors.toList());
     }
 
 }

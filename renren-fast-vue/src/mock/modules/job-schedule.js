@@ -1,7 +1,7 @@
 import Mock from 'mockjs'
 
 // 生成数据列表
-var dataList = []
+let dataList = []
 for (let i = 0; i < Math.floor(Math.random() * 10 + 1); i++) {
   let name = Mock.Random.name()
   dataList.push(Mock.mock({

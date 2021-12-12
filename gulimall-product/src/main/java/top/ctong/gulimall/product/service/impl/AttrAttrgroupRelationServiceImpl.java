@@ -33,19 +33,20 @@ import top.ctong.gulimall.product.vo.AttrGroupRelationVo;
  * <p>
  * 属性&属性分组关联
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
  */
 @Service("attrAttrgroupRelationService")
-public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity> implements AttrAttrgroupRelationService {
+public class AttrAttrgroupRelationServiceImpl
+        extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity>
+        implements AttrAttrgroupRelationService {
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrAttrgroupRelationEntity> page = this.page(
                 new Query<AttrAttrgroupRelationEntity>().getPage(params),
-                new QueryWrapper<AttrAttrgroupRelationEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);

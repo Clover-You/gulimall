@@ -1,13 +1,9 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.product.vo;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.AttrGroupEntity;
-import top.ctong.gulimall.product.vo.AttrGroupWithAttrsVo;
+import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -21,40 +17,66 @@ import java.util.Map;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 属性分组
+ * 新增商品Vo
  * </p>
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021/12/9 09:42
  */
-public interface AttrGroupService extends IService<AttrGroupEntity> {
+@Data
+public class SpuSaveVo {
 
     /**
-     * 分页查询分组信息
-     * @param params 自定义规则
-     * @return PageUtils
-     * @author Clover You
-     * @date 2021/11/25 16:32
+     * 商品名称
      */
-    PageUtils queryPage(Map<String, Object> params);
+    private String spuName;
 
     /**
-     * 通过分类id分页查询分组信息
-     * @param params 自定义查询规则
-     * @param catalogId 分类id
-     * @return PageUtils
-     * @author Clover You
-     * @date 2021/11/25 16:31
+     * 商品描述
      */
-    PageUtils queryPage(Map<String, Object> params, Long catalogId);
+    private String spuDescription;
 
-    /** 
-     * 获取分类下所有分组&关联属性
-     * @param catelogId 分类Id
-     * @return List<AttrGroupWithAttrsVo>
-     * @author Clover You
-     * @date 2021/12/7 11:03
+    /**
+     * 分类id
      */
-    List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId);
+    private Long catalogId;
+
+    /**
+     * 品牌id
+     */
+    private Long brandId;
+
+    /**
+     * 重量
+     */
+    private BigDecimal weight;
+
+    /**
+     * 发布状态
+     */
+    private Integer publishStatus;
+
+    /**
+     * 商品描述图集
+     */
+    private List<String> decript;
+
+    /**
+     * 商品全部图集
+     */
+    private List<String> images;
+
+    /**
+     * 积分信息
+     */
+    private Bounds bounds;
+
+    /**
+     * 基本属性
+     */
+    private List<BaseAttrs> baseAttrs;
+
+    /**
+     * 销售属性
+     */
+    private List<Skus> skus;
 }
-

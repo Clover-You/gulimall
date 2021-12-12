@@ -1,6 +1,8 @@
 package top.ctong.gulimall.product.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +45,17 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 保存SPU基本属性
+     * @param attrValueEntityList 属性信息
+     * @author Clover You
+     * @date 2021/12/9 11:10
+     */
+    @Override
+    public void saveProductAttr(List<ProductAttrValueEntity> attrValueEntityList) {
+        this.saveBatch(attrValueEntityList);
     }
 
 }

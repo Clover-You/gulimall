@@ -3,7 +3,9 @@ package top.ctong.gulimall.product.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -47,13 +49,15 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private CategoryBrandRelationDao relationDao;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryBrandRelationEntity> page = this.page(
                 new Query<CategoryBrandRelationEntity>().getPage(params),
-                new QueryWrapper<CategoryBrandRelationEntity>()
+                new QueryWrapper<>()
         );
-
         return new PageUtils(page);
     }
 
@@ -103,6 +107,24 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     @Override
     public void updateCategory(Long catId, String name) {
         this.baseMapper.updateCategory(catId, name);
+    }
+
+    /**
+     * 获取分类关联的品牌
+     * @param catId 分类id
+     * @return List<BrandEntity>
+     * @author Clover You
+     * @date 2021/11/29 10:01
+     */
+    @Override
+    public List<BrandEntity> getBrandsByCatId(Long catId) {
+        List<CategoryBrandRelationEntity> catelogList = relationDao.selectList(
+                new QueryWrapper<CategoryBrandRelationEntity>().eq("catelog_id", catId)
+        );
+        List<Long> brandIds = catelogList.stream().map(relation -> {
+            return relation.getBrandId();
+        }).collect(Collectors.toList());
+        return brandService.listByIds(brandIds);
     }
 
 }

@@ -1,8 +1,13 @@
 package top.ctong.gulimall.common.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import top.ctong.gulimall.common.to.SkuReductionTo;
+import top.ctong.gulimall.common.to.SpuBoundTo;
 import top.ctong.gulimall.common.utils.R;
 
 import java.util.Map;
@@ -27,16 +32,12 @@ import java.util.Map;
  * @create 2021-11-17 09:00
  */
 @FeignClient("gulimall-coupon")
-@RequestMapping("/coupon/coupon")
+@RequestMapping("/coupon")
 public interface CouponFeignService {
 
-    /**
-     * 通过自定义参数查询列表
-     * @param params 自定义参数
-     * @return R
-     * @author Clover You
-     * @date 2021/11/17 09:11
-     */
-    @RequestMapping("/list")
-    R list(@RequestParam Map<String, Object> params);
+    @PostMapping("/spubounds/save")
+    R saveSpuBounds(@RequestBody SpuBoundTo spuBoundTo);
+
+    @PostMapping("/skufullreduction/saveSkuReduction")
+    R saveSkuReduction(SkuReductionTo skuReductionTo);
 }

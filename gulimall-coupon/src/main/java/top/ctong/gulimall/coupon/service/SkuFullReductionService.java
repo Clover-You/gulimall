@@ -1,6 +1,7 @@
 package top.ctong.gulimall.coupon.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.ctong.gulimall.common.to.SkuReductionTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.coupon.entity.SkuFullReductionEntity;
 
@@ -29,5 +30,13 @@ import java.util.Map;
 public interface SkuFullReductionService extends IService<SkuFullReductionEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /** 
+     * 保存sku优惠信息
+     * @param skuReductionTo 优惠信息
+     * @author Clover You
+     * @date 2021/12/9 17:33
+     */
+    void saveSkuReduction(SkuReductionTo skuReductionTo);
 }
 

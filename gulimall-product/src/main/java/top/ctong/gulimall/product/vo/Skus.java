@@ -1,11 +1,8 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.product.vo;
+import lombok.Data;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.SpuInfoDescEntity;
-
-import java.util.Map;
-
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,23 +16,60 @@ import java.util.Map;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * spu信息介绍
+ * 属性信息
  * </p>
  *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021/12/9 09:56
  */
-public interface SpuInfoDescService extends IService<SpuInfoDescEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
+@Data
+public class Skus {
 
     /**
-     * 保存SPU描述信息
-     * @param descEntity SPU描述信息
-     * @author Clover You
-     * @date 2021/12/9 10:45
+     * 属性列表
      */
-    void saveSpuInfoDesc(SpuInfoDescEntity descEntity);
+    private List<Attr> attr;
+    /**
+     * sku名称
+     */
+    private String skuName;
+    /**
+     * 价格
+     */
+    private BigDecimal price;
+    /** 
+     * sku标题
+     */
+    private String skuTitle;
+    /** 
+     * sku副标题
+     */
+    private String skuSubtitle;
+    /** 
+     * 当前版本图片
+     */
+    private List<Images> images;
+    /** 
+     * 属性笛卡尔积
+     */
+    private List<String> descar;
+    /**
+     * 满件减价格
+     */
+    private Integer fullCount;
+    /**
+     * 折扣
+     */
+    private BigDecimal discount;
+    private Integer countStatus;
+    /**
+     * 满减价格
+     */
+    private BigDecimal fullPrice;
+    /**
+     * 满减后价格
+     */
+    private BigDecimal reducePrice;
+    private Integer priceStatus;
+    private List<MemberPrice> memberPrice;
 }
-

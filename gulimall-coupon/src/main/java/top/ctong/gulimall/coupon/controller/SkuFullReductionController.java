@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import top.ctong.gulimall.common.to.SkuReductionTo;
 import top.ctong.gulimall.coupon.entity.SkuFullReductionEntity;
 import top.ctong.gulimall.coupon.service.SkuFullReductionService;
 import top.ctong.gulimall.common.utils.PageUtils;
@@ -97,5 +98,18 @@ public class SkuFullReductionController {
 
         return R.ok();
     }
+    /** 
+     * 保存sku优惠信息
+     * @param skuReductionTo 优惠信息
+     * @return R
+     * @author Clover You
+     * @date 2021/12/9 17:30
+     */
+    @RequestMapping("/saveSkuReduction")
+    //@RequiresPermissions("coupon:skufullreduction:save")
+    public R saveSkuReduction(@RequestBody SkuReductionTo skuReductionTo){
+        skuFullReductionService.saveSkuReduction(skuReductionTo);
 
+        return R.ok();
+    }
 }

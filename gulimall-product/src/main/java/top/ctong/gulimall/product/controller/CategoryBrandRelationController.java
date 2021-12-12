@@ -1,19 +1,19 @@
 package top.ctong.gulimall.product.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import top.ctong.gulimall.product.entity.CategoryBrandRelationEntity;
-import top.ctong.gulimall.product.service.CategoryBrandRelationService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.product.entity.BrandEntity;
+import top.ctong.gulimall.product.entity.CategoryBrandRelationEntity;
+import top.ctong.gulimall.product.service.CategoryBrandRelationService;
+import top.ctong.gulimall.product.vo.BrandVo;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -48,14 +48,13 @@ public class CategoryBrandRelationController {
      * @date 2021/11/27 10:15
      */
     @GetMapping("/catelog/list")
-    public R catelogList(@RequestParam("brandId") Long brandId) {;
+    public R catelogList(@RequestParam("brandId") Long brandId) {
         QueryWrapper<CategoryBrandRelationEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("brand_id", brandId);
         List<CategoryBrandRelationEntity> list = categoryBrandRelationService.list(wrapper);
 
         return R.ok().put("data", list);
     }
-
 
     /**
      * 列表
@@ -66,7 +65,6 @@ public class CategoryBrandRelationController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
@@ -107,4 +105,22 @@ public class CategoryBrandRelationController {
         return R.ok();
     }
 
+    /**
+     * 获取分类关联的品牌
+     * @param catId 分类id
+     * @return R
+     * @author Clover You
+     * @date 2021/11/29 09:50
+     */
+    @GetMapping("/brands/list")
+    public R relationBrandsList(@RequestParam(value = "catId") Long catId) {
+        List<BrandEntity> list = categoryBrandRelationService.getBrandsByCatId(catId);
+        List<BrandVo> vos = list.stream().map(brand -> {
+            BrandVo vo = new BrandVo();
+            vo.setBrandId(brand.getBrandId());
+            vo.setBrandName(brand.getName());
+            return vo;
+        }).collect(Collectors.toList());
+        return R.ok().put("data", vos);
+    }
 }

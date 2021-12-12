@@ -50,12 +50,6 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @RequestMapping("/testFeignInvoke")
-    public R testFeignInvoke() {
-        Map<String, Object> parem = new HashMap<>(10);
-        return couponFeignService.list(parem);
-    }
-
     /**
      * 列表
      */
@@ -103,7 +97,6 @@ public class MemberController {
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids) {
         memberService.removeByIds(Arrays.asList(ids));
-
         return R.ok();
     }
 
