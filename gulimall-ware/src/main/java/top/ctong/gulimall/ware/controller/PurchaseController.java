@@ -1,20 +1,18 @@
 package top.ctong.gulimall.ware.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
 import top.ctong.gulimall.ware.service.PurchaseService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.ware.vo.MergeVo;
 
 
 /**
@@ -71,6 +69,8 @@ public class PurchaseController {
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchase:save")
     public R save(@RequestBody PurchaseEntity purchase){
+        purchase.setCreateTime(new Date());
+        purchase.setUpdateTime(new Date());
 		purchaseService.save(purchase);
 
         return R.ok();
@@ -95,6 +95,24 @@ public class PurchaseController {
     public R delete(@RequestBody Long[] ids){
 		purchaseService.removeByIds(Arrays.asList(ids));
 
+        return R.ok();
+    }
+    /** 
+     * 查询未领取的采购单
+     * @param params 分页数据
+     * @return R
+     * @author Clover You
+     * @date 2021/12/12 20:36
+     */
+    @GetMapping("/unreceive/list")
+    public R unreceiveList(@RequestParam Map<String, Object> params) {
+        PageUtils page = purchaseService.queryPageUnreceive(params);
+        return R.ok().put("page", page);
+    }
+
+    @PostMapping("/merge")
+    public R mergePurchase(@RequestBody MergeVo merge) {
+        purchaseService.mergePurchase(merge);
         return R.ok();
     }
 

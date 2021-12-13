@@ -8,6 +8,8 @@ spring:
     password: 123
     url: jdbc:mysql://localhost:3306/gulimall_wms?useSSH=false
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 
   cloud:
     nacos:

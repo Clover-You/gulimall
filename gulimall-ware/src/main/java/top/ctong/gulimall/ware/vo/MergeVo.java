@@ -1,16 +1,9 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- *
- * https://www.renren.io
- *
- * 版权所有，侵权必究！
- */
+package top.ctong.gulimall.ware.vo;
 
-package io.renren.config;
+import lombok.Data;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -24,21 +17,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 跨域
+ * 合并采购单vo
  * </p>
- *
  * @author Clover You
- * @create 2021/11/22 10:11
+ * @create 2021-12-13 09:02
  */
-//@Configuration
-public class CorsConfig implements WebMvcConfigurer {
+@Data
+public class MergeVo implements Serializable {
 
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//            .allowedOriginPatterns("*")
-//            .allowCredentials(true)
-//            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//            .maxAge(3600);
-//    }
+    private static final long serialVersionUID = 6841938921889434483L;
+
+    // 整单id
+    private Long purchaseId;
+
+    // 合并项集合
+    private List<Long> items;
 }

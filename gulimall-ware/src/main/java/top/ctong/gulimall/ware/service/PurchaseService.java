@@ -3,6 +3,7 @@ package top.ctong.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
+import top.ctong.gulimall.ware.vo.MergeVo;
 
 import java.util.Map;
 
@@ -29,5 +30,22 @@ import java.util.Map;
 public interface PurchaseService extends IService<PurchaseEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /** 
+     * 查询未领取的采购单
+     * @param params 分页数据
+     * @return PageUtils
+     * @author Clover You
+     * @date 2021/12/12 20:39
+     */
+    PageUtils queryPageUnreceive(Map<String, Object> params);
+
+    /**
+     * 合并采购单
+     * @param merge 采购单信息
+     * @author Clover You
+     * @date 2021/12/13 09:06
+     */
+    void mergePurchase(MergeVo merge);
 }
 
