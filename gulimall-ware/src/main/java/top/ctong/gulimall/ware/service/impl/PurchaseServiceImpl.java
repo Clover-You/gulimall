@@ -137,7 +137,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         // 改变采购单的状态
         this.updateBatchById(purchaseEntityList);
 
-        // TODO 改变采购项的状态
+        // 改变采购项的状态
         Optional.of(purchaseEntityList).orElse(new ArrayList<>()).forEach(entity -> {
             List<PurchaseDetailEntity> detailList = purchaseDetailService.listDetailByPurchaseId(entity.getId());
             List<PurchaseDetailEntity> newDetail = detailList.stream().map(item -> {
