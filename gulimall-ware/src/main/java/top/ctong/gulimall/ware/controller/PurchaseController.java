@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
+import top.ctong.gulimall.ware.exception.HandlerExceptionReJSON;
 import top.ctong.gulimall.ware.service.PurchaseService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
@@ -111,8 +112,15 @@ public class PurchaseController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * 合并采购单
+     * @param merge 采购单信息
+     * @return R
+     * @author Clover You
+     * @date 2021/12/13 10:34
+     */
     @PostMapping("/merge")
-    public R mergePurchase(@RequestBody MergeVo merge) {
+    public R mergePurchase(@RequestBody MergeVo merge) throws HandlerExceptionReJSON {
         purchaseService.mergePurchase(merge);
         return R.ok();
     }

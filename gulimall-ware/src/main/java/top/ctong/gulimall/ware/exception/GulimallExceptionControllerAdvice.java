@@ -1,6 +1,10 @@
-package top.ctong.gulimall.common.exception;
+package top.ctong.gulimall.ware.exception;
 
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import top.ctong.gulimall.common.utils.R;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -14,34 +18,16 @@ import lombok.Getter;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 通用错误代码
+ * 全局异常处理器
  * </p>
  * @author Clover You
- * @create 2021-11-25 08:47
+ * @create 2021-12-13 10:53
  */
-@Getter
-public enum BizCodeEnum {
-    /**
-     * 参数校验错误
-     */
-    VALID_EXCEPTION(10001, "参数校验错误"),
-    /**
-     * 非法操作
-     */
-    ILLEGAL_OPERATION(10002, "非法操作数据"),
-    /**
-     * 未知异常
-     */
-    UNKNOWN_EXCEPTION(10000, "未知异常");
-
-    private final Integer code;
-
-    private final String msg;
-
-    BizCodeEnum(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
+@Slf4j
+@RestControllerAdvice
+public class GulimallExceptionControllerAdvice {
+    @ExceptionHandler(HandlerExceptionReJSON.class)
+    public R handlerExceptionReJSON(HandlerExceptionReJSON e) {
+        return R.error(e.getCode(), e.toString());
     }
-
-
 }

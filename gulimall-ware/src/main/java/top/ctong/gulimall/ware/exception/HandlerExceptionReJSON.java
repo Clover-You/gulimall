@@ -1,6 +1,6 @@
-package top.ctong.gulimall.common.exception;
+package top.ctong.gulimall.ware.exception;
 
-import lombok.Getter;
+import lombok.Data;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -14,34 +14,20 @@ import lombok.Getter;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 通用错误代码
+ * 处理异常并返回json
  * </p>
  * @author Clover You
- * @create 2021-11-25 08:47
+ * @create 2021-12-13 10:55
  */
-@Getter
-public enum BizCodeEnum {
-    /**
-     * 参数校验错误
-     */
-    VALID_EXCEPTION(10001, "参数校验错误"),
-    /**
-     * 非法操作
-     */
-    ILLEGAL_OPERATION(10002, "非法操作数据"),
-    /**
-     * 未知异常
-     */
-    UNKNOWN_EXCEPTION(10000, "未知异常");
+@Data
+public class HandlerExceptionReJSON extends Exception{
+    private static final long serialVersionUID = 1644958328206535695L;
 
-    private final Integer code;
+    private int code;
 
-    private final String msg;
-
-    BizCodeEnum(int code, String msg) {
+    public HandlerExceptionReJSON(String msg, Integer code) {
+        super(msg);
         this.code = code;
-        this.msg = msg;
     }
-
 
 }

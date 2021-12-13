@@ -11,12 +11,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import top.ctong.gulimall.common.constant.WareConstant;
+import top.ctong.gulimall.common.exception.BizCodeEnum;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
 import top.ctong.gulimall.ware.dao.PurchaseDao;
 import top.ctong.gulimall.ware.entity.PurchaseDetailEntity;
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
+import top.ctong.gulimall.ware.exception.HandlerExceptionReJSON;
 import top.ctong.gulimall.ware.service.PurchaseDetailService;
 import top.ctong.gulimall.ware.service.PurchaseService;
 import top.ctong.gulimall.ware.vo.MergeVo;
@@ -82,7 +84,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
      */
     @Transactional
     @Override
-    public void mergePurchase(MergeVo merge) {
+    public void mergePurchase(MergeVo merge) throws HandlerExceptionReJSON {
         Long purchaseId = merge.getPurchaseId();
         // 如果 purchaseId 是空的，那么需要新建一个 purchase 单
         if (purchaseId == null) {
@@ -92,6 +94,13 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
             purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.CREATED.getStatus());
             this.save(purchaseEntity);
             purchaseId = purchaseEntity.getId();
+        } else {
+            PurchaseEntity byId = this.getById(purchaseId);
+            boolean isCreated = byId.getStatus().equals(WareConstant.PurchaseStatusEnum.CREATED.getStatus());
+            boolean isAssigned = byId.getStatus().equals(WareConstant.PurchaseStatusEnum.ASSIGNED.getStatus());
+            if (!(isCreated || isAssigned)) {
+                throw new HandlerExceptionReJSON("只能合并新建或已分配的订单", BizCodeEnum.ILLEGAL_OPERATION.getCode());
+            }
         }
 
         List<Long> items = merge.getItems();

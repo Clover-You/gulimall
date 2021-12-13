@@ -3,6 +3,7 @@ package top.ctong.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
+import top.ctong.gulimall.ware.exception.HandlerExceptionReJSON;
 import top.ctong.gulimall.ware.vo.MergeVo;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public interface PurchaseService extends IService<PurchaseEntity> {
      * @author Clover You
      * @date 2021/12/13 09:06
      */
-    void mergePurchase(MergeVo merge);
+    void mergePurchase(MergeVo merge) throws HandlerExceptionReJSON;
 
     /**
      * 领取采购单
