@@ -1,7 +1,5 @@
 package top.ctong.gulimall.common.constant;
 
-import lombok.Data;
-
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
  * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
@@ -26,7 +24,7 @@ public class WareConstant {
 
         ASSIGNED(1,"已分配"),
 
-        receive(2,"已领取"),
+        RECEIVE(2,"已领取"),
 
         FINISH(3,"已完成"),
 
@@ -51,7 +49,7 @@ public class WareConstant {
         }
     }
 
-    public enum PurchaseDeyailStatusEnum {
+    public enum PurchaseDetailStatusEnum {
 
         CREATED(0,"新建"),
 
@@ -68,7 +66,7 @@ public class WareConstant {
         private final String msg;
 
 
-        PurchaseDeyailStatusEnum(int status, String msg) {
+        PurchaseDetailStatusEnum(int status, String msg) {
             this.status = status;
             this.msg = msg;
         }

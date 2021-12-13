@@ -2,6 +2,7 @@ package top.ctong.gulimall.ware.controller;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -113,6 +114,19 @@ public class PurchaseController {
     @PostMapping("/merge")
     public R mergePurchase(@RequestBody MergeVo merge) {
         purchaseService.mergePurchase(merge);
+        return R.ok();
+    }
+
+    /** 
+     * 领取采购单
+     * @param purchaseIds 采购单id
+     * @return R
+     * @author Clover You
+     * @date 2021/12/13 09:57
+     */
+    @PostMapping("/received")
+    public R receivedPurchase(@RequestBody List<Long> purchaseIds) {
+        purchaseService.received(purchaseIds);
         return R.ok();
     }
 

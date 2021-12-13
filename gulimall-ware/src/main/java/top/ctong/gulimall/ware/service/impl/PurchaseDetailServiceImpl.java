@@ -1,6 +1,8 @@
 package top.ctong.gulimall.ware.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -60,6 +62,18 @@ public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, Pu
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 通过采购单id查询采购项
+     * @param id 采购单id
+     * @return List<PurchaseDetailEntity>
+     * @author Clover You
+     * @date 2021/12/13 10:18
+     */
+    @Override
+    public List<PurchaseDetailEntity> listDetailByPurchaseId(Long id) {
+        return this.list(new QueryWrapper<PurchaseDetailEntity>().eq("purchase_id", id));
     }
 
 }
