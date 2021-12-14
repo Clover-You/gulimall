@@ -1,10 +1,11 @@
-package top.ctong.gulimall.ware.dao;
+package top.ctong.gulimall.common.feign;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.ware.entity.WareSkuEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
-
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import top.ctong.gulimall.common.utils.R;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,23 +19,21 @@ import org.apache.ibatis.annotations.Mapper;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品库存
+ * 商品服务远程调用
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 16:12:36
+ * @create 2021-12-14 11:05
  */
-@Mapper
-public interface WareSkuDao extends BaseMapper<WareSkuEntity> {
-
+@FeignClient("gulimall-product")
+@RequestMapping("/product")
+public interface ProductFeignService {
     /**
-     * 添加库存
+     * 通过sku id远程查询sku信息
      * @param skuId sku id
-     * @param wareId 仓库id
-     * @param skuNum 入库数量
+     * @return R
      * @author Clover You
-     * @date 2021/12/13 16:07
+     * @date 2021/12/14 11:07
      */
-    void addStock(@Param("skuId") Long skuId, @Param("wareId") Long wareId, @Param("skuNum") Integer skuNum);
+    @GetMapping("/skuinfo/info/{skuId}")
+    R info(@PathVariable("skuId") Long skuId);
 }

@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ConditionalOnClass(MybatisPlusAutoConfiguration.class)
 @EnableTransactionManagement
-@MapperScan("top.ctong.gulimall.**.dao")
 public class MybatisPlusConfig {
 
     @Configuration

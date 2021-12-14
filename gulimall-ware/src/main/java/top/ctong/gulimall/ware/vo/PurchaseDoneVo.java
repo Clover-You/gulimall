@@ -1,12 +1,11 @@
-package top.ctong.gulimall.product.config;
+package top.ctong.gulimall.ware.vo;
 
-import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import lombok.Data;
+import top.ctong.gulimall.common.valid.group.AggregationGroup;
+
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,26 +19,25 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * MyBatis配置文件
- * {EnableTransactionManagement}开启事务
+ * 完成采购单vo
  * </p>
  * @author Clover You
- * @create 2021-11-27 09:28
+ * @create 2021-12-13 11:09
  */
-@Configuration
-@EnableTransactionManagement
-@MapperScan("top.ctong.gulimall.product.dao")
-public class MyBatisConfig {
+@Data
+public class PurchaseDoneVo implements Serializable {
+
+    private static final long serialVersionUID = -2924315023411348426L;
+
     /**
-     * 分页插件
-     * @return MybatisPlusInterceptor
-     * @author Clover You
-     * @date 2021/11/27 09:39
+     * 采购单id
      */
-    @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        return interceptor;
-    }
+    @NotNull(message = "采购单id不能为空", groups = AggregationGroup.class)
+    private Long id;
+
+    /**
+     * 完成/失败的需求详情
+     */
+    @NotNull(message = "采购单详情不能为空", groups = AggregationGroup.class)
+    private List<PurchaseItemDoneVo> items;
 }

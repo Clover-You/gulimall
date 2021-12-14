@@ -7,14 +7,17 @@ import java.util.Map;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import top.ctong.gulimall.common.valid.group.AggregationGroup;
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
 import top.ctong.gulimall.ware.exception.HandlerExceptionReJSON;
 import top.ctong.gulimall.ware.service.PurchaseService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.ware.vo.MergeVo;
+import top.ctong.gulimall.ware.vo.PurchaseDoneVo;
 
 
 /**
@@ -31,7 +34,6 @@ import top.ctong.gulimall.ware.vo.MergeVo;
  * <p>
  * 采购信息
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-16 16:12:37
@@ -47,7 +49,7 @@ public class PurchaseController {
      */
     @RequestMapping("/list")
     //@RequiresPermissions("ware:purchase:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = purchaseService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -59,8 +61,8 @@ public class PurchaseController {
      */
     @RequestMapping("/info/{id}")
     //@RequiresPermissions("ware:purchase:info")
-    public R info(@PathVariable("id") Long id){
-		PurchaseEntity purchase = purchaseService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        PurchaseEntity purchase = purchaseService.getById(id);
 
         return R.ok().put("purchase", purchase);
     }
@@ -70,10 +72,10 @@ public class PurchaseController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchase:save")
-    public R save(@RequestBody PurchaseEntity purchase){
+    public R save(@RequestBody PurchaseEntity purchase) {
         purchase.setCreateTime(new Date());
         purchase.setUpdateTime(new Date());
-		purchaseService.save(purchase);
+        purchaseService.save(purchase);
 
         return R.ok();
     }
@@ -83,8 +85,8 @@ public class PurchaseController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("ware:purchase:update")
-    public R update(@RequestBody PurchaseEntity purchase){
-		purchaseService.updateById(purchase);
+    public R update(@RequestBody PurchaseEntity purchase) {
+        purchaseService.updateById(purchase);
 
         return R.ok();
     }
@@ -94,12 +96,13 @@ public class PurchaseController {
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("ware:purchase:delete")
-    public R delete(@RequestBody Long[] ids){
-		purchaseService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        purchaseService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }
-    /** 
+
+    /**
      * 查询未领取的采购单
      * @param params 分页数据
      * @return R
@@ -125,7 +128,7 @@ public class PurchaseController {
         return R.ok();
     }
 
-    /** 
+    /**
      * 领取采购单
      * @param purchaseIds 采购单id
      * @return R
@@ -138,4 +141,16 @@ public class PurchaseController {
         return R.ok();
     }
 
+    /**
+     * 完成采购
+     * @param vo 采购信息详情
+     * @return R
+     * @author Clover You
+     * @date 2021/12/13 11:16
+     */
+    @PostMapping("/done")
+    public R purchaseDone(@RequestBody @Validated(AggregationGroup.class) PurchaseDoneVo vo) {
+        purchaseService.done(vo);
+        return R.ok();
+    }
 }

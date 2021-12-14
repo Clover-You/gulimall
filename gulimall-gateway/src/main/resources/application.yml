@@ -39,7 +39,5 @@ spring:
           filters:
             # 路径重写
             - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
-
-
 server:
   port: 8080

@@ -1,10 +1,10 @@
-package top.ctong.gulimall.ware.dao;
+package top.ctong.gulimall.common.to;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.ware.entity.WareSkuEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,23 +18,58 @@ import org.apache.ibatis.annotations.Mapper;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品库存
+ * sku信息
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 16:12:36
+ * @create 2021-12-14 11:12
  */
-@Mapper
-public interface WareSkuDao extends BaseMapper<WareSkuEntity> {
+@Data
+public class SkuInfoTo implements Serializable {
+
+    private static final long serialVersionUID = -4996629990802337441L;
 
     /**
-     * 添加库存
-     * @param skuId sku id
-     * @param wareId 仓库id
-     * @param skuNum 入库数量
-     * @author Clover You
-     * @date 2021/12/13 16:07
+     * skuId
      */
-    void addStock(@Param("skuId") Long skuId, @Param("wareId") Long wareId, @Param("skuNum") Integer skuNum);
+    private Long skuId;
+    /**
+     * spuId
+     */
+    private Long spuId;
+    /**
+     * sku名称
+     */
+    private String skuName;
+    /**
+     * sku介绍描述
+     */
+    private String skuDesc;
+    /**
+     * 所属分类id
+     */
+    private Long catalogId;
+    /**
+     * 品牌id
+     */
+    private Long brandId;
+    /**
+     * 默认图片
+     */
+    private String skuDefaultImg;
+    /**
+     * 标题
+     */
+    private String skuTitle;
+    /**
+     * 副标题
+     */
+    private String skuSubtitle;
+    /**
+     * 价格
+     */
+    private BigDecimal price;
+    /**
+     * 销量
+     */
+    private Long saleCount;
 }

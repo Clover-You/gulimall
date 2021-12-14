@@ -72,6 +72,10 @@
                     <groupId>com.netflix.ribbon</groupId>
                     <artifactId>ribbon</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                    <groupId>com.baomidou</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

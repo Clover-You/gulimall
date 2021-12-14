@@ -5,6 +5,7 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.ware.entity.PurchaseEntity;
 import top.ctong.gulimall.ware.exception.HandlerExceptionReJSON;
 import top.ctong.gulimall.ware.vo.MergeVo;
+import top.ctong.gulimall.ware.vo.PurchaseDoneVo;
 
 import java.util.List;
 import java.util.Map;
@@ -57,5 +58,13 @@ public interface PurchaseService extends IService<PurchaseEntity> {
      * @date 2021/12/13 10:00
      */
     void received(List<Long> purchaseIds);
+
+    /**
+     * 完成采购
+     * @param vo 采购信息
+     * @author Clover You
+     * @date 2021/12/13 15:41
+     */
+    void done(PurchaseDoneVo vo);
 }
 

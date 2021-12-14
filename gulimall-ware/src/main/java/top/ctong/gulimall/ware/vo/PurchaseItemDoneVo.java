@@ -1,10 +1,8 @@
-package top.ctong.gulimall.ware.dao;
+package top.ctong.gulimall.ware.vo;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.ware.entity.WareSkuEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.Data;
 
+import java.io.Serializable;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,23 +16,29 @@ import org.apache.ibatis.annotations.Mapper;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品库存
+ * 完成/失败的需求详情
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 16:12:36
+ * @create 2021-12-13 11:14
  */
-@Mapper
-public interface WareSkuDao extends BaseMapper<WareSkuEntity> {
+@Data
+public class PurchaseItemDoneVo implements Serializable {
+
+    private static final long serialVersionUID = 2382937484074066010L;
 
     /**
-     * 添加库存
-     * @param skuId sku id
-     * @param wareId 仓库id
-     * @param skuNum 入库数量
-     * @author Clover You
-     * @date 2021/12/13 16:07
+     * 采购项id
      */
-    void addStock(@Param("skuId") Long skuId, @Param("wareId") Long wareId, @Param("skuNum") Integer skuNum);
+    private Long itemId;
+
+    /**
+     * 采购项状态
+     */
+    private Integer status;
+
+    /**
+     * 失败详情
+     */
+    private String reason;
+
 }
