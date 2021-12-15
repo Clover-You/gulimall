@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.product.entity.ProductAttrValueEntity;
 import top.ctong.gulimall.product.service.AttrService;
+import top.ctong.gulimall.product.service.ProductAttrValueService;
 import top.ctong.gulimall.product.vo.AttrRespVo;
 import top.ctong.gulimall.product.vo.AttrVo;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,6 +38,9 @@ import java.util.Map;
 public class AttrController {
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private ProductAttrValueService productAttrValueService;
 
     /**
      * 列表
@@ -101,6 +107,34 @@ public class AttrController {
         attrService.removeByIds(Arrays.asList(attrIds));
 
         return R.ok();
+    }
+
+    /**
+     * 获取spu规格
+     * @param spuId spu id
+     * @return R
+     * @author Clover You
+     * @date 2021/12/15 10:29
+     */
+    @GetMapping("/base/listforspu/{spuId}")
+    public R getBaseAttrListForSpu(@PathVariable("spuId") Long spuId) {
+        List<ProductAttrValueEntity> list = productAttrValueService.baseAttrListForSpu(spuId);
+        return R.ok().put("data", list);
+    }
+
+    /** 
+     * 修改商品规格
+     * @param spuId spu id
+     * @param entityList 规格属性
+     * @return R
+     * @author Clover You
+     * @date 2021/12/15 14:42
+     */
+    @PostMapping("/update/{spuId}")
+    public R updateSpuAttr(@PathVariable("spuId") Long spuId, @RequestBody List<ProductAttrValueEntity> entityList) {
+        productAttrValueService.updateSpuAttr(spuId, entityList);
+        return R.ok();
+
     }
 
 }

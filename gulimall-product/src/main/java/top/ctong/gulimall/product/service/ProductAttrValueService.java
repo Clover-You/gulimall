@@ -38,5 +38,23 @@ public interface ProductAttrValueService extends IService<ProductAttrValueEntity
      * @date 2021/12/9 11:10
      */
     void saveProductAttr(List<ProductAttrValueEntity> attrValueEntityList);
+
+    /** 
+     * 获取spu规格
+     * @param spuId spu id
+     * @return List<ProductAttrValueEntity>
+     * @author Clover You
+     * @date 2021/12/15 10:41
+     */
+    List<ProductAttrValueEntity> baseAttrListForSpu(Long spuId);
+
+    /** 
+     * 修改规格属性数据
+     * @param spuId 规格id
+     * @param entityList 属性列表
+     * @author Clover You
+     * @date 2021/12/15 14:43
+     */
+    void updateSpuAttr(Long spuId, List<ProductAttrValueEntity> entityList);
 }
 
