@@ -5,7 +5,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,6 +23,7 @@ import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.ware.dao.WareSkuDao;
 import top.ctong.gulimall.ware.entity.WareSkuEntity;
 import top.ctong.gulimall.ware.service.WareSkuService;
+import top.ctong.gulimall.ware.vo.SkuHasStockVo;
 
 
 /**
@@ -103,4 +107,21 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
     }
 
+    /**
+     * 检查sku是否有库存
+     * @param skuIds sku id列表
+     * @return List<SkuHasStockVo>
+     * @author Clover You
+     * @date 2021/12/22 10:45
+     */
+    @Override
+    public List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds) {
+        return skuIds.stream().map(id -> {
+            Long count = this.baseMapper.getSkuStock(id);
+            SkuHasStockVo vo = new SkuHasStockVo();
+            vo.setSkuId(id);
+            vo.setHasStock(Optional.ofNullable(count).orElse(0L) > 0);
+            return  vo;
+        }).collect(Collectors.toList());
+    }
 }

@@ -3,7 +3,10 @@ package top.ctong.gulimall.product.service.impl;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -110,5 +113,18 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
                 wrapper
         );
         return new PageUtils(iPage);
+    }
+
+    /**
+     * 通过规格id查询所有属性信息
+     * @param spuId 规格id
+     * @return List<SkuInfoEntity>
+     * @author Clover You
+     * @date 2021/12/22 09:45
+     */
+    @Override
+    public List<SkuInfoEntity> getSkusBySpuId(Long spuId) {
+        List<SkuInfoEntity> list = this.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id", spuId));
+        return Optional.of(list).orElse(new ArrayList<>());
     }
 }

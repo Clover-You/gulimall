@@ -95,5 +95,14 @@ public interface AttrService extends IService<AttrEntity> {
      * @date 2021/11/28 20:02
      */
     PageUtils getNoRelationAttr(Map<String, Object> params, Long attrGroupId);
+
+    /** 
+     * 通过指定的attr id中查询可检索的attr id
+     * @param attrIds attr id 列表
+     * @return List<Long>
+     * @author Clover You
+     * @date 2021/12/22 10:12
+     */
+    List<Long> selectSearchAttrs(List<Long> attrIds);
 }
 

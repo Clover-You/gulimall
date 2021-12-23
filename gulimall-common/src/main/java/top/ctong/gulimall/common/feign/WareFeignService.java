@@ -1,12 +1,12 @@
-package top.ctong.gulimall.product.dao;
+package top.ctong.gulimall.common.feign;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.product.entity.AttrEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import top.ctong.gulimall.common.to.SkuHasStockVo;
+import top.ctong.gulimall.common.utils.R;
 
 import java.util.List;
-
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,21 +20,20 @@ import java.util.List;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品属性
+ * 库存服务
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-12-22 10:59
  */
-@Mapper
-public interface AttrDao extends BaseMapper<AttrEntity> {
-
+@FeignClient("gulimall-ware")
+public interface WareFeignService {
     /**
-     * 通过指定的attr id中查询可检索的attr id
-     * @param attrIds id集合
+     * 通过指定sku id查询是否有库存
+     * @param skuIds sku id集合
+     * @return R
      * @author Clover You
-     * @date 2021/12/22 10:16
+     * @date 2021/12/22 10:40
      */
-    List<Long> selectSearchAttrs(@Param("attrIds") List<Long> attrIds);
+    @PostMapping("ware/waresku/hasStock")
+    R<List<SkuHasStockVo>> getSkuHasStock(@RequestBody List<Long> skuIds);
 }

@@ -1,20 +1,17 @@
 package top.ctong.gulimall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import top.ctong.gulimall.ware.entity.WareSkuEntity;
 import top.ctong.gulimall.ware.service.WareSkuService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.ware.vo.SkuHasStockVo;
 
 
 /**
@@ -96,6 +93,19 @@ public class WareSkuController {
 		wareSkuService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    /**
+     * 通过指定sku id查询是否有库存
+     * @param skuIds sku id集合
+     * @return R
+     * @author Clover You
+     * @date 2021/12/22 10:40
+     */
+    @PostMapping("/hasStock")
+    public R getSkuHasStock(@RequestBody List<Long> skuIds){
+        List<SkuHasStockVo> list = wareSkuService.getSkuHasStock(skuIds);
+        return R.ok().setData(list);
     }
 
 }

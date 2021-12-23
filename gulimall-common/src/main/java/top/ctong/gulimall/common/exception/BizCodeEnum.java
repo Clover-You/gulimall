@@ -15,6 +15,12 @@ import lombok.Getter;
  * Copyright 2021 Clover You.
  * <p>
  * 通用错误代码
+ * - 10: 通用
+ *   - 001：参数校验错误
+ * - 11：商品
+ * - 12：订单
+ * - 13：购物车
+ * - 14：物流
  * </p>
  * @author Clover You
  * @create 2021-11-25 08:47
@@ -32,7 +38,12 @@ public enum BizCodeEnum {
     /**
      * 未知异常
      */
-    UNKNOWN_EXCEPTION(10000, "未知异常");
+    UNKNOWN_EXCEPTION(10000, "未知异常"),
+
+    /**
+     * 商品上架错误
+     */
+    PRODUCT_UP_EXCEPTION(11000, "商品上架错误");
 
     private final Integer code;
 

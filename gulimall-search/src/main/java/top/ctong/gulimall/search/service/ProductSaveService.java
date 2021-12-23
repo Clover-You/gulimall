@@ -1,12 +1,9 @@
-package top.ctong.gulimall.product.dao;
+package top.ctong.gulimall.search.service;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.product.entity.AttrEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import top.ctong.gulimall.common.to.es.SkuEsModel;
 
+import java.io.IOException;
 import java.util.List;
-
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,21 +17,17 @@ import java.util.List;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品属性
+ * 商品保存服务
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-12-22 15:06
  */
-@Mapper
-public interface AttrDao extends BaseMapper<AttrEntity> {
-
+public interface ProductSaveService {
     /**
-     * 通过指定的attr id中查询可检索的attr id
-     * @param attrIds id集合
+     * 上架指定商品
+     * @param skuEsModelList 商品列表
      * @author Clover You
-     * @date 2021/12/22 10:16
+     * @date 2021/12/22 15:08
      */
-    List<Long> selectSearchAttrs(@Param("attrIds") List<Long> attrIds);
+    boolean productStatusUp(List<SkuEsModel> skuEsModelList) throws IOException;
 }

@@ -3,7 +3,9 @@ package top.ctong.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.ware.entity.WareSkuEntity;
+import top.ctong.gulimall.ware.vo.SkuHasStockVo;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -39,5 +41,14 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      * @date 2021/12/13 16:05
      */
     void addStock(Long skuId, Long wareId, Integer skuNum);
+
+    /** 
+     * 检查sku是否有库存
+     * @param skuIds sku id列表
+     * @return List<SkuHasStockVo>
+     * @author Clover You
+     * @date 2021/12/22 10:45
+     */
+    List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds);
 }
 

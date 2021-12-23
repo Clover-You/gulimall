@@ -37,6 +37,19 @@ public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
 
+    /** 
+     * 商品上架
+     * @param spuId 规格id
+     * @return R
+     * @author Clover You
+     * @date 2021/12/22 09:15
+     */
+    @PostMapping("/{spuId}/up")
+    public R up(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return R.ok();
+    }
+
     /**
      * 列表
      */

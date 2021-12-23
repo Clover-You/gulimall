@@ -49,4 +49,30 @@ public class ProductConstant {
             this.msg = msg;
         }
     }
+
+    /**
+     * 商品状态
+     * @author Clover You
+     * @date 2021/12/22 15:49
+     */
+    @Getter
+    public enum SpuStatusEnum {
+        NEW_SPU(0, "新建"),
+        SPU_UP(1, "商品上架"),
+        SPU_DOWN(2, "商品下架");
+
+        /**
+         * 状态码
+         */
+        private final int code;
+        /**
+         * 注释
+         */
+        private final String msg;
+
+        SpuStatusEnum(int code, String msg) {
+            this.code = code;
+            this.msg = msg;
+        }
+    }
 }

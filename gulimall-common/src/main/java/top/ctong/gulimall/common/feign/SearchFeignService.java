@@ -1,13 +1,13 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.common.feign;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.SpuInfoDescEntity;
-import top.ctong.gulimall.product.entity.SpuInfoEntity;
-import top.ctong.gulimall.product.vo.SpuSaveVo;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import top.ctong.gulimall.common.to.es.SkuEsModel;
+import top.ctong.gulimall.common.utils.R;
 
-import java.util.Map;
-
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -21,48 +21,21 @@ import java.util.Map;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * spu信息
+ * 检索服务远程接口
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-12-22 15:39
  */
-public interface SpuInfoService extends IService<SpuInfoEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
-
-    /** 
-     * 保存spu信息
-     * @param vo spu信息
-     * @author Clover You
-     * @date 2021/12/9 10:08
-     */
-    void saveSpuInfo(SpuSaveVo vo);
-
-    /**
-     * 保存SPU基本信息
-     * @param spuInfo spu信息
-     * @author Clover You
-     * @date 2021/12/9 10:36
-     */
-    void saveBaseSpuInfo(SpuInfoEntity spuInfo);
-
-    /** 
-     * 根据条件查询SPU信息
-     * @param params 自定义条件
-     * @return PageUtils
-     * @author Clover You
-     * @date 2021/12/12 08:28
-     */
-    PageUtils queryPageByCondition(Map<String, Object> params);
-
+@FeignClient("gulimall-search")
+@RequestMapping("/search")
+public interface SearchFeignService {
     /**
      * 商品上架
-     * @param spuId 规格id
+     * @param skuEsModelList 商品信息
+     * @return R
      * @author Clover You
-     * @date 2021/12/22 09:17
+     * @date 2021/12/22 15:03
      */
-    void up(Long spuId);
+    @PostMapping("/save/product")
+    R productStatusUp(@RequestBody List<SkuEsModel> skuEsModelList);
 }
-

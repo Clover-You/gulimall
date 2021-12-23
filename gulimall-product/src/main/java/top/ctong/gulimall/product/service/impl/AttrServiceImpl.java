@@ -336,4 +336,16 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
         return new PageUtils(page);
     }
+
+    /**
+     * 通过指定的attr id中查询可检索的attr id
+     * @param attrIds attr id 列表
+     * @return List<Long>
+     * @author Clover You
+     * @date 2021/12/22 10:12
+     */
+    @Override
+    public List<Long> selectSearchAttrs(List<Long> attrIds) {
+        return this.baseMapper.selectSearchAttrs(attrIds);
+    }
 }

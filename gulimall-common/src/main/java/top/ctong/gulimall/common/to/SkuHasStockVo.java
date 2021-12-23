@@ -1,12 +1,8 @@
-package top.ctong.gulimall.product.dao;
+package top.ctong.gulimall.common.to;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.product.entity.AttrEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.Data;
 
-import java.util.List;
-
+import java.io.Serializable;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,21 +16,24 @@ import java.util.List;
  * ░     ░ ░      ░  ░
  * Copyright 2021 Clover You.
  * <p>
- * 商品属性
+ * 是否有库存信息vo
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2021-12-22 10:43
  */
-@Mapper
-public interface AttrDao extends BaseMapper<AttrEntity> {
+@Data
+public class SkuHasStockVo implements Serializable {
+
+    private static final long serialVersionUID = 6864703268401071290L;
 
     /**
-     * 通过指定的attr id中查询可检索的attr id
-     * @param attrIds id集合
-     * @author Clover You
-     * @date 2021/12/22 10:16
+     * skuid
      */
-    List<Long> selectSearchAttrs(@Param("attrIds") List<Long> attrIds);
+    private Long skuId;
+
+    /**
+     * 是否有库存
+     */
+    private Boolean hasStock;
+
 }
