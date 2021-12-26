@@ -1,5 +1,6 @@
 package top.ctong.gulimall.product.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -297,8 +298,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         //  查询库存系统查询是否有库存
         Map<Long, SkuHasStockVo> skuHasStockVoMap = null;
         try {
-            R<List<SkuHasStockVo>> skuHasStock = wareFeignService.getSkuHasStock(skuIds);
-            skuHasStockVoMap = skuHasStock.getData().stream()
+
+            R skuHasStock = wareFeignService.getSkuHasStock(skuIds);
+            TypeReference<List<SkuHasStockVo>> ref = new TypeReference<List<SkuHasStockVo>>() {};
+            skuHasStockVoMap = skuHasStock.getData(ref).stream()
                     .collect(Collectors.toMap(SkuHasStockVo::getSkuId, v -> v));
         } catch (Exception e) {
             log.error("查询库存系统异常：{}", e);

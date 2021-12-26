@@ -8,9 +8,14 @@
 
 package top.ctong.gulimall.common.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,15 +23,17 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class R<T> extends HashMap<String, Object> {
+public class R extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
 
-	public T getData() {
-		return (T) this.get("data");
+	public <T> T getData(TypeReference<T> typeRef) {
+		Object data = this.get("data");
+		String s = JSON.toJSONString(data);
+		return JSON.<T>parseObject(s, typeRef.getType());
 	}
 
-	public R<T> setData(T data) {
+	public R setData(Object data) {
 		this.put("data", data);
 		return this;
 	}
@@ -63,11 +70,12 @@ public class R<T> extends HashMap<String, Object> {
 		return r;
 	}
 	
-	public static <J> R<J> ok() {
-		return new R<>();
+	public static R ok() {
+		return new R();
 	}
-	public static <J> R<J> data(J data) {
-		R<J> r = new R<>();
+
+	public static R data(Object data) {
+		R r = new R();
 		r.setData(data);
 		return r;
 	}
