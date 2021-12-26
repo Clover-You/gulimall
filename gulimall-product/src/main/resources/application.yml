@@ -21,6 +21,10 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
 
+# 关闭 thymeleaf 缓存
+  thymeleaf:
+    cache: false
+
 server:
   port: 10000
 
