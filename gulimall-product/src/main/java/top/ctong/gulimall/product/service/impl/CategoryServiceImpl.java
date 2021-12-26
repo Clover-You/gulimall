@@ -13,6 +13,7 @@ import top.ctong.gulimall.product.dao.CategoryDao;
 import top.ctong.gulimall.product.entity.CategoryEntity;
 import top.ctong.gulimall.product.service.CategoryBrandRelationService;
 import top.ctong.gulimall.product.service.CategoryService;
+import top.ctong.gulimall.product.vo.Catalog2Vo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -168,4 +169,59 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
+    /**
+     * 查询一级分类
+     * @return List<CategoryEntity>
+     * @author Clover You
+     * @date 2021/12/26 10:41
+     */
+    @Override
+    public List<CategoryEntity> getLeve1Category() {
+        return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("cat_level", 1));
+    }
+
+    /**
+     * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回
+     * @return Map<String, Object>
+     * @author Clover You
+     * @date 2021/12/26 14:50
+     */
+    @Override
+    public Map<String, List<Catalog2Vo>> getCatalogJson() {
+        // 查询所有一级分类
+        List<CategoryEntity> leve1Category = getLeve1Category();
+        Map<String, List<Catalog2Vo>> map = leve1Category.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            QueryWrapper<CategoryEntity> level2Wrapper = new QueryWrapper<>();
+            level2Wrapper.eq("parent_cid", v.getCatId());
+            List<CategoryEntity> categoryEntities = baseMapper.selectList(level2Wrapper);
+            List<Catalog2Vo> catalog2Vos = new ArrayList<>();
+            if (categoryEntities != null) {
+                catalog2Vos = categoryEntities.stream().map(item -> {
+                    Catalog2Vo catalog2Vo = new Catalog2Vo(
+                            v.getCatId().toString(),
+                            null,
+                            item.getCatId().toString(),
+                            item.getName()
+                    );
+                    QueryWrapper<CategoryEntity> level3Wrapper = new QueryWrapper<>();
+                    level3Wrapper.eq("parent_cid", item.getCatId());
+                    List<CategoryEntity> categoryEntityList = baseMapper.selectList(level3Wrapper);
+                    List<Catalog2Vo.Catalog3Vo> level3List = null;
+                    if (categoryEntityList != null) {
+                        level3List = categoryEntityList.stream().map(level3 -> {
+                            return new Catalog2Vo.Catalog3Vo(
+                                    item.getCatId().toString(),
+                                    level3.getCatId().toString(),
+                                    level3.getName()
+                            );
+                        }).collect(Collectors.toList());
+                        catalog2Vo.setCatalog3List(level3List);
+                    }
+                    return catalog2Vo;
+                }).collect(Collectors.toList());
+            }
+            return catalog2Vos;
+        }));
+        return map;
+    }
 }

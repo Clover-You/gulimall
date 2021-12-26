@@ -3,6 +3,7 @@ package top.ctong.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.product.entity.CategoryEntity;
+import top.ctong.gulimall.product.vo.Catalog2Vo;
 
 import java.util.List;
 import java.util.Map;
@@ -70,5 +71,21 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @date 2021/11/27 11:00
      */
     void updateCascade(CategoryEntity category);
+
+    /**
+     * 查询一级分类
+     * @return List<CategoryEntity>
+     * @author Clover You
+     * @date 2021/12/26 10:41
+     */
+    List<CategoryEntity> getLeve1Category();
+
+    /**
+     * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回
+     * @return Map<String,Object>
+     * @author Clover You
+     * @date 2021/12/26 14:50
+     */
+    Map<String, List<Catalog2Vo>> getCatalogJson();
 }
 
