@@ -1,6 +1,6 @@
 # 生产环境
 
-spring:
-  thymeleaf:
-#    开启thymeleaf缓存
-    cache: false
+#spring:
+#  thymeleaf:
+##    开启thymeleaf缓存
+#    cache: false

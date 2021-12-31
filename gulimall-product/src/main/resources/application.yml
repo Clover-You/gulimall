@@ -25,6 +25,10 @@ spring:
   thymeleaf:
     cache: false
 
+# 配置 redis
+  redis:
+    host: 172.16.34.128
+
 server:
   port: 10000
 

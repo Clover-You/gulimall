@@ -1,9 +1,13 @@
 package top.ctong.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -15,10 +19,8 @@ import top.ctong.gulimall.product.service.CategoryBrandRelationService;
 import top.ctong.gulimall.product.service.CategoryService;
 import top.ctong.gulimall.product.vo.Catalog2Vo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -45,6 +47,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     /**
      * 查询叶
@@ -181,19 +186,59 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
-     * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回
+     * getCatalogJsonLock 锁对象
+     */
+    private final Object getCatalogJsonLock = new Object();
+
+    /**
+     * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回，使用缓存
+     * @return Map<String, List < Catalog2Vo>>
+     * @author Clover You
+     * @date 2021/12/30 15:36
+     */
+    @Override
+    public Map<String, List<Catalog2Vo>> getCatalogJson() {
+        // 从缓存中获取数据
+        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        if (!StringUtils.hasText(catalogJson)) {
+            synchronized (getCatalogJsonLock) {
+                // 从缓存中获取数据
+                String confirmCache = redisTemplate.opsForValue().get("catalogJson");
+                if (!StringUtils.hasText(confirmCache)) {
+                    log.warn("从数据库中获取数据");
+                    // 从数据库中获取数据
+                    Map<String, List<Catalog2Vo>> catalogJsonFormDb = getCatalogJsonFormDB();
+                    // 解决缓存穿透
+                    if (catalogJsonFormDb == null || catalogJsonFormDb.isEmpty()) {
+                        redisTemplate.opsForValue().set("catalogJson", "{}", 1, TimeUnit.DAYS);
+                        return new HashMap<>(0);
+                    } else {
+                        String jsonString = JSON.toJSONString(catalogJsonFormDb);
+                        redisTemplate.opsForValue().set("catalogJson", jsonString);
+                        return catalogJsonFormDb;
+                    }
+                }
+            }
+        }
+        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
+        });
+    }
+
+    /**
+     * 从数据库中查出所有分类，以{"1": {Catalog2Vo}} 的形式返回
      * @return Map<String, Object>
      * @author Clover You
      * @date 2021/12/26 14:50
      */
-    @Override
-    public Map<String, List<Catalog2Vo>> getCatalogJson() {
+    public Map<String, List<Catalog2Vo>> getCatalogJsonFormDB() {
+        // 所有分类数据
+        List<CategoryEntity> categoryEntitiesAll = baseMapper.selectList(null);
         // 查询所有一级分类
-        List<CategoryEntity> leve1Category = getLeve1Category();
-        Map<String, List<Catalog2Vo>> map = leve1Category.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-            QueryWrapper<CategoryEntity> level2Wrapper = new QueryWrapper<>();
-            level2Wrapper.eq("parent_cid", v.getCatId());
-            List<CategoryEntity> categoryEntities = baseMapper.selectList(level2Wrapper);
+        List<CategoryEntity> leve1Category = getCategoryByParentCid(categoryEntitiesAll, 0L);
+        return leve1Category.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+
+            List<CategoryEntity> categoryEntities = getCategoryByParentCid(categoryEntitiesAll, v.getCatId());
+
             List<Catalog2Vo> catalog2Vos = new ArrayList<>();
             if (categoryEntities != null) {
                 catalog2Vos = categoryEntities.stream().map(item -> {
@@ -203,9 +248,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                             item.getCatId().toString(),
                             item.getName()
                     );
-                    QueryWrapper<CategoryEntity> level3Wrapper = new QueryWrapper<>();
-                    level3Wrapper.eq("parent_cid", item.getCatId());
-                    List<CategoryEntity> categoryEntityList = baseMapper.selectList(level3Wrapper);
+
+                    List<CategoryEntity> categoryEntityList = getCategoryByParentCid(categoryEntitiesAll, item.getCatId());
                     List<Catalog2Vo.Catalog3Vo> level3List = null;
                     if (categoryEntityList != null) {
                         level3List = categoryEntityList.stream().map(level3 -> {
@@ -222,6 +266,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             }
             return catalog2Vos;
         }));
-        return map;
+    }
+
+    /**
+     * 通过父id在指定列表中查找指定项
+     * @param metaList 数据源
+     * @return List<CategoryEntity>
+     * @author Clover You
+     * @date 2021/12/30 10:39
+     */
+    private List<CategoryEntity> getCategoryByParentCid(List<CategoryEntity> metaList, Long cId) {
+        return metaList.stream().filter(item -> item.getParentCid().equals(cId)).collect(Collectors.toList());
     }
 }

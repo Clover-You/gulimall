@@ -22,7 +22,7 @@ spring:
         - id: product_route
           uri: lb://gulimall-product
           predicates:
-            - Path=/api/product/**
+            - Path=/api/product/**,/hello
           filters:
             - RewritePath=/api/(?<path>.*),/$\{path}
         - id: third_party_route
@@ -39,5 +39,9 @@ spring:
           filters:
             # 路径重写
             - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
+        - id: gulimall_host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**.gulimall.com,gulimall.com
 server:
   port: 8080

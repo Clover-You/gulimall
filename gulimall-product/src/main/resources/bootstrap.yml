@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: gulimall-product
+
+  cloud:
+    nacos:
+      config:
+        server-addr: 172.16.34.128:8848
+      discovery:
+        server-addr: 172.16.34.128:8848

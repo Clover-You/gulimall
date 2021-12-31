@@ -1,12 +1,10 @@
 package top.ctong.gulimall.product.web;
 
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ctong.gulimall.product.entity.CategoryEntity;
 import top.ctong.gulimall.product.service.CategoryService;
@@ -68,4 +66,12 @@ public class IndexController {
         Map<String, List<Catalog2Vo>> map = categoryService.getCatalogJson();
         return map;
     }
+
+    @ResponseBody
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello world";
+    }
 }
+
+
