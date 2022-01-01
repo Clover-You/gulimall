@@ -1,7 +1,6 @@
 package top.ctong.gulimall.product.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
  * <p>
  * 商品三级分类
  * </p>
+ *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
@@ -53,6 +53,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 查询叶
+     *
      * @param params 自定义查询条件
      * @return PageUtils
      * @author Clover You
@@ -70,6 +71,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 查询所有分类并构造树形结构
+     *
      * @return List<CategoryEntity>
      * @author Clover You
      * @date 2021/11/21 20:36
@@ -97,6 +99,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 通过菜单id删除菜单
+     *
      * @param asList id列表
      * @author Clover You
      * @date 2021/11/22 14:48
@@ -109,8 +112,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 找到指定菜单的子菜单
+     *
      * @param root 当前指定菜单
-     * @param all 全部菜单
+     * @param all  全部菜单
      * @return List<CategoryEntity>
      * @author Clover You
      * @date 2021/11/21 20:54
@@ -130,6 +134,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 通过分组id查找分组路径[父/子/孙]
+     *
      * @param catelogId 分组id
      * @return Long
      * @author Clover You
@@ -144,8 +149,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 通过子孙节点找所有父节点
+     *
      * @param catelogId 要查找的子孙节点id
-     * @param path 节点集合
+     * @param path      节点集合
      * @return List<Long>
      * @author Clover You
      * @date 2021/11/27 09:03
@@ -161,6 +167,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 集联更新分类
+     *
      * @param category 分类信息
      * @author Clover You
      * @date 2021/11/27 11:00
@@ -176,6 +183,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 查询一级分类
+     *
      * @return List<CategoryEntity>
      * @author Clover You
      * @date 2021/12/26 10:41
@@ -192,6 +200,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回，使用缓存
+     *
      * @return Map<String, List < Catalog2Vo>>
      * @author Clover You
      * @date 2021/12/30 15:36
@@ -226,6 +235,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 从数据库中查出所有分类，以{"1": {Catalog2Vo}} 的形式返回
+     *
      * @return Map<String, Object>
      * @author Clover You
      * @date 2021/12/26 14:50
@@ -270,6 +280,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 通过父id在指定列表中查找指定项
+     *
      * @param metaList 数据源
      * @return List<CategoryEntity>
      * @author Clover You

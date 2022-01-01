@@ -1,6 +1,5 @@
 package top.ctong.gulimall.common.to.es;
 
-import jdk.internal.util.xml.impl.Attrs;
 import lombok.Data;
 
 import java.io.Serializable;

@@ -73,5 +73,3 @@ public class IndexController {
         return "hello world";
     }
 }
-
-
