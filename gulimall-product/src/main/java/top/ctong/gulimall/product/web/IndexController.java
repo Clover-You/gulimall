@@ -55,16 +55,14 @@ public class IndexController {
 
     /** 
      * 获取分类
-     * @param 
      * @return void
      * @author Clover You
      * @date 2021/12/26 14:46
      */
     @ResponseBody
     @GetMapping("index/catalog.json")
-    public Map<String, List<Catalog2Vo>> getCatalogJson() {
-        Map<String, List<Catalog2Vo>> map = categoryService.getCatalogJson();
-        return map;
+    public Map<String, List<Catalog2Vo>> getCatalogJson() throws InterruptedException {
+        return categoryService.getCatalogJson();
     }
 
     @ResponseBody

@@ -5,8 +5,11 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mysql.cj.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +21,7 @@ import top.ctong.gulimall.product.service.CategoryBrandRelationService;
 import top.ctong.gulimall.product.service.CategoryService;
 import top.ctong.gulimall.product.vo.Catalog2Vo;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -63,7 +67,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page = this.page(
                 new Query<CategoryEntity>().getPage(params),
-                new QueryWrapper<CategoryEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -199,14 +203,96 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private final Object getCatalogJsonLock = new Object();
 
     /**
+     * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回
+     *
+     * @return Map<String, Object>
+     * @author Clover You
+     * @date 2021/12/26 14:50
+     */
+    @Override
+    public Map<String, List<Catalog2Vo>> getCatalogJson() throws InterruptedException {
+        return getCatalogJsonWithRedisLock();
+    }
+
+    /**
+     * 获取所有分类，使用 redis 分布式锁
+     * <p>加锁保证原子性，解锁保证原子性</p>
+     *
+     * @return Map<String, List <Catalog2Vo>>
+     * @create 2022-1-2 21:22
+     */
+    public Map<String, List<Catalog2Vo>> getCatalogJsonWithRedisLock() throws InterruptedException {
+        String uuid = UUID.randomUUID().toString();
+        // 从缓存中获取数据
+        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        if (!StringUtils.hasText(catalogJson)) {
+            log.warn("占用分布式锁");
+            ValueOperations<String, String> ops = redisTemplate.opsForValue();
+            // 占用分布式锁 set EX NX
+            Boolean lock = ops.setIfAbsent("product_catalog_lock", uuid, 30, TimeUnit.SECONDS);
+            if (Boolean.TRUE.equals(lock)) {
+                try {
+                    // 从缓存中获取数据
+                    String confirmCache = redisTemplate.opsForValue().get("catalogJson");
+                    if (!StringUtils.hasText(confirmCache)) {
+                        log.warn("从数据库中获取数据");
+                        // 从数据库中获取数据
+                        Map<String, List<Catalog2Vo>> catalogJsonFormDb = getCatalogJsonFormDB();
+                        // 解决缓存穿透
+                        if (catalogJsonFormDb == null || catalogJsonFormDb.isEmpty()) {
+                            redisTemplate.opsForValue().set("catalogJson", "{}", 1, TimeUnit.DAYS);
+                            return new HashMap<>(0);
+                        } else {
+                            String jsonString = JSON.toJSONString(catalogJsonFormDb);
+                            redisTemplate.opsForValue().set("catalogJson", jsonString);
+                            return catalogJsonFormDb;
+                        }
+                    } else {
+                        catalogJson = confirmCache;
+                    }
+                } finally {
+                    // 释放锁
+                    unlockOfRedis("product_catalog_lock", uuid);
+                }
+
+            } else {
+                Thread.sleep(100);
+                return getCatalogJsonWithRedisLock();
+            }
+        }
+        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
+        });
+    }
+
+    /**
+     * 删除分布式锁
+     *
+     * @param lockName 锁名称
+     * @param uuid     锁id
+     * @Author: Clover You
+     * @Date: 2022/1/4 10:55
+     **/
+    private void unlockOfRedis(String lockName, String uuid) {
+//        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+//        String lock = ops.get(lockName);
+//        // 如果锁是自己的，那么进行解锁
+//        if (uuid.equals(lock)) {
+//            redisTemplate.delete(lockName);
+//        }
+        String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1])" +
+                " else return 0 end";
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(luaScript, Long.class);
+        redisTemplate.execute(redisScript, Collections.singletonList(lockName), uuid);
+    }
+
+    /**
      * 查出所有分类，以{"1": {Catalog2Vo}} 的形式返回，使用缓存
      *
      * @return Map<String, List < Catalog2Vo>>
      * @author Clover You
      * @date 2021/12/30 15:36
      */
-    @Override
-    public Map<String, List<Catalog2Vo>> getCatalogJson() {
+    public Map<String, List<Catalog2Vo>> getCatalogJsonWithLocalLock() {
         // 从缓存中获取数据
         String catalogJson = redisTemplate.opsForValue().get("catalogJson");
         if (!StringUtils.hasText(catalogJson)) {
@@ -290,3 +376,4 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return metaList.stream().filter(item -> item.getParentCid().equals(cId)).collect(Collectors.toList());
     }
 }
+

@@ -86,6 +86,6 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @author Clover You
      * @date 2021/12/26 14:50
      */
-    Map<String, List<Catalog2Vo>> getCatalogJson();
+    Map<String, List<Catalog2Vo>> getCatalogJson() throws InterruptedException;
 }
 
