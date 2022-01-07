@@ -3,6 +3,7 @@ package top.ctong.gulimall.product;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * <p>
  * redis 测试
  * </p>
+ *
  * @author Clover You
  * @create 2021-12-30 15:18
  */
@@ -34,6 +36,9 @@ public class RedisTest {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Test
     @DisplayName("测试是否成功加载")
@@ -51,5 +56,11 @@ public class RedisTest {
         // 查询
         String hello = ops.get("hello");
         log.info(hello);
+    }
+
+    @Test
+    @DisplayName("redisson 是否加载成功")
+    void loadRedisson() {
+        assert redissonClient != null : "Redisson 加载失败！";
     }
 }

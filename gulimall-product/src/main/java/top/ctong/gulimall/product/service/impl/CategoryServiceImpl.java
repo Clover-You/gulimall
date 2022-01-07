@@ -5,8 +5,11 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mysql.cj.util.TimeUtil;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -21,7 +24,6 @@ import top.ctong.gulimall.product.service.CategoryBrandRelationService;
 import top.ctong.gulimall.product.service.CategoryService;
 import top.ctong.gulimall.product.vo.Catalog2Vo;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -54,6 +56,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redisson;
 
     /**
      * 查询叶
@@ -218,7 +223,50 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * 获取所有分类，使用 redis 分布式锁
      * <p>加锁保证原子性，解锁保证原子性</p>
      *
-     * @return Map<String, List <Catalog2Vo>>
+     * @return Map<String, List < Catalog2Vo>>
+     * @create 2022-1-2 21:22
+     */
+    public Map<String, List<Catalog2Vo>> getCatalogJsonWithRedissonLock() throws InterruptedException {
+        String uuid = UUID.randomUUID().toString();
+        // 从缓存中获取数据
+        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        if (!StringUtils.hasText(catalogJson)) {
+            log.warn("占用分布式锁");
+            RLock lock = redisson.getLock("catalogJson-lock");
+            lock.lock();
+            try {
+                // 从缓存中获取数据
+                String confirmCache = redisTemplate.opsForValue().get("catalogJson");
+                if (!StringUtils.hasText(confirmCache)) {
+                    log.warn("从数据库中获取数据");
+                    // 从数据库中获取数据
+                    Map<String, List<Catalog2Vo>> catalogJsonFormDb = getCatalogJsonFormDB();
+                    // 解决缓存穿透
+
+                    if (catalogJsonFormDb == null || catalogJsonFormDb.isEmpty()) {
+                        redisTemplate.opsForValue().set("catalogJson", "{}", 1, TimeUnit.DAYS);
+                        return new HashMap<>(0);
+                    } else {
+                        String jsonString = JSON.toJSONString(catalogJsonFormDb);
+                        redisTemplate.opsForValue().set("catalogJson", jsonString);
+                        return catalogJsonFormDb;
+                    }
+                } else {
+                    catalogJson = confirmCache;
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
+        });
+    }
+
+    /**
+     * 获取所有分类，使用 redis 分布式锁
+     * <p>加锁保证原子性，解锁保证原子性</p>
+     *
+     * @return Map<String, List < Catalog2Vo>>
      * @create 2022-1-2 21:22
      */
     public Map<String, List<Catalog2Vo>> getCatalogJsonWithRedisLock() throws InterruptedException {
@@ -273,12 +321,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @Date: 2022/1/4 10:55
      **/
     private void unlockOfRedis(String lockName, String uuid) {
-//        ValueOperations<String, String> ops = redisTemplate.opsForValue();
-//        String lock = ops.get(lockName);
-//        // 如果锁是自己的，那么进行解锁
-//        if (uuid.equals(lock)) {
-//            redisTemplate.delete(lockName);
-//        }
         String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1])" +
                 " else return 0 end";
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(luaScript, Long.class);
