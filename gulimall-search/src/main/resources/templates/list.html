@@ -1226,8 +1226,8 @@
                                 </a>
                             </span>
                             <span class="page_span2">
-                                <em>共<b>169</b>页&nbsp;&nbsp;到第</em>
-                                <input type="number" value="1">
+                                <em>共<b th:text="${searchResult.totalPage}">169</b>页&nbsp;&nbsp;到第</em>
+                                <input type="number" th:value="${searchResult.pageNum}">
                                 <em>页</em>
                                 <a href="#">确定</a>
                             </span>
