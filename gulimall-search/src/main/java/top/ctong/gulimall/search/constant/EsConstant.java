@@ -35,6 +35,6 @@ public class EsConstant {
     /**
      * 分页大小
      */
-    public static final Integer PRODUCT_PAGE_SIZE = 2;
+    public static final Integer PRODUCT_PAGE_SIZE = 20;
 
 }
