@@ -189,7 +189,7 @@ public class SkuEsModel implements Serializable {
  *   					"type": "keyword"
  *                }
  *                }
- *            }* 		}
+ *            } 		}
  * 	}
  * }
  */

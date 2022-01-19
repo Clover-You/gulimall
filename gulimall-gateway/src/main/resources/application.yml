@@ -7,6 +7,10 @@ spring:
         server-addr: 192.168.226.128:8848
     gateway:
       routes:
+#        - id: search_route
+#          uri: lb://gulimall-search
+#          predicates:
+#            - Path=/a
         - id: ware_route
           uri: lb://gulimall-ware
           predicates:
@@ -39,6 +43,10 @@ spring:
           filters:
             # 路径重写
             - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
+        - id: search_gulimall_host_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
         - id: gulimall_host_route
           uri: lb://gulimall-product
           predicates:

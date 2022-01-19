@@ -5,17 +5,24 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.product.dao.CategoryDao;
@@ -48,6 +55,7 @@ import java.util.stream.Collectors;
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
  */
+@Slf4j
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
@@ -70,10 +78,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<CategoryEntity> page = this.page(
-                new Query<CategoryEntity>().getPage(params),
-                new QueryWrapper<>()
-        );
+        IPage<CategoryEntity> page = this.page(new Query<CategoryEntity>().getPage(params), new QueryWrapper<>());
 
         return new PageUtils(page);
     }
@@ -92,13 +97,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         List<CategoryEntity> entities = baseMapper.selectList(null);
         // TODO 组装成树形结构
         // 找到所有一级分类
-        List<CategoryEntity> level1Menus = entities.stream().filter((category) ->
-                category.getParentCid() == 0
-        ).map(menu -> {
-            // 查找子分类
-            menu.setChildren(getChildren(menu, entities));
-            return menu;
-        }).sorted((m1, m2) -> {
+        List<CategoryEntity> level1Menus = entities.stream().filter((category) -> category.getParentCid() == 0).map(
+            menu -> {
+                // 查找子分类
+                menu.setChildren(getChildren(menu, entities));
+                return menu;
+            }).sorted((m1, m2) -> {
             // 排序，小的在左边，大的在右边
             return (m1.getSort() == null ? 0 : m1.getSort()) - (m2.getSort() == null ? 0 : m2.getSort());
         }).collect(Collectors.toList());
@@ -181,6 +185,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @author Clover You
      * @date 2021/11/27 11:00
      */
+    @CacheEvict(value = "category", allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateCascade(CategoryEntity category) {
@@ -197,8 +202,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @author Clover You
      * @date 2021/12/26 10:41
      */
+    @Cacheable(cacheNames = {"category"}, key = "'leve1Category'", sync = true)
     @Override
     public List<CategoryEntity> getLeve1Category() {
+        log.info("getLeve1Category调用....");
         return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("cat_level", 1));
     }
 
@@ -214,9 +221,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @author Clover You
      * @date 2021/12/26 14:50
      */
+    @Cacheable(cacheNames = "category", key = "#root.methodName")
     @Override
-    public Map<String, List<Catalog2Vo>> getCatalogJson() throws InterruptedException {
-        return getCatalogJsonWithRedisLock();
+    public Map<String, List<Catalog2Vo>> getCatalogJson() {
+        return getCatalogJsonFormDB();
     }
 
     /**
@@ -258,8 +266,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 lock.unlock();
             }
         }
-        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
-        });
+        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {});
     }
 
     /**
@@ -308,8 +315,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 return getCatalogJsonWithRedisLock();
             }
         }
-        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
-        });
+        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {});
     }
 
     /**
@@ -321,8 +327,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @Date: 2022/1/4 10:55
      **/
     private void unlockOfRedis(String lockName, String uuid) {
-        String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1])" +
-                " else return 0 end";
+        String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1])" + " else return 0 end";
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(luaScript, Long.class);
         redisTemplate.execute(redisScript, Collections.singletonList(lockName), uuid);
     }
@@ -357,8 +362,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 }
             }
         }
-        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {
-        });
+        return JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catalog2Vo>>>() {});
     }
 
     /**
@@ -381,20 +385,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             if (categoryEntities != null) {
                 catalog2Vos = categoryEntities.stream().map(item -> {
                     Catalog2Vo catalog2Vo = new Catalog2Vo(
-                            v.getCatId().toString(),
-                            null,
-                            item.getCatId().toString(),
-                            item.getName()
+                        v.getCatId().toString(), null, item.getCatId().toString(), item.getName()
                     );
 
-                    List<CategoryEntity> categoryEntityList = getCategoryByParentCid(categoryEntitiesAll, item.getCatId());
+                    List<CategoryEntity> categoryEntityList = getCategoryByParentCid(
+                        categoryEntitiesAll, item.getCatId()
+                    );
                     List<Catalog2Vo.Catalog3Vo> level3List = null;
                     if (categoryEntityList != null) {
                         level3List = categoryEntityList.stream().map(level3 -> {
                             return new Catalog2Vo.Catalog3Vo(
-                                    item.getCatId().toString(),
-                                    level3.getCatId().toString(),
-                                    level3.getName()
+                                item.getCatId().toString(),
+                                level3.getCatId().toString(),
+                                level3.getName()
                             );
                         }).collect(Collectors.toList());
                         catalog2Vo.setCatalog3List(level3List);
@@ -417,5 +420,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private List<CategoryEntity> getCategoryByParentCid(List<CategoryEntity> metaList, Long cId) {
         return metaList.stream().filter(item -> item.getParentCid().equals(cId)).collect(Collectors.toList());
     }
+
 }
 

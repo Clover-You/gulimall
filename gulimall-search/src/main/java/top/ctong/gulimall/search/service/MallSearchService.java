@@ -1,4 +1,6 @@
-package top.ctong.gulimall.search.constant;
+package top.ctong.gulimall.search.service;
+import top.ctong.gulimall.search.vo.SearchParam;
+import top.ctong.gulimall.search.vo.SearchResult;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -10,31 +12,24 @@ package top.ctong.gulimall.search.constant;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * ES常量
+ * 商城检索服务
  * </p>
  *
  * @author Clover You
- * @create 2021-12-22 15:12
+ * @email 2621869236@qq.com
+ * @create 2022-01-17 00:32
  */
-public class EsConstant {
+public interface MallSearchService {
 
     /**
-     * 索引
+     * 通过检索条件查询所需的检索结果
+     * @param param 检索所有条件
+     * @author Clover You
+     * @date 2022/1/17 00:35
+     * @return SearchResult 检索结果
      */
-    public static final class INDEX {
-
-        /**
-         * 商品索引
-         */
-        public static final String PRODUCT = "gulimall_product";
-
-    }
-
-    /**
-     * 分页大小
-     */
-    public static final Integer PRODUCT_PAGE_SIZE = 2;
+    SearchResult search(SearchParam param);
 
 }

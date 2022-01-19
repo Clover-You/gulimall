@@ -1,4 +1,13 @@
-package top.ctong.gulimall.search.constant;
+package top.ctong.gulimall.search.controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import lombok.extern.slf4j.Slf4j;
+import top.ctong.gulimall.search.service.MallSearchService;
+import top.ctong.gulimall.search.vo.SearchParam;
+import top.ctong.gulimall.search.vo.SearchResult;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -10,31 +19,35 @@ package top.ctong.gulimall.search.constant;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * ES常量
+ * 搜索页前端控制器
  * </p>
  *
  * @author Clover You
- * @create 2021-12-22 15:12
+ * @email 2621869236@qq.com
+ * @create 2022-01-16 22:08
  */
-public class EsConstant {
+@Controller
+@Slf4j
+public class SearchController {
+
+    @Autowired
+    private MallSearchService mallSearchService;
 
     /**
-     * 索引
+     * 检索页
+     * @param param 检索参数
+     * @author Clover You
+     * @date 2022/1/17 00:56
+     * @return String 检索页面
      */
-    public static final class INDEX {
-
-        /**
-         * 商品索引
-         */
-        public static final String PRODUCT = "gulimall_product";
-
+    @GetMapping("/list.html")
+    public String listPage(SearchParam param, Model model) {
+        log.debug("come list page..");
+        SearchResult result = mallSearchService.search(param);
+        model.addAttribute("searchResult", result);
+        return "list";
     }
-
-    /**
-     * 分页大小
-     */
-    public static final Integer PRODUCT_PAGE_SIZE = 2;
 
 }

@@ -29,6 +29,15 @@ spring:
   redis:
     host: 192.168.226.128
 
+  # SpringCache配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000
+      use-key-prefix: true
+      # 是否缓存空值，可解决缓存穿透问题
+      cache-null-values: true
+
 server:
   port: 10000
 
