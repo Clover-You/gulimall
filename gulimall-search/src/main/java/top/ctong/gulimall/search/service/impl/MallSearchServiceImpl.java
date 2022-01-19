@@ -252,9 +252,11 @@ public class MallSearchServiceImpl implements MallSearchService {
                 );
             });
         }
-        filter.add(
-            QueryBuilders.termQuery("hasStock", Integer.valueOf(1).equals(param.getHasStock()))
-        );
+        if (param.getHasStock()!=null) {
+            filter.add(
+                QueryBuilders.termQuery("hasStock", Integer.valueOf(1).equals(param.getHasStock()))
+            );
+        }
         if (StringUtils.hasText(param.getSkuPrice())) {
             RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
             // 1_500/_500/500_
