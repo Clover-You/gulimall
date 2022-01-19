@@ -47,7 +47,7 @@ public class SearchResult implements Serializable {
     /**
      * 总页码
      */
-    private Integer totalPage;
+    private Long totalPage;
 
     /**
      * 当前检索的结果所涉及的所有品牌

@@ -1,4 +1,8 @@
 package top.ctong.gulimall.search.service.impl;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -7,20 +11,33 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import top.ctong.gulimall.common.to.es.SkuEsModel;
 import top.ctong.gulimall.search.config.GuliMallElasticSearchConfig;
 import top.ctong.gulimall.search.constant.EsConstant;
 import top.ctong.gulimall.search.service.MallSearchService;
@@ -69,7 +86,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         try {
             // 执行检索请求
             SearchResponse search = esClient.search(searchRequest, GuliMallElasticSearchConfig.COMMON_OPTIONS);
-            result = buildSearchResult(search);
+            result = buildSearchResult(search, param);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,12 +97,107 @@ public class MallSearchServiceImpl implements MallSearchService {
      * 构建检索结果
      *
      * @param search 检索结果
+     * @param param
      * @return SearchResult
      * @author Clover You
      * @date 2022/1/17 21:39
      */
-    private SearchResult buildSearchResult(SearchResponse search) {
-        return null;
+    private SearchResult buildSearchResult(SearchResponse search, SearchParam param) {
+        SearchResult result = new SearchResult();
+        log.debug("检索结果：{}", search);
+        SearchHits hits = search.getHits();
+        // 设置命中结果
+        if (hits.getHits() != null && hits.getHits().length > 0) {
+            List<SkuEsModel> esModels = new ArrayList<>(hits.getHits().length);
+            for (SearchHit hit : hits.getHits()) {
+                SkuEsModel skuEsModel = JSON.parseObject(hit.getSourceAsString(), SkuEsModel.class);
+                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+                if (highlightFields.get("skuTitle") != null) {
+                    String skuTitle = highlightFields.get("skuTitle").getFragments()[0].toString();
+                    skuEsModel.setSkuTitle(skuTitle);
+                }
+                esModels.add(skuEsModel);
+            }
+            result.setProduct(esModels);
+        }
+        Aggregations aggs = search.getAggregations();
+        // region 分类聚合信息
+        ParsedLongTerms catalogAgg = aggs.get("catalog_agg");
+        if (aggs.get("catalog_agg") != null) {
+            List<? extends Terms.Bucket> buckets = catalogAgg.getBuckets();
+            List<SearchResult.Catalog> catalogList = new ArrayList<>(buckets.size());
+            for (Terms.Bucket bucket : buckets) {
+                SearchResult.Catalog catalog = new SearchResult.Catalog();
+                // 分类id
+                catalog.setCatalogId(bucket.getKeyAsNumber().longValue());
+                // 分类名称
+                ParsedStringTerms catalogNameAgg = bucket.getAggregations().get("catalog_name_agg");
+                catalog.setCatalogName(catalogNameAgg.getBuckets().get(0).getKeyAsString());
+                catalogList.add(catalog);
+            }
+            result.setCatalogs(catalogList);
+        }
+
+        // endregion
+
+        // region 品牌聚合信息
+        ParsedLongTerms brandAgg = aggs.get("brand_agg");
+        List<? extends Terms.Bucket> brandAggBuckets = brandAgg.getBuckets();
+        if (brandAggBuckets != null && !brandAggBuckets.isEmpty()) {
+            List<SearchResult.Brand> brands = new ArrayList<>(brandAggBuckets.size());
+            for (Terms.Bucket brandAggBucket : brandAggBuckets) {
+                SearchResult.Brand brand = new SearchResult.Brand();
+                brand.setBrandId(brandAggBucket.getKeyAsNumber().longValue());
+                // 品牌logo
+                ParsedStringTerms brandImgAgg = brandAggBucket.getAggregations().get("brand_img_agg");
+                brand.setBrandImg(brandImgAgg.getBuckets().get(0).getKeyAsString());
+
+                // 品牌名称
+                ParsedStringTerms brandNameAgg = brandAggBucket.getAggregations().get("brand_name_agg");
+                brand.setBrandName(brandNameAgg.getBuckets().get(0).getKeyAsString());
+                brands.add(brand);
+            }
+            result.setBrands(brands);
+        }
+
+        // endregion
+
+        // region 属性聚合信息
+        ParsedNested attrAgg = aggs.get("attr_agg");
+        ParsedLongTerms attrIdAgg = attrAgg.getAggregations().get("attr_id_agg");
+        List<? extends Terms.Bucket> attrIdAggBuckets = attrIdAgg.getBuckets();
+        List<SearchResult.Attr> attrs = new ArrayList<>(attrIdAggBuckets.size());
+        for (Terms.Bucket attrIdAggBucket : attrIdAggBuckets) {
+            SearchResult.Attr attr = new SearchResult.Attr();
+            // 属性id
+            attr.setAttrId(attrIdAggBucket.getKeyAsNumber().longValue());
+            Aggregations attrIdAggBucketAggregations = attrIdAggBucket.getAggregations();
+            // 属性名
+            ParsedStringTerms attrNameAgg = attrIdAggBucketAggregations.get("attr_name_agg");
+            attr.setAttrName(attrNameAgg.getBuckets().get(0).getKeyAsString());
+            // 属性值
+            ParsedStringTerms attrValueAgg = attrIdAggBucketAggregations.get("attr_value_agg");
+            List<String> attrValList = attrValueAgg.getBuckets().stream().map(bucket -> {
+                return bucket.getKeyAsString();
+            }).collect(Collectors.toList());
+            attr.setAttrValue(attrValList);
+            attrs.add(attr);
+        }
+        result.setAttrs(attrs);
+        // endregion
+
+        TotalHits totalHits = search.getHits().getTotalHits();
+        Aggregations aggregations = search.getAggregations();
+        // 总记录数
+        result.setTotal(hits.getTotalHits().value);
+        // 总页数
+        long totalPage = hits.getTotalHits().value / EsConstant.PRODUCT_PAGE_SIZE;
+        result.setTotalPage(
+            hits.getTotalHits().value % EsConstant.PRODUCT_PAGE_SIZE == 0 ? totalPage : totalPage + 1
+        );
+        // 当前页码
+        result.setPageNum(param.getPageNum());
+        return result;
     }
 
     /**
@@ -221,7 +333,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         // 属性值
         TermsAggregationBuilder attrValueAgg = AggregationBuilders.terms("attr_value_agg");
         attrValueAgg.field("attrs.attrValue");
-        attrValueAgg.size(30);
+        attrValueAgg.size(50);
         attrIdAgg.subAggregation(attrValueAgg);
         attrAgg.subAggregation(attrIdAgg);
 
