@@ -1,6 +1,6 @@
 package top.ctong.gulimall.search.service.impl;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.join.ScoreMode;
@@ -13,7 +13,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
@@ -31,13 +30,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import top.ctong.gulimall.common.feign.ProductFeignService;
+import top.ctong.gulimall.common.vo.AttrRespVo;
+import top.ctong.gulimall.common.vo.BrandEntityVo;
 import top.ctong.gulimall.common.to.es.SkuEsModel;
+import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.search.config.GuliMallElasticSearchConfig;
 import top.ctong.gulimall.search.constant.EsConstant;
 import top.ctong.gulimall.search.service.MallSearchService;
@@ -58,7 +63,6 @@ import top.ctong.gulimall.search.vo.SearchResult;
  * <p>
  * 商城检索服务实现
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2022-01-17 00:34
@@ -70,9 +74,11 @@ public class MallSearchServiceImpl implements MallSearchService {
     @Autowired
     private RestHighLevelClient esClient;
 
+    @Autowired
+    private ProductFeignService productFeignService;
+
     /**
      * 通过检索条件查询所需的检索结果
-     *
      * @param param 检索所有条件
      * @return SearchResult 检索结果
      * @author Clover You
@@ -95,7 +101,6 @@ public class MallSearchServiceImpl implements MallSearchService {
 
     /**
      * 构建检索结果
-     *
      * @param search 检索结果
      * @param param
      * @return SearchResult
@@ -182,6 +187,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             }).collect(Collectors.toList());
             attr.setAttrValue(attrValList);
             attrs.add(attr);
+
         }
         result.setAttrs(attrs);
         // endregion
@@ -197,12 +203,85 @@ public class MallSearchServiceImpl implements MallSearchService {
         );
         // 当前页码
         result.setPageNum(param.getPageNum());
+
+        List<Integer> navsNum = new ArrayList<>(result.getTotalPage().intValue());
+        for (int i = 0; i < result.getTotalPage(); i++) {
+            navsNum.add(i + 1);
+        }
+        result.setPageNavs(navsNum);
+
+        // 构建面包屑导航
+        if (param.getAttrs() != null) {
+            List<SearchResult.Nav> navList = param.getAttrs().stream().map(attr -> {
+                SearchResult.Nav nav = new SearchResult.Nav();
+                String[] attrInfo = attr.split("_");
+                nav.setNavValue(attrInfo[1]);
+                R r = productFeignService.attrInfo(Long.parseLong(attrInfo[0]));
+                if (r.getCode() == 0) {
+                    AttrRespVo rData = r.getData("attr", new TypeReference<AttrRespVo>() {});
+                    nav.setNavName(rData.getAttrName());
+                } else {
+                    nav.setNavName(attrInfo[0]);
+                }
+                // 去掉当前查询条件
+                String targetStr = replaceQueryString("attrs", attr, param);
+                nav.setLink("http://search.gulimall.com/list.html?" + targetStr);
+
+                result.getAttrIds().add(Long.parseLong(attrInfo[0]));
+                return nav;
+            }).collect(Collectors.toList());
+            result.setNavs(navList);
+        }
+
+        if (param.getBrandId() != null && !param.getBrandId().isEmpty()) {
+            // 查询品牌信息
+            R r = productFeignService.brandInfo(param.getBrandId());
+            if (r.getCode() == 0) {
+                List<SearchResult.Nav> navs = result.getNavs();
+                SearchResult.Nav nav = new SearchResult.Nav();
+                nav.setNavName("品牌");
+
+                List<BrandEntityVo> brandList = r.getData("brand", new TypeReference<List<BrandEntityVo>>() {});
+                StringBuilder stringBuffer = new StringBuilder();
+                String targetStr = "";
+                for (BrandEntityVo brand : brandList) {
+                    stringBuffer.append(brand.getName()).append(";");
+                    targetStr = replaceQueryString("brandId", brand.getBrandId().toString(), param);
+                }
+                nav.setNavValue(stringBuffer.toString());
+                nav.setLink("http://search.gulimall.com/list.html?" + targetStr);
+                navs.add(nav);
+            }
+
+        }
         return result;
     }
 
     /**
+     * 替换请求条件字符串
+     * @param key 条件
+     * @param param 检索条件
+     * @param val 值
+     * @return String
+     * @author Clover You
+     * @date 2022/1/23 19:24
+     */
+    private String replaceQueryString(String key, String val, SearchParam param) {
+        String queryString = param.get_queryString();
+        String str = "";
+        try {
+            str = URLEncoder.encode(val, "UTF-8");
+            // 解决java与浏览器的差异
+            str = str.replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String targetStr = queryString.replace("&" + key + "=" + str, "");
+        return targetStr;
+    }
+
+    /**
      * 创建检索请求
-     *
      * @param param 检索参数
      * @return SearchRequest
      * @author Clover You
@@ -252,7 +331,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                 );
             });
         }
-        if (param.getHasStock()!=null) {
+        if (param.getHasStock() != null) {
             filter.add(
                 QueryBuilders.termQuery("hasStock", Integer.valueOf(1).equals(param.getHasStock()))
             );

@@ -1,5 +1,6 @@
 package top.ctong.gulimall.search.vo;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -38,6 +39,21 @@ public class SearchResult implements Serializable {
      * 当前页码
      */
     private Integer pageNum;
+
+    /**
+     * 页码列表
+     */
+    private List<Integer> pageNavs;
+
+    /**
+     * 面包屑数据
+     */
+    private List<Nav> navs = new ArrayList<>();
+
+    /**
+     * 已选属性的id
+     */
+    private List<Long> attrIds = new ArrayList<>();
 
     /**
      * 数据总数
@@ -134,6 +150,32 @@ public class SearchResult implements Serializable {
          * 分类名称
          */
         private String catalogName;
+
+    }
+
+    /**
+     * 导航信息
+     *
+     * @author Clover You
+     * @date 2022/1/23 16:15
+     */
+    @Data
+    public static class Nav {
+
+        /**
+         * 导航名
+         */
+        private String navName;
+
+        /**
+         * 值
+         */
+        private String navValue;
+
+        /**
+         * 跳转的位置
+         */
+        private String link;
 
     }
 

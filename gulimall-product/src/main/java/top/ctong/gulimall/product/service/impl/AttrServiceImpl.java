@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -174,6 +176,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
      * @author Clover You
      * @date 2021/11/27 16:57
      */
+    @Cacheable(value = "attr", key = "'attrInfo:' + #root.args[0]")
     @Override
     public AttrRespVo getAttrInfo(Long attrId) {
         AttrEntity byId = this.getById(attrId);

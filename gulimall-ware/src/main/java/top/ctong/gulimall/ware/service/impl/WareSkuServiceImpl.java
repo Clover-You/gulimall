@@ -1,7 +1,7 @@
 package top.ctong.gulimall.ware.service.impl;
 
 import com.google.gson.Gson;
-import org.springframework.beans.BeanUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,7 +91,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             entity.setStock(skuNum);
             entity.setStockLocked(0);
             // 查询sku名字
-            R info = productFeignService.info(skuId);
+            R info = productFeignService.skuInfo(skuId);
             if (info.getCode() != 0) {
                 log.error(info.getMsg());
             } else {

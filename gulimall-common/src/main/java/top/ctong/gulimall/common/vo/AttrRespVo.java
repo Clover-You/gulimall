@@ -1,7 +1,4 @@
-package top.ctong.gulimall.search.vo;
-import java.io.Serializable;
-import java.util.List;
-
+package top.ctong.gulimall.common.vo;
 import lombok.Data;
 
 /**
@@ -16,61 +13,73 @@ import lombok.Data;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 检索条件
+ * 属性信息
  * </p>
  *
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2022-01-17 00:30
+ * @create 2022-01-23 16:53
  */
 @Data
-public class SearchParam implements Serializable {
-
-    private static final long serialVersionUID = 6699495679074731167L;
+public class AttrRespVo {
+    /**
+     * 分类名称
+     */
+    private String catelogName;
 
     /**
-     * 全文检索
+     * 分组名称
      */
-    private String keyword;
+    private String groupName;
 
     /**
-     * 三级分类id
+     * 所属分类
      */
-    private Long catalog3Id;
+    private Long[] catelogPath;
+    /**
+     * 属性id
+     */
+    private Long attrId;
+    /**
+     * 属性名
+     */
+    private String attrName;
+    /**
+     * 是否需要检索[0-不需要，1-需要]
+     */
+    private Integer searchType;
+    /**
+     * 属性图标
+     */
+    private String icon;
+    /**
+     * 可选值列表[用逗号分隔]
+     */
+    private String valueSelect;
+    /**
+     * 属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]
+     */
+    private Integer attrType;
+    /**
+     * 启用状态[0 - 禁用，1 - 启用]
+     */
+    private Long enable;
+    /**
+     * 所属分类
+     */
+    private Long catelogId;
+    /**
+     * 快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整
+     */
+    private Integer showDesc;
 
     /**
-     * 排序条件
+     * 属性分组信息
      */
-    private String sort;
+    private Long attrGroupId;
 
     /**
-     * 是否有货
+     * 值信息
      */
-    private Integer hasStock;
-
-    /**
-     * 价格区间
-     */
-    private String skuPrice;
-
-    /**
-     * 品牌id
-     */
-    private List<Long> brandId;
-
-    /**
-     * 属性信息
-     */
-    private List<String> attrs;
-
-    /**
-     * 页码
-     */
-    private Integer pageNum = 1;
-
-    /**
-     * 查询条件
-     */
-    private String _queryString;
-
+    private Integer valueType;
 }

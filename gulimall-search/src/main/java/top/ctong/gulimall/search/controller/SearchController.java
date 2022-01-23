@@ -1,8 +1,11 @@
 package top.ctong.gulimall.search.controller;
+import org.apache.http.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
 import top.ctong.gulimall.search.service.MallSearchService;
@@ -43,8 +46,10 @@ public class SearchController {
      * @return String 检索页面
      */
     @GetMapping("/list.html")
-    public String listPage(SearchParam param, Model model) {
+    public String listPage(SearchParam param, Model model, HttpServletRequest request) {
         log.debug("come list page..");
+        log.info("查询条件,{}",request.getQueryString());
+        param.set_queryString(request.getQueryString());
         SearchResult result = mallSearchService.search(param);
         model.addAttribute("searchResult", result);
         return "list";
