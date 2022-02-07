@@ -1,4 +1,10 @@
-package top.ctong.gulimall.auth.config;/**
+package top.ctong.gulimall.auth.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+/**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
  * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
  * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
@@ -12,7 +18,18 @@ package top.ctong.gulimall.auth.config;/**
  * <p>
  * 配置文件
  * </p>
+ *
  * @author Clover You
  * @create 2022-02-07 6:10 下午
- */public class GulimallWebConfig {
+ */
+@Configuration
+public class GulimallWebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/login.html").setViewName("login");
+        registry.addViewController("/reg.html").setViewName("reg");
+    }
+
+
 }

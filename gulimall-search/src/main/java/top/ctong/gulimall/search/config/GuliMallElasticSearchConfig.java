@@ -5,6 +5,7 @@ import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,10 +42,11 @@ public class GuliMallElasticSearchConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean(RestHighLevelClient.class)
     public RestHighLevelClient restHighLevelClient() {
         return new RestHighLevelClient(
             RestClient.builder(
-                new HttpHost("192.168.226.128", 9200, "http")
+                new HttpHost("192.168.135.128", 9200, "http")
             )
         );
     }

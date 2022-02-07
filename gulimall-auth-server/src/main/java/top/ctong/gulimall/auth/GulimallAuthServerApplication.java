@@ -1,10 +1,11 @@
-package top.ctong.gulimall.thirdparty;
+package top.ctong.gulimall.auth;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import top.ctong.gulimall.thirdparty.component.SmsComponent;
+import org.checkerframework.checker.units.qual.C;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import top.ctong.gulimall.common.feign.ThirdPartyFeignService;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,20 +19,19 @@ import top.ctong.gulimall.thirdparty.component.SmsComponent;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- *
+ * 认证服务
  * </p>
  *
  * @author Clover You
- * @create 2022-02-07 9:06 下午
+ * @create 2022/2/7 4:53 下午
  */
-@SpringBootTest
-public class SmsComponentTest {
-    @Autowired
-    private SmsComponent smsComponent;
+@EnableFeignClients(clients = ThirdPartyFeignService.class)
+@EnableDiscoveryClient
+@SpringBootApplication
+public class GulimallAuthServerApplication {
 
-    @Test
-    @DisplayName("验证码接口测试")
-    void smsComponentTest() {
-        smsComponent.sendSmsCode("18933797903", "1234", 30);
+    public static void main(String[] args) {
+        SpringApplication.run(GulimallAuthServerApplication.class, args);
     }
+
 }

@@ -4,7 +4,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.226.128:8848
+        server-addr: 192.168.135.128:8848
     gateway:
       routes:
 #        - id: search_route
@@ -47,9 +47,14 @@ spring:
           uri: lb://gulimall-search
           predicates:
             - Host=search.gulimall.com
+
+        - id: gulimall_auth_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com
         - id: gulimall_host_route
           uri: lb://gulimall-product
           predicates:
-            - Host=**.gulimall.com,gulimall.com
+            - Host=**.gulimall.com,gulimall.com,item.gulimall.com,auth.gulimall.com
 server:
   port: 8080
