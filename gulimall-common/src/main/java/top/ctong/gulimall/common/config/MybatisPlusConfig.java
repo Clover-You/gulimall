@@ -45,6 +45,7 @@ public class MybatisPlusConfig {
          * @date 2021/11/27 09:39
          */
         @ConditionalOnMissingBean(MybatisPlusInterceptor.class)
+        @Bean
         public MybatisPlusInterceptor mybatisPlusInterceptor() {
             MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
             interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
