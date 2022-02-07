@@ -13,6 +13,7 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
 import top.ctong.gulimall.product.dao.SpuImagesDao;
+import top.ctong.gulimall.product.entity.SkuImagesEntity;
 import top.ctong.gulimall.product.entity.SpuImagesEntity;
 import top.ctong.gulimall.product.service.SpuImagesService;
 
@@ -69,5 +70,20 @@ public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEnt
         }).collect(Collectors.toList());
         this.saveBatch(imagesEntityList);
     }
+
+    /**
+     * 通过skuId查询spu图片
+     *
+     * @param skuId sku id
+     * @return List<SpuImagesEntity>
+     * @author Clover You
+     * @date
+     */
+    @Override
+    public List<SpuImagesEntity> getImagesBySkuId(Long skuId) {
+//        baseMapper.selectList(new QueryWrapper<SkuImagesEntity>().eq("sku_id"));
+        return null;
+    }
+
 
 }

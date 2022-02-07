@@ -1,13 +1,15 @@
-package top.ctong.gulimall.product.dao;
+package top.ctong.gulimall.product.web;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import top.ctong.gulimall.product.service.SkuInfoService;
 import top.ctong.gulimall.product.vo.SkuItemVo;
 
-import java.util.List;
-
+import java.util.concurrent.ExecutionException;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,25 +21,33 @@ import java.util.List;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * sku销售属性&值
+ * 商品详情页
  * </p>
  *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2022-02-02 9:14 下午
  */
-@Mapper
-public interface SkuSaleAttrValueDao extends BaseMapper<SkuSaleAttrValueEntity> {
+@Controller
+@Slf4j
+public class ItemController {
+
+    @Autowired
+    private SkuInfoService skuInfoService;
 
     /**
-     * 通过spu id查询当前spu所有销售属性
-     *
-     * @param spuId spu id
-     * @return List<ItemSaleAttrsVo>
+     * 展示当前sku的详情
      * @author Clover You
-     * @date
+     * @date 2022/2/2 9:27 下午
+     * @param skuId 商品id
+     * @return String
      */
-    List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(@Param("spuId") Long spuId);
+    @RequestMapping("/{skuId}.html")
+    public String skuItemPage(@PathVariable("skuId") Long skuId, Model model) throws ExecutionException, InterruptedException {
+        log.info("sku id {}", skuId);
+        SkuItemVo skuItemVo = skuInfoService.item(skuId);
+        model.addAttribute("skuItem", skuItemVo);
+        return "item";
+    }
 }

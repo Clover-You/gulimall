@@ -1,11 +1,13 @@
 package top.ctong.gulimall.product.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,27 +21,32 @@ import org.springframework.context.annotation.Configuration;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * redisson 程序化配置
+ * 线程配置
  * </p>
  *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2022-01-04 15:58
+ * @create 2022-02-06 9:59 下午
  */
 @Configuration
-public class RedissonConfig {
+@EnableConfigurationProperties(ThreadPoolConfigProperties.class)
+public class MyThreadConfig {
 
     /**
-     * 注册一个用于操作 Redisson 的RedissonClient
-     * @return org.redisson.api.RedissonClient
-     * @author: Clover You
-     * @date: 2022/1/4 16:13
-     **/
-    @Bean(destroyMethod = "shutdown")
-    public RedissonClient redisson() {
-        Config config = new Config();
-        // 单节点模式
-        config.useSingleServer().setAddress("redis://192.168.135.128:6379");
-        return Redisson.create(config);
+     * 自定义线程池
+     * @return ThreadPoolExecutor
+     * @author Clover You
+     * @date 2022/2/6 10:10 下午
+     */
+    @Bean
+    public ThreadPoolExecutor threadPoolExecutor(ThreadPoolConfigProperties poolConfig) {
+        return new ThreadPoolExecutor(
+                poolConfig.getCorePoolSize(),
+                poolConfig.getMaximumPoolSize(),
+                poolConfig.getKeepAliveTime(),
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(poolConfig.getQueueSize()),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
     }
 }

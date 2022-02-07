@@ -36,11 +36,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("product/attr")
 public class AttrController {
+
     @Autowired
     private AttrService attrService;
 
     @Autowired
     private ProductAttrValueService productAttrValueService;
+
+    @RequestMapping("test")
+    public String test() {
+        return "测试";
+    }
 
     /**
      * 列表

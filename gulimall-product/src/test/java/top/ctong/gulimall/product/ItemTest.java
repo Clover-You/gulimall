@@ -1,13 +1,18 @@
-package top.ctong.gulimall.product.dao;
+package top.ctong.gulimall.product;
 
-import org.apache.ibatis.annotations.Param;
-import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import top.ctong.gulimall.product.entity.SkuInfoEntity;
+import top.ctong.gulimall.product.service.SkuInfoService;
 import top.ctong.gulimall.product.vo.SkuItemVo;
 
 import java.util.List;
-
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,25 +24,30 @@ import java.util.List;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * sku销售属性&值
+ * 商品详情测试
  * </p>
  *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2022-02-05 4:36 下午
  */
-@Mapper
-public interface SkuSaleAttrValueDao extends BaseMapper<SkuSaleAttrValueEntity> {
+@SpringBootTest
+@Slf4j
+public class ItemTest {
 
-    /**
-     * 通过spu id查询当前spu所有销售属性
-     *
-     * @param spuId spu id
-     * @return List<ItemSaleAttrsVo>
-     * @author Clover You
-     * @date
-     */
-    List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(@Param("spuId") Long spuId);
+    @Autowired
+    private SkuInfoService skuInfoService;
+
+
+    @Test
+    @DisplayName("item test")
+    void itemTest() throws ExecutionException, InterruptedException {
+        long ctl = System.currentTimeMillis();
+        SkuItemVo item = skuInfoService.item(73L);
+        log.info("执行时间： {}" , System.currentTimeMillis() - ctl);
+        assert item != null;
+        log.info("skusBySpuId: {}", JSON.toJSONString(item));
+    }
+
 }

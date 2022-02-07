@@ -3,7 +3,7 @@
 
 <mapper namespace="top.ctong.gulimall.product.dao.AttrGroupDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="top.ctong.gulimall.product.entity.AttrGroupEntity" id="attrGroupMap">
         <result property="attrGroupId" column="attr_group_id"/>
         <result property="attrGroupName" column="attr_group_name"/>
@@ -12,6 +12,26 @@
         <result property="icon" column="icon"/>
         <result property="catelogId" column="catelog_id"/>
     </resultMap>
+
+    <resultMap id="SpuItemBaseAttrVo" type="top.ctong.gulimall.product.vo.SkuItemVo$SpuItemBaseAttrVo">
+        <result property="groupName" column="attr_group_name"/>
+        <collection property="attrs" ofType="top.ctong.gulimall.product.vo.SkuItemVo$SpuBaseAttrVo">
+            <result property="attrName" column="attr_name"/>
+            <result property="attrValue" column="attr_value"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAttrGroupWithAttrsBySpuId"
+            resultMap="SpuItemBaseAttrVo"
+    >
+        select ag.attr_group_name, ag.attr_group_id, aar.attr_id, attr.attr_name, val.attr_value
+        from pms_attr_group ag
+                 left join pms_attr_attrgroup_relation aar on aar.attr_group_id = ag.attr_group_id
+                 left join pms_attr attr on attr.attr_id = aar.attr_id
+                 left join pms_product_attr_value val on val.attr_id = attr.attr_id
+        where ag.catelog_id = #{catelogId}
+          and val.spu_id = #{spuId}
+    </select>
 
 
 </mapper>

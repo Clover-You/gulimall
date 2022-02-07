@@ -1,6 +1,8 @@
 package top.ctong.gulimall.product.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +13,7 @@ import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.product.dao.SkuSaleAttrValueDao;
 import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
 import top.ctong.gulimall.product.service.SkuSaleAttrValueService;
+import top.ctong.gulimall.product.vo.SkuItemVo;
 
 
 /**
@@ -43,6 +46,19 @@ public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 通过spu id查询当前spu所有销售属性
+     *
+     * @param spuId spu id
+     * @return List<ItemSaleAttrsVo>
+     * @author Clover You
+     * @date
+     */
+    @Override
+    public List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(Long spuId) {
+        return baseMapper.getSaleAttrsBySpuId(spuId);
     }
 
 }

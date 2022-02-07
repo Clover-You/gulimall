@@ -3,7 +3,9 @@ package top.ctong.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
+import top.ctong.gulimall.product.vo.SkuItemVo;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -29,5 +31,14 @@ import java.util.Map;
 public interface SkuSaleAttrValueService extends IService<SkuSaleAttrValueEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 通过spu id查询当前spu所有销售属性
+     * @param spuId  spu id
+     * @return List<ItemSaleAttrsVo>
+     * @author Clover You
+     * @date
+     */
+    List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(Long spuId);
 }
 

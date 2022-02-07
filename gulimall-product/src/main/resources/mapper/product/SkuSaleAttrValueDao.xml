@@ -3,7 +3,7 @@
 
 <mapper namespace="top.ctong.gulimall.product.dao.SkuSaleAttrValueDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity" id="skuSaleAttrValueMap">
         <result property="id" column="id"/>
         <result property="skuId" column="sku_id"/>
@@ -12,6 +12,29 @@
         <result property="attrValue" column="attr_value"/>
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
+
+    <resultMap id="ItemSaleAttrsVo" type="top.ctong.gulimall.product.vo.SkuItemVo$ItemSaleAttrsVo">
+        <id property="attrId" column="attr_id"/>
+        <result property="attrName" column="attr_name"/>
+        <collection
+            property="valueWithSkuIdVos"
+            ofType="top.ctong.gulimall.product.vo.SkuItemVo$ItemSaleAttrsVo$AttrValueWithSkuIdVo"
+        >
+            <result property="attrValues" column="attr_value"/>
+            <result property="skuIds" column="sku_ids"/>
+        </collection>
+    </resultMap>
+
+    <select id="getSaleAttrsBySpuId" resultMap="ItemSaleAttrsVo">
+        select attr.attr_id,
+               attr_name,
+               attr.attr_value,
+               group_concat(distinct sku.sku_id) sku_ids
+        from `pms_sku_info` sku
+                 left join pms_sku_sale_attr_value attr on attr.sku_id = sku.sku_id
+        where spu_id = 28
+        group by attr.attr_id, attr.attr_name, attr.attr_value
+    </select>
 
 
 </mapper>

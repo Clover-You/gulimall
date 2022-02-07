@@ -3,9 +3,11 @@ package top.ctong.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.product.entity.SkuInfoEntity;
+import top.ctong.gulimall.product.vo.SkuItemVo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -56,5 +58,14 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
      * @date 2021/12/22 09:45
      */
     List<SkuInfoEntity> getSkusBySpuId(Long spuId);
+
+    /**
+     * 通过id查询sku详细信息
+     * @param skuId sku id
+     * @return SkuItemVo
+     * @author Clover You
+     * @date 2022/2/4 8:03 下午
+     */
+    SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException;
 }
 
