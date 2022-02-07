@@ -324,7 +324,7 @@
     let count = 60;
     let timer;
     let allowSend = true;
-    const timeoutChangeStyle = () => {
+    const timeoutChangeStyle = (req) => {
         if (count <= 0) {
             allowSend = true;
             clearTimeout(timer);
@@ -343,7 +343,14 @@
             if (!allowSend) return;
             let str = '60s';
             $.get("/login/send/sms?phone=" + $("#phoneNum").val(), function (res) {
-                timeoutChangeStyle();
+                console.log(res)
+                if (res.code === 10002) {
+                    alert(res.msg)
+                    count = parseInt(res.data / 1000);
+                    timeoutChangeStyle();
+                } else {
+                    timeoutChangeStyle();
+                }
             });
         })
     })
