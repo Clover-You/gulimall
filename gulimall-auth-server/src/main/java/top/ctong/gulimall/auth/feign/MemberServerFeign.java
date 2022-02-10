@@ -1,12 +1,10 @@
-package top.ctong.gulimall.auth;
+package top.ctong.gulimall.auth.feign;
 
-import org.checkerframework.checker.units.qual.C;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import top.ctong.gulimall.auth.feign.MemberServerFeign;
-import top.ctong.gulimall.common.feign.ThirdPartyFeignService;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import top.ctong.gulimall.auth.vo.UserRegisterVo;
+import top.ctong.gulimall.common.utils.R;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,20 +18,23 @@ import top.ctong.gulimall.common.feign.ThirdPartyFeignService;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 认证服务
+ * 会员模块远程服务
  * </p>
- * , basePackages = "top.ctong.gulimall.auth.feign"
  *
  * @author Clover You
- * @create 2022/2/7 4:53 下午
+ * @create 2022-02-10 10:18 下午
  */
-@EnableFeignClients(clients = {ThirdPartyFeignService.class, MemberServerFeign.class})
-@EnableDiscoveryClient
-@SpringBootApplication
-public class GulimallAuthServerApplication {
+@FeignClient("gulimall-member")
+public interface MemberServerFeign {
 
-    public static void main(String[] args) {
-        SpringApplication.run(GulimallAuthServerApplication.class, args);
-    }
-
+    /**
+     * 调用远程会员注册服务
+     *
+     * @param memberRegisterVo 会员信息
+     * @return R
+     * @author Clover You
+     * @date 2022/2/10 10:23 下午
+     */
+    @PostMapping("/member/member/register")
+    R register(@RequestBody UserRegisterVo memberRegisterVo);
 }

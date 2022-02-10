@@ -1,20 +1,32 @@
 package top.ctong.gulimall.auth.controller;
 
 import com.alibaba.nacos.common.utils.UuidUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import top.ctong.gulimall.auth.feign.MemberServerFeign;
+import top.ctong.gulimall.auth.vo.UserRegisterVo;
 import top.ctong.gulimall.common.constant.AuthServerConstant;
 import top.ctong.gulimall.common.exception.BizCodeEnum;
 import top.ctong.gulimall.common.feign.ThirdPartyFeignService;
 import top.ctong.gulimall.common.utils.R;
 
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -34,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * @author Clover You
  * @create 2022-02-07 9:18 下午
  */
-@RestController
+@Controller
 @RequestMapping("/login")
 public class LoginController {
 
@@ -43,6 +55,9 @@ public class LoginController {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private MemberServerFeign memberServerFeign;
 
     /**
      * redis 缓存验证码与设置时间的分隔符：123456_2021...
@@ -62,6 +77,7 @@ public class LoginController {
      * @author Clover You
      * @date 2022/2/7 10:05 下午
      */
+    @ResponseBody
     @GetMapping("/send/sms")
     public R sendSmsCode(@RequestParam("phone") String phone) {
         String redisCacheKey = AuthServerConstant.REG_SMS_CODE_CACHE_PREFIX + phone;
@@ -75,8 +91,8 @@ public class LoginController {
             // 间隔时间不能小于 SMS_CODE_CACHE_RETRY_INTERVAL_TIME 指定时间
             if (alive < SMS_CODE_CACHE_RETRY_INTERVAL_TIME) {
                 return R.error(
-                        BizCodeEnum.VALID_SMS_CODE_EXCEPTION.getCode(),
-                        BizCodeEnum.VALID_SMS_CODE_EXCEPTION.getMsg()
+                    BizCodeEnum.VALID_SMS_CODE_EXCEPTION.getCode(),
+                    BizCodeEnum.VALID_SMS_CODE_EXCEPTION.getMsg()
                 ).setData(SMS_CODE_CACHE_RETRY_INTERVAL_TIME - alive);
             }
         }
@@ -90,4 +106,94 @@ public class LoginController {
         return R.ok();
     }
 
+    /**
+     * @param userRegister       用户注册信息
+     * @param result             注册信息验证 jsr303 valid 封装错误结果集
+     * @param redirectAttributes spring 的自定义域，可用于重定向时获取数据
+     * @return String
+     * @author Clover You
+     * @date 2022/2/11 3:28 上午
+     */
+    @PostMapping("/register")
+    public String register(
+        @Valid UserRegisterVo userRegister,
+        BindingResult result,
+        RedirectAttributes redirectAttributes
+    ) {
+        String validResult = validRegisterData(userRegister, result, redirectAttributes);
+        if (validResult != null) {
+            return validResult;
+        }
+
+        // 使用远程服务进行注册
+        R registerResult = memberServerFeign.register(userRegister);
+        if (!registerResult.getCode().equals(0)) {
+            HashMap<String, String> errors = new HashMap<>(1);
+            if (registerResult.getCode().equals(BizCodeEnum.USERNAME_EXIST_EXCEPTION.getCode())) {
+                errors.put("userName", registerResult.getMsg());
+            } else if (registerResult.getCode().equals(BizCodeEnum.MOBILE_EXIST_EXCEPTION.getCode())) {
+                errors.put("phone", registerResult.getMsg());
+            }
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
+        return "redirect:http://auth.gulimall.com/login.html";
+    }
+
+    /**
+     * 校验注册信息
+     *
+     * @param userRegister       注册信息
+     * @param result             jsr303 valid 封装错误结果集
+     * @param redirectAttributes spring 的自定义域，可用于重定向时获取数据
+     * @return String
+     * @author Clover You
+     * @date 2022/2/11 3:23 上午
+     */
+    private String validRegisterData(
+        UserRegisterVo userRegister,
+        BindingResult result,
+        RedirectAttributes redirectAttributes
+    ) {
+        //region 处理错误消息
+        if (result.hasErrors()) {
+            // 处理错误消息传回页面
+            Map<String, String> errors = result.getFieldErrors().stream().collect(
+                Collectors.toMap(
+                    FieldError::getField,
+                    (target) -> Optional.ofNullable(target.getDefaultMessage()).orElse(""),
+                    (o1, o2) -> o1
+                )
+            );
+//            model.addAttribute("errors", errors);
+            redirectAttributes.addFlashAttribute("errors", errors);
+//            return "reg";
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
+        // endregion
+
+        //region 校验验证码
+        String code = userRegister.getCode();
+        String phone = userRegister.getPhone();
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        String codeInfo = ops.get(AuthServerConstant.REG_SMS_CODE_CACHE_PREFIX + phone);
+        if (StringUtils.hasText(codeInfo)) {
+            String[] codeInfos = codeInfo.split("_");
+            if (!codeInfos[0].equalsIgnoreCase(code)) {
+                Map<String, String> errors = new HashMap<>(1);
+                errors.put("code", "验证码错误");
+                redirectAttributes.addFlashAttribute("errors", errors);
+                return "redirect:http://auth.gulimall.com/reg.html";
+            }
+            // 验证码校验成功，验证码作废删除
+            redisTemplate.delete(AuthServerConstant.REG_SMS_CODE_CACHE_PREFIX + phone);
+        } else {
+            Map<String, String> errors = new HashMap<>(1);
+            errors.put("code", "验证码错误");
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
+        // endregion
+        return null;
+    }
 }
