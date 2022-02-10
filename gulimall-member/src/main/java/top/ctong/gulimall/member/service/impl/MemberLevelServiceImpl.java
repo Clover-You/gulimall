@@ -45,4 +45,16 @@ public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLe
         return new PageUtils(page);
     }
 
+    /**
+     * 获取默认会员等级
+     *
+     * @return MemberLevelEntity
+     * @author Clover You
+     * @date 2022/2/10 10:13 下午
+     */
+    @Override
+    public MemberLevelEntity getDefaultLevel() {
+        return baseMapper.getDefaultLevel();
+    }
+
 }

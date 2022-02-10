@@ -3,7 +3,7 @@
 
 <mapper namespace="top.ctong.gulimall.member.dao.MemberDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="top.ctong.gulimall.member.entity.MemberEntity" id="memberMap">
         <result property="id" column="id"/>
         <result property="levelId" column="level_id"/>
@@ -24,6 +24,18 @@
         <result property="status" column="status"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
+
+    <select id="checkMobileUnique" resultType="java.lang.Boolean">
+        select count(id) as exist
+        from ums_member
+        where mobile = #{phone}
+    </select>
+
+    <select id="checkUserNameUnique" resultType="java.lang.Boolean">
+        select count(id) as exist
+        from ums_member
+        where username = #{userName}
+    </select>
 
 
 </mapper>

@@ -48,7 +48,17 @@ public enum BizCodeEnum {
     /**
      * 验证码频繁获取异常代码
      */
-    VALID_SMS_CODE_EXCEPTION(10002, "验证码获取过于频繁，请稍后再试！");
+    VALID_SMS_CODE_EXCEPTION(10002, "验证码获取过于频繁，请稍后再试！"),
+
+    /**
+     * 用户名已被占用
+     */
+    USERNAME_EXIST_EXCEPTION(15001, "用户名已被占用"),
+
+    /**
+     * 手机号已被占用
+     */
+    MOBILE_EXIST_EXCEPTION(15002, "手机号已被注册");
 
     private final Integer code;
 
