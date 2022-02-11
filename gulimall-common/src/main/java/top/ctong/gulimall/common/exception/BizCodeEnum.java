@@ -58,7 +58,12 @@ public enum BizCodeEnum {
     /**
      * 手机号已被占用
      */
-    MOBILE_EXIST_EXCEPTION(15002, "手机号已被注册");
+    MOBILE_EXIST_EXCEPTION(15002, "手机号已被注册"),
+
+    /**
+     * 账号or密码错误
+     */
+    LOGINACCT_PASSWORD_INVALID_EXCEPTION(15003, "账号密码错误！");
 
     private final Integer code;
 

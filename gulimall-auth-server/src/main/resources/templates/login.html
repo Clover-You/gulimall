@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="/static/login/JD_sass/JD1.css"/>
@@ -58,14 +58,28 @@
                 请输入账户名和密码
             </div>
             <form action="/login/go" method="post">
+                <div style="color: red"
+                     th:text="${errors!=null?(#maps.containsKey(errors, 'msg') ? errors.msg : ''):''}"/>
                 <ul>
                     <li class="top_1">
                         <img src="/static/login/JD_img/user_03.png" class="err_img1"/>
-                        <input type="text" name="loginAcct" placeholder=" 邮箱/用户名/已验证手机" class="user"/>
+                        <input
+                          type="text"
+                          name="loginAcct"
+                          placeholder=" 邮箱/用户名/已验证手机"
+                          class="user"
+                          th:value="${data!=null ? (data.loginAcct != null ? data.loginAcct : ''): ''}"
+                        />
                     </li>
                     <li>
                         <img src="/static/login/JD_img/user_06.png" class="err_img2"/>
-                        <input type="password" name="password" placeholder=" 密码" class="password"/>
+                        <input
+                          type="password"
+                          name="password"
+                          placeholder=" 密码"
+                          class="password"
+                          th:value="${data!=null ? (data.password != null ? data.password : ''): ''}"
+                        />
                     </li>
                     <li class="bri">
                         <a href="">忘记密码</a>

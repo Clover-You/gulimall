@@ -3,10 +3,13 @@ package top.ctong.gulimall.member.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import top.ctong.gulimall.common.utils.BCryptPasswordEncoders;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
@@ -17,6 +20,7 @@ import top.ctong.gulimall.member.exception.MobileExistException;
 import top.ctong.gulimall.member.exception.UsernameExistException;
 import top.ctong.gulimall.member.service.MemberLevelService;
 import top.ctong.gulimall.member.service.MemberService;
+import top.ctong.gulimall.member.vo.MemberLoginVo;
 import top.ctong.gulimall.member.vo.MemberRegisterVo;
 
 
@@ -34,7 +38,6 @@ import top.ctong.gulimall.member.vo.MemberRegisterVo;
  * <p>
  * 会员
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-16 15:59:12
@@ -48,8 +51,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<MemberEntity> page = this.page(
-                new Query<MemberEntity>().getPage(params),
-                new QueryWrapper<>()
+            new Query<MemberEntity>().getPage(params),
+            new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -57,7 +60,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
     /**
      * 会员注册
-     *
      * @param memberRegisterVo 会员信息
      * @author Clover You
      * @date 2022/2/10 10:05 下午
@@ -67,8 +69,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setUsername(memberRegisterVo.getUserName());
         // 使用spring加密密码
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        memberEntity.setPassword(passwordEncoder.encode(memberRegisterVo.getPassword()));
+        memberEntity.setPassword(BCryptPasswordEncoders.encode(memberRegisterVo.getPassword()));
         // 查询默认会员
         MemberLevelEntity defaultLevel = memberLevelService.getDefaultLevel();
         memberEntity.setLevelId(defaultLevel.getId());
@@ -82,7 +83,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
     /**
      * 检查邮箱是否存在
-     *
      * @param phone 邮箱
      * @author Clover You
      * @date 2022/2/10 10:33 下午
@@ -90,13 +90,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     @Override
     public void checkMobileUnique(String phone) throws MobileExistException {
         if (baseMapper.checkMobileUnique(phone)) {
-            throw  new MobileExistException();
+            throw new MobileExistException();
         }
     }
 
     /**
      * 检查用户名是否存在
-     *
      * @param userName 用户名
      * @author Clover You
      * @date 2022/2/10 10:32 下午
@@ -106,5 +105,33 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         if (baseMapper.checkUserNameUnique(userName)) {
             throw new UsernameExistException();
         }
+    }
+
+    /**
+     * 用户登录
+     * @param memberLoginVo 用户信息
+     * @return MemberEntity 用户信息
+     * @author Clover You
+     * @date 2022/2/11 7:44 下午
+     */
+    @Override
+    public MemberEntity login(MemberLoginVo memberLoginVo) {
+        String loginAcct = memberLoginVo.getLoginAcct();
+        String password = memberLoginVo.getPassword();
+
+        QueryWrapper<MemberEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.or().eq("username", loginAcct)
+            .or().eq("mobile", loginAcct);
+        MemberEntity memberInfo = baseMapper.selectOne(queryWrapper);
+        if (memberInfo == null) {
+            return null;
+        }
+
+        String metaPass = memberInfo.getPassword();
+        boolean matches = BCryptPasswordEncoders.matches(password, metaPass);
+        if (!matches) {
+            return null;
+        }
+        return memberInfo;
     }
 }

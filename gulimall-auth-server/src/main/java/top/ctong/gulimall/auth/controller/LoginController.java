@@ -201,7 +201,15 @@ public class LoginController {
      * @date 2022/2/11 7:02 下午
      */
     @PostMapping("/go")
-    public String login(UserLoginVo userLogin) {
+    public String login(UserLoginVo userLogin, RedirectAttributes redirectAttributes) {
+        R login = memberServerFeign.login(userLogin);
+        HashMap<String, String> errors = new HashMap<>(10);
+        if (!login.getCode().equals(0)) {
+            errors.put("msg", login.getMsg());
+            redirectAttributes.addFlashAttribute("errors", errors);
+            redirectAttributes.addFlashAttribute("data", userLogin);
+            return "redirect:http://auth.gulimall.com/login.html";
+        }
         return "redirect:http://www.gulimall.com";
     }
 }

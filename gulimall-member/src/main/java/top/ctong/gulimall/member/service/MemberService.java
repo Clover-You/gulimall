@@ -5,6 +5,7 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.member.entity.MemberEntity;
 import top.ctong.gulimall.member.exception.MobileExistException;
 import top.ctong.gulimall.member.exception.UsernameExistException;
+import top.ctong.gulimall.member.vo.MemberLoginVo;
 import top.ctong.gulimall.member.vo.MemberRegisterVo;
 
 import java.util.Map;
@@ -58,5 +59,14 @@ public interface MemberService extends IService<MemberEntity> {
      * @date 2022/2/10 10:32 下午
      */
     void checkUserNameUnique(String userName) throws UsernameExistException;
+
+    /**
+     * 用户登录
+     * @param memberLoginVo 用户信息
+     * @return MemberEntity 用户信息
+     * @author Clover You
+     * @date 2022/2/11 7:44 下午
+     */
+    MemberEntity login(MemberLoginVo memberLoginVo);
 }
 

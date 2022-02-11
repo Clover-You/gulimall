@@ -1,11 +1,6 @@
-package top.ctong.gulimall.auth.feign;
+package top.ctong.gulimall.member.vo;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import top.ctong.gulimall.auth.vo.UserLoginVo;
-import top.ctong.gulimall.auth.vo.UserRegisterVo;
-import top.ctong.gulimall.common.utils.R;
+import lombok.Data;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,31 +14,23 @@ import top.ctong.gulimall.common.utils.R;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 会员模块远程服务
+ * 用户登录信息
  * </p>
  * @author Clover You
- * @create 2022-02-10 10:18 下午
+ * @email 2621869236@qq.com
+ * @create 2022-02-11 6:56 下午
  */
-@FeignClient("gulimall-member")
-public interface MemberServerFeign {
+@Data
+public class MemberLoginVo {
 
     /**
-     * 调用远程会员注册服务
-     * @param memberRegisterVo 会员信息
-     * @return R
-     * @author Clover You
-     * @date 2022/2/10 10:23 下午
+     * 账户，手机号、邮箱、用户名
      */
-    @PostMapping("/member/member/register")
-    R register(@RequestBody UserRegisterVo memberRegisterVo);
+    private String loginAcct;
 
     /**
-     * 会员登录
-     * @param memberLoginVo 登录凭证信息
-     * @return R
-     * @author Clover You
-     * @date 2022/2/11 7:51 下午
+     * 密码
      */
-    @PostMapping("/member/member/login")
-    R login(@RequestBody UserLoginVo memberLoginVo);
+    private String password;
+
 }
