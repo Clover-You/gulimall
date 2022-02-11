@@ -16,8 +16,9 @@
 <body>
 
 <header>
-    <a href="https://www.jd.com/?cu=true&utm_source=haosou-pinzhuan&utm_medium=cpc&utm_campaign=t_288551095_haosoupinzhuan&utm_term=0a875d61c5fe47d8bc48679132932d23_0_2702c6f4ae1c4cd191c1ee4398e2e21b"
-       class="logo"><img src="/static/reg/img/logo1.jpg" alt=""></a>
+    <a
+      href="https://www.jd.com/?cu=true&utm_source=haosou-pinzhuan&utm_medium=cpc&utm_campaign=t_288551095_haosoupinzhuan&utm_term=0a875d61c5fe47d8bc48679132932d23_0_2702c6f4ae1c4cd191c1ee4398e2e21b"
+      class="logo"><img src="/static/reg/img/logo1.jpg" alt=""></a>
     <div class="desc">欢迎注册</div>
     <div class="dfg">
         <span>已有账号？</span>
@@ -26,23 +27,47 @@
 </header>
 <section>
     <form action="/login/register" method="post" class="one">
+        <div
+          class="tips" style="color: red"
+          th:text="${errors != null ? (#maps.containsKey(errors, 'msg') ? errors.msg : '') : ''}"
+        >
+        </div>
         <div class="register-box">
             <label for="username" class="username_label">用 户 名
-                <input maxlength="20" name="userName" type="text" placeholder="您的用户名和登录名">
+                <input
+                  maxlength="20"
+                  name="userName"
+                  type="text"
+                  placeholder="您的用户名和登录名"
+                  th:value="${data != null ? (data.userName!=null ? data.userName : '') : ''}"
+                >
             </label>
-            <div class="tips" style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'userName') ? errors.userName : '') : ''}">
+            <div class="tips" style="color: red"
+                 th:text="${errors != null ? (#maps.containsKey(errors, 'userName') ? errors.userName : '') : ''}">
             </div>
         </div>
         <div class="register-box">
             <label for="username" class="other_label">设 置 密 码
-                <input maxlength="20" name="password" type="password" placeholder="建议至少使用两种字符组合">
+                <input
+                  maxlength="20"
+                  name="password"
+                  type="password"
+                  placeholder="建议至少使用两种字符组合"
+                  th:value="${data != null ? (data.password!=null ? data.password : '') : ''}"
+                >
             </label>
-            <div class="tips" style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'password') ? errors.password: '') : ''}">
+            <div class="tips" style="color: red"
+                 th:text="${errors != null ? (#maps.containsKey(errors, 'password') ? errors.password: '') : ''}">
             </div>
         </div>
         <div class="register-box">
             <label for="username" class="other_label">确 认 密 码
-                <input maxlength="20" type="password" placeholder="请再次输入密码">
+                <input
+                  maxlength="20"
+                  type="password"
+                  placeholder="请再次输入密码"
+                  th:value="${data != null ? (data.password!=null ? data.password : '') : ''}"
+                >
             </label>
             <div class="tips">
 
@@ -51,17 +76,35 @@
         <div class="register-box">
             <label for="username" class="other_label">
                 <span>中国 0086∨</span>
-                <input name="phone" class="phone" id="phoneNum" maxlength="20" type="text" placeholder="建议使用常用手机">
+                <input
+                  th:value="${data != null ? (data.phone!=null ? data.phone : '') : ''}"
+                  name="phone"
+                  class="phone"
+                  id="phoneNum"
+                  maxlength="20"
+                  type="text"
+                  placeholder="建议使用常用手机"
+                >
             </label>
-            <div class="tips" style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'phone') ? errors.phone : '') : ''}">
+            <div class="tips" style="color: red"
+                 th:text="${errors != null ? (#maps.containsKey(errors, 'phone') ? errors.phone : '') : ''}">
             </div>
         </div>
         <div class="register-box">
             <label for="username" class="other_label">验 证 码
-                <input name="code" maxlength="20" type="text" id="codeInp" placeholder="请输入验证码" class="caa">
+                <input
+                  name="code"
+                  maxlength="20"
+                  type="text"
+                  id="codeInp"
+                  placeholder="请输入验证码"
+                  class="caa"
+                  th:value="${data != null ? ( data.code !=null ? data.code : '') : ''}"
+                >
             </label>
             <a id="sendCode" href="javascript:void 0;">发送验证码</a>
-            <div class="tips" style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'code') ? errors.code : '') : ''}">
+            <div class="tips" style="color: red"
+                 th:text="${errors != null ? (#maps.containsKey(errors, 'code') ? errors.code : '') : ''}">
             </div>
         </div>
         <div class="arguement">

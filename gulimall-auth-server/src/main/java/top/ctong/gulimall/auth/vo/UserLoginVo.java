@@ -1,14 +1,6 @@
-package top.ctong.gulimall.thirdparty;
+package top.ctong.gulimall.auth.vo;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import top.ctong.gulimall.thirdparty.component.SmsComponent;
-
-import java.util.Random;
-import java.util.UUID;
+import lombok.Data;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -22,31 +14,23 @@ import java.util.UUID;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- *
+ * 用户登录信息
  * </p>
- *
  * @author Clover You
- * @create 2022-02-07 9:06 下午
+ * @email 2621869236@qq.com
+ * @create 2022-02-11 6:56 下午
  */
-@Slf4j
-@SpringBootTest
-public class SmsComponentTest {
-    @Autowired
-    private SmsComponent smsComponent;
+@Data
+public class UserLoginVo {
 
-    @Test
-    @DisplayName("验证码接口测试")
-    void smsComponentTest() {
-        smsComponent.sendSmsCode("18933797903", "1234", 30);
-    }
+    /**
+     * 账户，手机号、邮箱、用户名
+     */
+    private String loginAcct;
 
-    @Test
-    @DisplayName("随机验证码")
-    void randomCode() {
-        String substring = UUID.randomUUID().toString().substring(0, 6);
-        log.info("验证码：{}",substring);
+    /**
+     * 密码
+     */
+    private String password;
 
-        Random r = new Random();
-        log.info("随机数字：{}",r.nextInt(9999));
-    }
 }

@@ -1,19 +1,16 @@
 package top.ctong.gulimall.auth.controller;
 
-import com.alibaba.nacos.common.utils.UuidUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ctong.gulimall.auth.feign.MemberServerFeign;
+import top.ctong.gulimall.auth.vo.UserLoginVo;
 import top.ctong.gulimall.auth.vo.UserRegisterVo;
 import top.ctong.gulimall.common.constant.AuthServerConstant;
 import top.ctong.gulimall.common.exception.BizCodeEnum;
@@ -21,10 +18,7 @@ import top.ctong.gulimall.common.feign.ThirdPartyFeignService;
 import top.ctong.gulimall.common.utils.R;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -42,7 +36,6 @@ import java.util.stream.Collectors;
  * <p>
  * 前端登录控制器
  * </p>
- *
  * @author Clover You
  * @create 2022-02-07 9:18 下午
  */
@@ -71,7 +64,6 @@ public class LoginController {
 
     /**
      * 用户注册-发送手机短信验证码
-     *
      * @param phone 手机号
      * @return R
      * @author Clover You
@@ -97,7 +89,8 @@ public class LoginController {
             }
         }
         // 生成验证码
-        String ranCode = UUID.randomUUID().toString().substring(0, 6);
+        Random random = new Random();
+        String ranCode = Integer.toString(random.nextInt(9999));
         // 发送验证码
         thirdPartyFeignService.sendCode(phone, ranCode);
         // 将验证码缓存到 redis
@@ -107,8 +100,8 @@ public class LoginController {
     }
 
     /**
-     * @param userRegister       用户注册信息
-     * @param result             注册信息验证 jsr303 valid 封装错误结果集
+     * @param userRegister 用户注册信息
+     * @param result 注册信息验证 jsr303 valid 封装错误结果集
      * @param redirectAttributes spring 的自定义域，可用于重定向时获取数据
      * @return String
      * @author Clover You
@@ -120,6 +113,7 @@ public class LoginController {
         BindingResult result,
         RedirectAttributes redirectAttributes
     ) {
+        redirectAttributes.addFlashAttribute("data", userRegister);
         String validResult = validRegisterData(userRegister, result, redirectAttributes);
         if (validResult != null) {
             return validResult;
@@ -133,6 +127,8 @@ public class LoginController {
                 errors.put("userName", registerResult.getMsg());
             } else if (registerResult.getCode().equals(BizCodeEnum.MOBILE_EXIST_EXCEPTION.getCode())) {
                 errors.put("phone", registerResult.getMsg());
+            } else {
+                errors.put("msg", registerResult.getMsg());
             }
             redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:http://auth.gulimall.com/reg.html";
@@ -142,9 +138,8 @@ public class LoginController {
 
     /**
      * 校验注册信息
-     *
-     * @param userRegister       注册信息
-     * @param result             jsr303 valid 封装错误结果集
+     * @param userRegister 注册信息
+     * @param result jsr303 valid 封装错误结果集
      * @param redirectAttributes spring 的自定义域，可用于重定向时获取数据
      * @return String
      * @author Clover You
@@ -195,5 +190,18 @@ public class LoginController {
         }
         // endregion
         return null;
+    }
+
+
+    /**
+     * 用户登录
+     * @param userLogin 登录信息
+     * @return String
+     * @author Clover You
+     * @date 2022/2/11 7:02 下午
+     */
+    @PostMapping("/go")
+    public String login(UserLoginVo userLogin) {
+        return "redirect:http://www.gulimall.com";
     }
 }
