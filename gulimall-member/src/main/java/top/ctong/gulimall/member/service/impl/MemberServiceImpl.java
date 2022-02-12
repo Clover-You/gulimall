@@ -1,20 +1,14 @@
 package top.ctong.gulimall.member.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import top.ctong.gulimall.common.to.GiteeUserInfo;
 import top.ctong.gulimall.common.utils.BCryptPasswordEncoders;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
-
 import top.ctong.gulimall.member.dao.MemberDao;
 import top.ctong.gulimall.member.entity.MemberEntity;
 import top.ctong.gulimall.member.entity.MemberLevelEntity;
@@ -24,6 +18,9 @@ import top.ctong.gulimall.member.service.MemberLevelService;
 import top.ctong.gulimall.member.service.MemberService;
 import top.ctong.gulimall.member.vo.MemberLoginVo;
 import top.ctong.gulimall.member.vo.MemberRegisterVo;
+
+import java.util.Date;
+import java.util.Map;
 
 
 /**

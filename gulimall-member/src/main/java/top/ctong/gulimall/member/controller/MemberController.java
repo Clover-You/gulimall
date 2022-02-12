@@ -1,25 +1,22 @@
 package top.ctong.gulimall.member.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import sun.jvm.hotspot.ui.tree.RevPtrsTreeNodeAdapter;
 import top.ctong.gulimall.common.exception.BizCodeEnum;
 import top.ctong.gulimall.common.feign.CouponFeignService;
 import top.ctong.gulimall.common.to.GiteeUserInfo;
+import top.ctong.gulimall.common.utils.PageUtils;
+import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.member.entity.MemberEntity;
 import top.ctong.gulimall.member.exception.MobileExistException;
 import top.ctong.gulimall.member.exception.UsernameExistException;
 import top.ctong.gulimall.member.service.MemberService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.member.vo.MemberLoginVo;
 import top.ctong.gulimall.member.vo.MemberRegisterVo;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**

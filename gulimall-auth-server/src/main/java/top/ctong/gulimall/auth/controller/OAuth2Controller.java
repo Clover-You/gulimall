@@ -15,7 +15,6 @@ import top.ctong.gulimall.auth.po.GiteeSocialUser;
 import top.ctong.gulimall.auth.po.gitee.GiteeUserInfo;
 import top.ctong.gulimall.common.utils.HttpUtils;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
