@@ -1,6 +1,7 @@
 package top.ctong.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.ctong.gulimall.common.to.GiteeUserInfo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.member.entity.MemberEntity;
 import top.ctong.gulimall.member.exception.MobileExistException;
@@ -68,5 +69,14 @@ public interface MemberService extends IService<MemberEntity> {
      * @date 2022/2/11 7:44 下午
      */
     MemberEntity login(MemberLoginVo memberLoginVo);
+
+    /**
+     * gitee用户登录，如果用户不存在则创建新用户并捆绑当前gitee
+     * @param userInfo gitee信息
+     * @return MemberEntity
+     * @author Clover You
+     * @date 2022/2/13 12:59 上午
+     */
+    MemberEntity giteeLogin(GiteeUserInfo userInfo);
 }
 

@@ -4,7 +4,7 @@ import org.apache.http.HttpResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.ctong.gulimall.thirdparty.utils.HttpUtils;
+import top.ctong.gulimall.common.utils.HttpUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,12 +1,6 @@
-package top.ctong.gulimall.auth.feign;
+package top.ctong.gulimall.auth.po;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import top.ctong.gulimall.auth.po.gitee.GiteeUserInfo;
-import top.ctong.gulimall.auth.vo.UserLoginVo;
-import top.ctong.gulimall.auth.vo.UserRegisterVo;
-import top.ctong.gulimall.common.utils.R;
+import lombok.Data;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,34 +14,41 @@ import top.ctong.gulimall.common.utils.R;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 会员模块远程服务
+ * gitee 社交登录
  * </p>
  * @author Clover You
- * @create 2022-02-10 10:18 下午
+ * @email 2621869236@qq.com
+ * @create 2022-02-12 10:27 下午
  */
-@FeignClient("gulimall-member")
-public interface MemberServerFeign {
+@Data
+public class GiteeSocialUser {
+    /**
+     * token
+     */
+    private String accessToken;
 
     /**
-     * 调用远程会员注册服务
-     * @param memberRegisterVo 会员信息
-     * @return R
-     * @author Clover You
-     * @date 2022/2/10 10:23 下午
+     * token 类型
      */
-    @PostMapping("/member/member/register")
-    R register(@RequestBody UserRegisterVo memberRegisterVo);
+    private String tokenType;
 
     /**
-     * 会员登录
-     * @param memberLoginVo 登录凭证信息
-     * @return R
-     * @author Clover You
-     * @date 2022/2/11 7:51 下午
+     * 过期时间
      */
-    @PostMapping("/member/member/login")
-    R login(@RequestBody UserLoginVo memberLoginVo);
+    private Integer expiresIn;
 
-    @PostMapping("/member/member/oauth2/gitee/login")
-    R giteeLogin(@RequestBody GiteeUserInfo userInfo);
+    /**
+     * 刷新 accessToken 所需携带的token
+     */
+    private String refreshToken;
+
+    /**
+     * access作用范围
+     */
+    private String scope;
+
+    /**
+     * 创建时间
+     */
+    private Long createdAt;
 }

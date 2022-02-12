@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import top.ctong.gulimall.common.to.GiteeUserInfo;
 import top.ctong.gulimall.common.utils.BCryptPasswordEncoders;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
@@ -76,7 +78,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         memberEntity.setMobile(memberRegisterVo.getPhone());
 
         // 检查手机号和用户名是否被占用
-        checkMobileUnique(memberRegisterVo.getPhone());
+        if (memberRegisterVo.getPhone() != null) {
+            checkMobileUnique(memberRegisterVo.getPhone());
+        }
         checkUserNameUnique(memberRegisterVo.getUserName());
         baseMapper.insert(memberEntity);
     }
@@ -133,5 +137,43 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             return null;
         }
         return memberInfo;
+    }
+
+    /**
+     * gitee用户登录，如果用户不存在则创建新用户并捆绑当前gitee
+     * @param userInfo gitee信息
+     * @return MemberEntity
+     * @author Clover You
+     * @date 2022/2/13 12:59 上午
+     */
+    @Override
+    public MemberEntity giteeLogin(GiteeUserInfo userInfo) {
+        // gitee用户id
+        Long id = userInfo.getId();
+
+        MemberEntity memberEntity = baseMapper.selectOne(
+            new QueryWrapper<MemberEntity>().eq("gitee_id", id)
+        );
+        if (memberEntity != null) {
+            return memberEntity;
+        }
+
+        // 用户注册
+        memberEntity = new MemberEntity();
+        memberEntity.setNickname(userInfo.getName());
+        memberEntity.setGiteeId(id);
+
+        MemberLevelEntity level = memberLevelService.getDefaultLevel();
+        memberEntity.setLevelId(level.getId());
+
+        memberEntity.setCreateTime(new Date());
+        memberEntity.setStatus(1);
+        memberEntity.setGrowth(0);
+        memberEntity.setHeader(userInfo.getAvatarUrl());
+        memberEntity.setSign(userInfo.getBio());
+        memberEntity.setGender(1);
+        baseMapper.insert(memberEntity);
+
+        return memberEntity;
     }
 }

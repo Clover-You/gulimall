@@ -1,4 +1,4 @@
-package top.ctong.gulimall.thirdparty.utils;
+package top.ctong.gulimall.common.utils;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗

@@ -37,6 +37,12 @@ public class MemberEntity implements Serializable {
 	 */
 	@TableId
 	private Long id;
+
+	/**
+	 * 绑定的giteeid
+	 */
+	private Long giteeId;
+
 	/**
 	 * 会员等级id
 	 */

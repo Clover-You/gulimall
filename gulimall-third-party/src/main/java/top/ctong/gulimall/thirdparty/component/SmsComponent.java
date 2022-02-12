@@ -4,7 +4,7 @@ import lombok.Data;
 import org.apache.http.HttpResponse;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import top.ctong.gulimall.thirdparty.utils.HttpUtils;
+import top.ctong.gulimall.common.utils.HttpUtils;
 
 import java.util.HashMap;
 import java.util.Map;

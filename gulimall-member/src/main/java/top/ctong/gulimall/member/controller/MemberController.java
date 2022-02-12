@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import sun.jvm.hotspot.ui.tree.RevPtrsTreeNodeAdapter;
 import top.ctong.gulimall.common.exception.BizCodeEnum;
 import top.ctong.gulimall.common.feign.CouponFeignService;
+import top.ctong.gulimall.common.to.GiteeUserInfo;
 import top.ctong.gulimall.member.entity.MemberEntity;
 import top.ctong.gulimall.member.exception.MobileExistException;
 import top.ctong.gulimall.member.exception.UsernameExistException;
@@ -144,5 +145,18 @@ public class MemberController {
             return R.error(bizCodeEnum.getCode(), bizCodeEnum.getMsg());
         }
         return R.ok().setData(memberInfo);
+    }
+
+    /**
+     * 使用社交账号gitee登录
+     * @param userInfo 账号信息
+     * @return R
+     * @author Clover You
+     * @date 2022/2/13 1:42 上午
+     */
+    @PostMapping("/oauth2/gitee/login")
+    public R giteeLogin(@RequestBody GiteeUserInfo userInfo) {
+        MemberEntity login = memberService.giteeLogin(userInfo);
+        return R.ok().setData(login);
     }
 }
