@@ -1,6 +1,7 @@
 package top.ctong.gulimall.auth.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,7 +14,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ctong.gulimall.auth.feign.MemberServerFeign;
 import top.ctong.gulimall.auth.po.GiteeSocialUser;
 import top.ctong.gulimall.auth.po.gitee.GiteeUserInfo;
+import top.ctong.gulimall.auth.vo.MemberRespVo;
 import top.ctong.gulimall.common.utils.HttpUtils;
+import top.ctong.gulimall.common.utils.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +56,7 @@ public class OAuth2Controller {
      */
     @RequestMapping("/gitee/success")
     public String giteeAuth(@RequestParam("code") String code, RedirectAttributes rediAttr) throws Exception {
+        log.info("code: {}", code);
         String clientSecret = "2f6d176f36ab8c6aad5caa5ac352088af70f04883a380a03de0f137e208fa8a4";
         String clientId = "93fd702d282049b9c61c5fe63166a6707f5fa742abd9c08b36d9846650bcfc6b";
         String redirectUri = "http://auth.gulimall.com/oauth2.0/gitee/success";
@@ -110,7 +114,17 @@ public class OAuth2Controller {
         String userInfoJson = EntityUtils.toString(userInfoHttpEntity);
         GiteeUserInfo giteeUserInfo = JSON.parseObject(userInfoJson, GiteeUserInfo.class);
 
-        memberServerFeign.giteeLogin(giteeUserInfo);
+        R r = memberServerFeign.giteeLogin(giteeUserInfo);
+        if (!r.getCode().equals(0)) {
+            HashMap<String, String> errors = new HashMap<>(1);
+            errors.put("msg", r.getMsg());
+            rediAttr.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.gulimall.com/login.html";
+        }
+        MemberRespVo memberData = r.getData(new TypeReference<MemberRespVo>() {});
+
+        log.info("登录成功 ====>> {}", memberData);
+
         return "redirect:http://www.gulimall.com";
     }
 
