@@ -28,6 +28,7 @@ spring:
 # 配置 redis
   redis:
     host: 192.168.135.128
+    port: 6379
 
   # SpringCache配置
   cache:
@@ -37,6 +38,8 @@ spring:
       use-key-prefix: true
       # 是否缓存空值，可解决缓存穿透问题
       cache-null-values: true
+  session:
+    store-type: redis
 
 server:
   port: 10000
@@ -52,10 +55,6 @@ mybatis-plus:
       logic-delete-value: 1
       # 逻辑不删除
       logic-not-delete-value: 0
-
-logging:
-  level:
-    top.ctong.gulimall: debug
 
 gulimall:
   thread:

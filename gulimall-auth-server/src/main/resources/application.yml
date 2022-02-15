@@ -8,6 +8,12 @@ spring:
   redis:
     host: 192.168.135.128
     port: 6379
+  session:
+    store-type: redis
 server:
   port: 20000
+  servlet:
+    session:
+      timeout: 30m
 debug: true
+

@@ -1,6 +1,4 @@
-package top.ctong.gulimall.auth;
-
-import org.springframework.stereotype.Service;
+package top.ctong.gulimall.common.constant;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -14,12 +12,17 @@ import org.springframework.stereotype.Service;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 登录service
+ * session 全局key
  * </p>
- *
  * @author Clover You
- * @create 2022-02-07 10:46 下午
+ * @email 2621869236@qq.com
+ * @create 2022-02-15 11:14 下午
  */
-@Service
-public interface LoginService  {
+public class SessionKeyConstant {
+
+    /**
+     * 用户登录信息
+     */
+    public static final String LOGIN_USER = "loginUser";
+
 }

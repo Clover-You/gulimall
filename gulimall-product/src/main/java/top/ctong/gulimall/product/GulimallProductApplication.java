@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import top.ctong.gulimall.common.feign.CouponFeignService;
 import top.ctong.gulimall.common.feign.SearchFeignService;
@@ -29,6 +30,7 @@ import top.ctong.gulimall.common.feign.WareFeignService;
  * @author Clover You
  * @create 2021/11/16 15:56
  */
+@EnableRedisHttpSession
 @EnableTransactionManagement
 @EnableDiscoveryClient
 @EnableFeignClients(clients = {CouponFeignService.class, WareFeignService.class, SearchFeignService.class})

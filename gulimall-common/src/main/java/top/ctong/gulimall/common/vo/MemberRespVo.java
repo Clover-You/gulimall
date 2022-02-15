@@ -1,4 +1,4 @@
-package top.ctong.gulimall.auth.vo;
+package top.ctong.gulimall.common.vo;
 
 import lombok.Data;
 

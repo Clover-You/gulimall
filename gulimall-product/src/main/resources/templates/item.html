@@ -57,8 +57,18 @@
                 </li>
             </ul>
             <ul class="header_ul_right">
-                <li style="border: 0;"><a href="http://auth.gulimall.com/login.html" class="aa">你好，请登录</a></li>
-                <li><a href="http://auth.gulimall.com/reg.html" style="color: red;">免费注册</a> |</li>
+                <li>
+                    <a
+                      th:if="${session.loginUser == null}"
+                      href="http://auth.gulimall.com/login.html"
+                    >
+                        你好，请登录
+                    </a>
+                    <a th:if="${session.loginUser != null}">欢迎：[[${session.loginUser.nickname}]]</a>
+                </li>
+                <li>
+                    <a href="http://auth.gulimall.com/reg.html" class="li_2" th:if="${session.loginUser == null}">免费注册</a>
+                </li>
                 <li><a href="javascript:;" class="aa">我的订单</a> |</li>
                 <li class="jingdong"><a href="javascript:;">我的京东</a><span class="glyphicon glyphicon-menu-down">|</span>
                     <ol class="jingdong_ol">
@@ -241,7 +251,7 @@
                                 <h6><a href="#">京东金融客户端</a></h6>
                                 <p>新人专享大礼包</p>
                                 <div><a href="#"><img src="/static/item/img/11.png"/></a><a href="#"><img
-                                        src="/static/item/img/22.png"/></a></div>
+                                  src="/static/item/img/22.png"/></a></div>
                             </div>
                         </div>
                     </div>
@@ -257,7 +267,7 @@
                     <button>搜索</button>
                 </div>
                 <div class="nav_top_three"><a href="../JD_Shop/One_JDshop.html">我的购物车</a><span
-                        class="glyphicon glyphicon-shopping-cart"></span>
+                  class="glyphicon glyphicon-shopping-cart"></span>
                     <div class="nav_top_three_1">
                         <img src="/static/item/img/44.png"/>购物车还没有商品，赶紧选购吧！
                     </div>
@@ -446,7 +456,7 @@
                     <div class="box-lh-one">
                         <ul>
                             <li th:each="img : ${skuItem.skuImages}" th:if="${!#strings.isEmpty(img.imgUrl)}"><img
-                                    th:src="${img.imgUrl}"/></li>
+                              th:src="${img.imgUrl}"/></li>
                         </ul>
                     </div>
                     <div id="left">
@@ -603,8 +613,8 @@
                             <dt>选择[[${attr.attrName}]]</dt>
                             <dd th:each="value : ${attr.valueWithSkuIdVos}">
                                 <a
-                                        class="sku_attr_value"
-                                        th:attr="skus=${value.skuIds},class=${#lists.contains(#strings.listSplit(value.skuIds, ','), skuItem.skuInfo.skuId.toString())? 'sku_attr_value checked' : 'sku_attr_value'}"
+                                  class="sku_attr_value"
+                                  th:attr="skus=${value.skuIds},class=${#lists.contains(#strings.listSplit(value.skuIds, ','), skuItem.skuInfo.skuId.toString())? 'sku_attr_value checked' : 'sku_attr_value'}"
                                 >
                                     <!--                                    <img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg"/> [[${value.attrValues}]]-->
                                     [[${value.attrValues}]]
@@ -1292,7 +1302,7 @@
                                 <li><a href="##">差评（100+）</a></li>
                                 <li><a href="##"><input type="checkbox"/>只看当前商品价格</a></li>
                                 <li class="imga" style="float: right;"><a href="##">推荐排序 <img
-                                        src="/static/item/img/animaite.png"/> </a>
+                                  src="/static/item/img/animaite.png"/> </a>
                                 </li>
                             </ul>
                         </div>
@@ -1527,7 +1537,7 @@
         $(this).parent().parent().find(".sku_attr_value.checked").removeClass('checked');
         let skuAttr = [];
         skuAttr.push(skus)
-        $("a[class='sku_attr_value checked']").each(function() {
+        $("a[class='sku_attr_value checked']").each(function () {
             skuAttr.push($(this).attr("skus").split(","));
         })
         let filterEle = skuAttr[0];
@@ -1536,7 +1546,7 @@
         }
         location.href = `http://item.gulimall.com/${filterEle[0]}.html`
     })
-    $(function() {
+    $(function () {
         $(".sku_attr_value").parent().css({border: 'solid 1px #ccc'})
         $("a[class='sku_attr_value checked']").parent().css({border: 'solid 1px red'})
     })

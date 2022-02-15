@@ -1,8 +1,4 @@
-package top.ctong.gulimall.auth.config;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+package top.ctong.gulimall.common.constant;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -16,20 +12,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 配置文件
+ * 公共常量
  * </p>
- *
  * @author Clover You
- * @create 2022-02-07 6:10 下午
+ * @email 2621869236@qq.com
+ * @create 2022-02-14 11:03 PM
  */
-@Configuration
-public class GulimallWebConfig implements WebMvcConfigurer {
+public final class CommonConstant {
+    /**
+     * session id
+     */
+    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-//        registry.addViewController("/login.html").setViewName("login");
-        registry.addViewController("/reg.html").setViewName("reg");
-    }
-
-
+    /**
+     * session id作用域
+     */
+    public static final String SESSION_COOKIE_DOMAIN_NAME = "gulimall.com";
 }

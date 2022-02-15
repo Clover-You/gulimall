@@ -24,4 +24,6 @@ public class AuthServerConstant {
      * 注册手机验证码缓存前缀
      */
     public static final String REG_SMS_CODE_CACHE_PREFIX = "reg:sms:code:";
+
+
 }

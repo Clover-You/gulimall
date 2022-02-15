@@ -1,5 +1,6 @@
 package top.ctong.gulimall.auth.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -13,10 +14,13 @@ import top.ctong.gulimall.auth.feign.MemberServerFeign;
 import top.ctong.gulimall.auth.vo.UserLoginVo;
 import top.ctong.gulimall.auth.vo.UserRegisterVo;
 import top.ctong.gulimall.common.constant.AuthServerConstant;
+import top.ctong.gulimall.common.constant.SessionKeyConstant;
 import top.ctong.gulimall.common.exception.BizCodeEnum;
 import top.ctong.gulimall.common.feign.ThirdPartyFeignService;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.common.vo.MemberRespVo;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +44,6 @@ import java.util.stream.Collectors;
  * @create 2022-02-07 9:18 下午
  */
 @Controller
-@RequestMapping("/login")
 public class LoginController {
 
     @Autowired
@@ -70,7 +73,7 @@ public class LoginController {
      * @date 2022/2/7 10:05 下午
      */
     @ResponseBody
-    @GetMapping("/send/sms")
+    @GetMapping("/login/send/sms")
     public R sendSmsCode(@RequestParam("phone") String phone) {
         String redisCacheKey = AuthServerConstant.REG_SMS_CODE_CACHE_PREFIX + phone;
 
@@ -107,7 +110,7 @@ public class LoginController {
      * @author Clover You
      * @date 2022/2/11 3:28 上午
      */
-    @PostMapping("/register")
+    @PostMapping("/login/register")
     public String register(
         @Valid UserRegisterVo userRegister,
         BindingResult result,
@@ -200,8 +203,11 @@ public class LoginController {
      * @author Clover You
      * @date 2022/2/11 7:02 下午
      */
-    @PostMapping("/go")
-    public String login(UserLoginVo userLogin, RedirectAttributes redirectAttributes) {
+    @PostMapping("/login/go")
+    public String login(
+        UserLoginVo userLogin,
+        RedirectAttributes redirectAttributes,
+        HttpSession session) {
         R login = memberServerFeign.login(userLogin);
         HashMap<String, String> errors = new HashMap<>(10);
         if (!login.getCode().equals(0)) {
@@ -210,6 +216,27 @@ public class LoginController {
             redirectAttributes.addFlashAttribute("data", userLogin);
             return "redirect:http://auth.gulimall.com/login.html";
         }
+        MemberRespVo loginData = login.getData(new TypeReference<MemberRespVo>() {
+        });
+        // 将数据保存到 session
+        session.setAttribute(SessionKeyConstant.LOGIN_USER, loginData);
         return "redirect:http://www.gulimall.com";
+    }
+
+    /**
+     * 登录页面
+     * @param session session
+     * @return String
+     * @author Clover You
+     * @date 2022/2/15 11:43 下午
+     */
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session) {
+        Object exist = session.getAttribute(SessionKeyConstant.LOGIN_USER);
+        // 如果已登录，那么重定向到主页
+        if (exist != null) {
+            return "redirect:http://www.gulimall.com";
+        }
+        return "login";
     }
 }

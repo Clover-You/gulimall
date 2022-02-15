@@ -14,10 +14,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ctong.gulimall.auth.feign.MemberServerFeign;
 import top.ctong.gulimall.auth.po.GiteeSocialUser;
 import top.ctong.gulimall.auth.po.gitee.GiteeUserInfo;
-import top.ctong.gulimall.auth.vo.MemberRespVo;
+import top.ctong.gulimall.common.constant.SessionKeyConstant;
+import top.ctong.gulimall.common.vo.MemberRespVo;
 import top.ctong.gulimall.common.utils.HttpUtils;
 import top.ctong.gulimall.common.utils.R;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +57,7 @@ public class OAuth2Controller {
      * @date 2022/2/12 9:55 下午
      */
     @RequestMapping("/gitee/success")
-    public String giteeAuth(@RequestParam("code") String code, RedirectAttributes rediAttr) throws Exception {
+    public String giteeAuth(@RequestParam("code") String code, RedirectAttributes rediAttr, HttpSession session) throws Exception {
         log.info("code: {}", code);
         String clientSecret = "2f6d176f36ab8c6aad5caa5ac352088af70f04883a380a03de0f137e208fa8a4";
         String clientId = "93fd702d282049b9c61c5fe63166a6707f5fa742abd9c08b36d9846650bcfc6b";
@@ -122,6 +124,7 @@ public class OAuth2Controller {
             return "redirect:http://auth.gulimall.com/login.html";
         }
         MemberRespVo memberData = r.getData(new TypeReference<MemberRespVo>() {});
+        session.setAttribute(SessionKeyConstant.LOGIN_USER, memberData);
 
         log.info("登录成功 ====>> {}", memberData);
 

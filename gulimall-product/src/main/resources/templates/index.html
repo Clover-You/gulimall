@@ -95,10 +95,16 @@
             </b>
             <ul>
                 <li>
-                    <a href="http://auth.gulimall.com/login.html">你好，请登录</a>
+                    <a
+                      th:if="${session.loginUser == null}"
+                      href="http://auth.gulimall.com/login.html"
+                    >
+                        你好，请登录
+                    </a>
+                    <a th:if="${session.loginUser != null}">欢迎：[[${session.loginUser.nickname}]]</a>
                 </li>
                 <li>
-                    <a href="http://auth.gulimall.com/reg.html" class="li_2">免费注册</a>
+                    <a href="http://auth.gulimall.com/reg.html" class="li_2" th:if="${session.loginUser == null}">免费注册</a>
                 </li>
                 <span>|</span>
                 <li>
@@ -203,7 +209,7 @@
                 <ul>
                     <li th:each="category : ${categorys}">
                         <a href="#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b
-                                th:text="${category.name}">家用电器</b></a>
+                          th:text="${category.name}">家用电器</b></a>
                     </li>
 
                 </ul>

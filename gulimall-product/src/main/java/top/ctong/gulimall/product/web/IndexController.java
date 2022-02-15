@@ -17,6 +17,7 @@ import top.ctong.gulimall.product.entity.CategoryEntity;
 import top.ctong.gulimall.product.service.CategoryService;
 import top.ctong.gulimall.product.vo.Catalog2Vo;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -60,7 +61,8 @@ public class IndexController {
      * @date 2021/12/26 10:38
      */
     @GetMapping({"/", "/index", "/index.html"})
-    public String indexPage(Model model) {
+    public String indexPage(Model model, HttpSession session) {
+        Object loginUser = session.getAttribute("loginUser");
         // 查询所有一级分类
         List<CategoryEntity> list = categoryService.getLeve1Category();
         if (log.isDebugEnabled()) {
