@@ -1,8 +1,13 @@
-package top.ctong.gulimall.cart.service;
+package top.ctong.gulimall.cart.config;
 
-import top.ctong.gulimall.cart.vo.CartItem;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -16,21 +21,32 @@ import java.util.concurrent.ExecutionException;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 购物车服务
+ * 线程配置
  * </p>
+ *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2022-02-17 9:46 下午
+ * @create 2022-02-06 9:59 下午
  */
-public interface CartService {
+@Configuration
+@EnableConfigurationProperties(ThreadPoolConfigProperties.class)
+public class MyThreadConfig {
 
     /**
-     * 将指定商品添加到购物车
-     * @param skuId 商品规格id
-     * @param num 添加数量
-     * @return CartItem
+     * 自定义线程池
+     * @return ThreadPoolExecutor
      * @author Clover You
-     * @date 2022/2/18 6:12 下午
+     * @date 2022/2/6 10:10 下午
      */
-    CartItem addToCart(Long skuId, Integer num);
+    @Bean
+    public ThreadPoolExecutor threadPoolExecutor(ThreadPoolConfigProperties poolConfig) {
+        return new ThreadPoolExecutor(
+                poolConfig.getCorePoolSize(),
+                poolConfig.getMaximumPoolSize(),
+                poolConfig.getKeepAliveTime(),
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(poolConfig.getQueueSize()),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+    }
 }

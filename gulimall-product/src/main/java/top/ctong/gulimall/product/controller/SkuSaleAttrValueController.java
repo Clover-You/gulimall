@@ -1,6 +1,7 @@
 package top.ctong.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -96,6 +97,18 @@ public class SkuSaleAttrValueController {
 		skuSaleAttrValueService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    /**
+     * 根据指定商品规格查询商品销售属性信息
+     * @param skuId 商品规格id
+     * @return List<String>
+     * @author Clover You
+     * @date 2022/2/18 7:06 下午
+     */
+    @RequestMapping("/string-list/{skuId}")
+    public List<String> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId) {
+        return skuSaleAttrValueService.getSkuSaleAttrValuesAsStringList(skuId);
     }
 
 }

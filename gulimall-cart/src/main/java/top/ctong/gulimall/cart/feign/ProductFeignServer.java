@@ -1,13 +1,12 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.cart.feign;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
-import top.ctong.gulimall.product.vo.SkuItemVo;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import top.ctong.gulimall.common.utils.R;
 
 import java.util.List;
-import java.util.Map;
-
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,35 +18,34 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * sku销售属性&值
+ * 商品远程服务
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2022-02-18 6:27 下午
  */
-public interface SkuSaleAttrValueService extends IService<SkuSaleAttrValueEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
+@FeignClient("gulimall-product")
+public interface ProductFeignServer {
 
     /**
-     * 通过spu id查询当前spu所有销售属性
-     * @param spuId  spu id
-     * @return List<ItemSaleAttrsVo>
+     * 根据sku id远程查询sku信息
+     * @param skuId 商品规格id
+     * @return R
      * @author Clover You
-     * @date
+     * @date 2022/2/18 6:30 下午
      */
-    List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(Long spuId);
+    @GetMapping("/product/skuinfo/info/{skuId}")
+    R getSkuInfoBySkuId(@PathVariable("skuId") Long skuId);
 
-    /** 
-     * 通过指定sku id 查询属性信息
-     * @param skuId 
-     * @return List<String> 
-     * @author Clover You 
-     * @date 2022/2/18 7:03 下午
+    /**
+     * 根据指定商品规格查询商品销售属性信息
+     * @param skuId 商品规格id
+     * @return List<String>
+     * @author Clover You
+     * @date 2022/2/18 7:05 下午
      */
-    List<String> getSkuSaleAttrValuesAsStringList(Long skuId);
+    @RequestMapping("/product/skusaleattrvalue/string-list/{skuId}")
+    List<String> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId);
 }
-

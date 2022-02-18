@@ -36,5 +36,11 @@
         group by attr.attr_id, attr.attr_name, attr.attr_value
     </select>
 
+    <select id="getSkuSaleAttrValuesAsStringList" resultType="java.lang.String">
+        select concat(attr_name,': ', attr_value) as 'values'
+        from pms_sku_sale_attr_value
+        where sku_id=#{skuId}
+    </select>
+
 
 </mapper>

@@ -1,13 +1,9 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.cart.to;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
-import top.ctong.gulimall.product.vo.SkuItemVo;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
 
-import java.util.List;
-import java.util.Map;
-
+import java.math.BigDecimal;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,35 +15,58 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * sku销售属性&值
+ *  商品属性信息
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2022-02-18 6:34 下午
  */
-public interface SkuSaleAttrValueService extends IService<SkuSaleAttrValueEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
-
+@Data
+public class SkuInfoTo {
     /**
-     * 通过spu id查询当前spu所有销售属性
-     * @param spuId  spu id
-     * @return List<ItemSaleAttrsVo>
-     * @author Clover You
-     * @date
+     * skuId
      */
-    List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(Long spuId);
-
-    /** 
-     * 通过指定sku id 查询属性信息
-     * @param skuId 
-     * @return List<String> 
-     * @author Clover You 
-     * @date 2022/2/18 7:03 下午
+    private Long skuId;
+    /**
+     * spuId
      */
-    List<String> getSkuSaleAttrValuesAsStringList(Long skuId);
+    private Long spuId;
+    /**
+     * sku名称
+     */
+    private String skuName;
+    /**
+     * sku介绍描述
+     */
+    private String skuDesc;
+    /**
+     * 所属分类id
+     */
+    private Long catalogId;
+    /**
+     * 品牌id
+     */
+    private Long brandId;
+    /**
+     * 默认图片
+     */
+    private String skuDefaultImg;
+    /**
+     * 标题
+     */
+    private String skuTitle;
+    /**
+     * 副标题
+     */
+    private String skuSubtitle;
+    /**
+     * 价格
+     */
+    private BigDecimal price;
+    /**
+     * 销量
+     */
+    private Long saleCount;
 }
-

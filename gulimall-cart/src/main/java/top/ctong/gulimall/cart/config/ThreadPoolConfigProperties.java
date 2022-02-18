@@ -1,13 +1,7 @@
-package top.ctong.gulimall.product.service;
+package top.ctong.gulimall.cart.config;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.product.entity.SkuSaleAttrValueEntity;
-import top.ctong.gulimall.product.vo.SkuItemVo;
-
-import java.util.List;
-import java.util.Map;
-
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -19,35 +13,48 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * sku销售属性&值
+ * 线程池自动配置
  * </p>
  *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-15 09:51:26
+ * @create 2022-02-06 10:11 下午
  */
-public interface SkuSaleAttrValueService extends IService<SkuSaleAttrValueEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
+@Data
+@ConfigurationProperties("gulimall.thread")
+public class ThreadPoolConfigProperties {
 
     /**
-     * 通过spu id查询当前spu所有销售属性
-     * @param spuId  spu id
-     * @return List<ItemSaleAttrsVo>
-     * @author Clover You
-     * @date
+     * 核心线程数
      */
-    List<SkuItemVo.ItemSaleAttrsVo> getSaleAttrsBySpuId(Long spuId);
+    private Integer corePoolSize;
 
-    /** 
-     * 通过指定sku id 查询属性信息
-     * @param skuId 
-     * @return List<String> 
-     * @author Clover You 
-     * @date 2022/2/18 7:03 下午
+    /**
+     * 自大线程数
      */
-    List<String> getSkuSaleAttrValuesAsStringList(Long skuId);
+    private Integer maximumPoolSize;
+
+    /**
+     * 线程池阻塞队列大小
+     */
+    private Integer queueSize;
+
+    /**
+     * 扩容线程最大空闲时间，单位ms
+     */
+    private Integer keepAliveTime;
+
+    public ThreadPoolConfigProperties() {
+        int cpuCoreCount = Runtime.getRuntime().availableProcessors();
+        // 核心线程数默认使用最大CPU核心数 + 2
+        this.corePoolSize = cpuCoreCount + 2;
+        // 扩容数默认使用CPU核心数*20
+        this.maximumPoolSize = cpuCoreCount * 20;
+        // 阻塞队列大小默认10w
+        this.queueSize = 100000;
+        // 最大空闲时间
+        this.keepAliveTime = 10;
+    }
+
 }
-

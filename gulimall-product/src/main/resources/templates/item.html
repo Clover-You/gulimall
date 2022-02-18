@@ -627,7 +627,7 @@
 
                 <div class="box-btns clear">
                     <div class="box-btns-one">
-                        <input type="text" name="" id="" value="1"/>
+                        <input type="text" name="" id="numInput" value="1"/>
                         <div class="box-btns-one1">
 
                             <div>
@@ -644,7 +644,7 @@
                         </div>
                     </div>
                     <div class="box-btns-two">
-                        <a href="http://cart.gulimall.com/addToCart">
+                        <a href="javascript:void 0;" id="addToCart" th:attr="skuId=${skuItem.skuInfo.skuId}">
                             加入购物车
                         </a>
                     </div>
@@ -1550,6 +1550,14 @@
     $(function () {
         $(".sku_attr_value").parent().css({border: 'solid 1px #ccc'})
         $("a[class='sku_attr_value checked']").parent().css({border: 'solid 1px red'})
+    })
+
+    $("#addToCart").click(function() {
+        const numInput = $("#numInput").val()
+        const skuId = $(this).attr('skuId')
+        const url = `http://cart.gulimall.com/addToCart?skuId=${skuId}&num=${numInput}`;
+        location.href = url;
+        return false;
     })
 </script>
 

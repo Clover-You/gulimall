@@ -1,11 +1,14 @@
 package top.ctong.gulimall.cart.controller;
 
-import org.apache.shiro.session.mgt.SessionKey;
-import org.bouncycastle.asn1.mozilla.PublicKeyAndChallenge;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import top.ctong.gulimall.cart.interceptor.CartInterceptor;
+import top.ctong.gulimall.cart.service.CartService;
 import top.ctong.gulimall.cart.to.UserInfoTo;
+import top.ctong.gulimall.cart.vo.CartItem;
 import top.ctong.gulimall.common.constant.SessionKeyConstant;
 
 import javax.servlet.http.HttpSession;
@@ -31,6 +34,9 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class CartController {
 
+    @Autowired
+    private CartService cartService;
+
     /**
      * 购物车列表 页
      * @return String
@@ -45,7 +51,12 @@ public class CartController {
     }
 
     @GetMapping("/addToCart")
-    public String addToCart() {
+    public String addToCart(
+        @RequestParam("skuId") Long skuId,
+        @RequestParam("num") Integer num,
+        Model model) {
+        CartItem cartItem = cartService.addToCart(skuId, num);
+        model.addAttribute("item", cartItem);
         return "success";
     }
 }
