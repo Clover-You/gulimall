@@ -4,6 +4,8 @@ import org.apache.shiro.session.mgt.SessionKey;
 import org.bouncycastle.asn1.mozilla.PublicKeyAndChallenge;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import top.ctong.gulimall.cart.interceptor.CartInterceptor;
+import top.ctong.gulimall.cart.to.UserInfoTo;
 import top.ctong.gulimall.common.constant.SessionKeyConstant;
 
 import javax.servlet.http.HttpSession;
@@ -38,6 +40,7 @@ public class CartController {
     @GetMapping("/cart.html")
     public String cartListPage(HttpSession session) {
         Object userInfo = session.getAttribute(SessionKeyConstant.LOGIN_USER);
+        UserInfoTo userInfoTo = CartInterceptor.THREAD_LOCAL.get();
         if (userInfo == null) {
             return "redirect:http://gulimall.com";
         }

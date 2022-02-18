@@ -1,4 +1,9 @@
-package top.ctong.gulimall.common.constant;
+package top.ctong.gulimall.cart.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.ctong.gulimall.cart.interceptor.CartInterceptor;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -12,21 +17,29 @@ package top.ctong.gulimall.common.constant;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 购物车常量
+ * web mvc 配置
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2022-02-18 10:36 上午
+ * @create 2022-02-18 10:54 上午
  */
-public class CartConstant {
-    /**
-     * 临时用户Cookie名称
-     */
-    public static final String TEMP_USER_COOKIE_NAME = "user-key";
+@Configuration
+public class GulimallWebConfig implements WebMvcConfigurer {
+
+
 
     /**
-     * 临时用户过期时间
+     * Add Spring MVC lifecycle interceptors for pre- and post-processing of
+     * controller method invocations and resource handler requests.
+     * Interceptors can be registered to apply to all requests or be limited
+     * to a subset of URL patterns.
+     * @param registry
      */
-    public static final int TEMP_USER_COOKIE_TIMEOUT =  2592000;
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new CartInterceptor())
+            .addPathPatterns("/**");
 
+        WebMvcConfigurer.super.addInterceptors(registry);
+    }
 }
