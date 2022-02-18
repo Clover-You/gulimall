@@ -14,11 +14,13 @@ import top.ctong.gulimall.cart.service.CartService;
 import top.ctong.gulimall.cart.to.SkuInfoTo;
 import top.ctong.gulimall.cart.to.UserInfoTo;
 import top.ctong.gulimall.cart.vo.CartItem;
+import top.ctong.gulimall.common.constant.CartConstant;
 import top.ctong.gulimall.common.utils.R;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -65,37 +67,38 @@ public class CartServiceImpl implements CartService {
     public CartItem addToCart(Long skuId, Integer num) {
         BoundHashOperations<String, String, Object> ops = getCartOps();
         // 如果购物车中有这个数据，那么就直接对购物车中的数量加上当前添加的数量
-        String cacheSkuInfo = (String) ops.get(skuId.toString());
-        if (StringUtils.hasText(cacheSkuInfo)) {
-            CartItem cartItem = JSON.parseObject(cacheSkuInfo, CartItem.class);
+        CartItem cartItem = (CartItem) ops.get(skuId.toString());
+        if (cartItem != null) {
             cartItem.setCount(cartItem.getCount() + num);
             ops.put(cartItem.getSkuId().toString(), cartItem);
             return cartItem;
         }
         // 如果购物车没有数据，那么查询该商品保存到购物车
-        CartItem cartItem = new CartItem();
+        cartItem = new CartItem();
 
+        CartItem finalCartItem = cartItem;
         CompletableFuture<Void> skuInfoFuture = CompletableFuture.runAsync(() -> {
             R info = productFeignServer.getSkuInfoBySkuId(skuId);
             SkuInfoTo skuInfo = info.getData("skuInfo", new TypeReference<SkuInfoTo>() {
             });
 
-            cartItem.setCheck(true);
-            cartItem.setImage(skuInfo.getSkuDefaultImg());
-            cartItem.setCount(num);
-            cartItem.setPrice(skuInfo.getPrice());
-            cartItem.setTitle(skuInfo.getSkuTitle());
-            cartItem.setSkuId(skuId);
+            finalCartItem.setCheck(true);
+            finalCartItem.setImage(skuInfo.getSkuDefaultImg());
+            finalCartItem.setCount(num);
+            finalCartItem.setPrice(skuInfo.getPrice());
+            finalCartItem.setTitle(skuInfo.getSkuTitle());
+            finalCartItem.setSkuId(skuId);
         }, threadPoolExecutor);
 
         CompletableFuture<Void> skuAttrFuture = CompletableFuture.runAsync(() -> {
             List<String> skuSaleAttrValues = productFeignServer.getSkuSaleAttrValues(skuId);
-            cartItem.setSkuAttr(skuSaleAttrValues);
+            finalCartItem.setSkuAttr(skuSaleAttrValues);
         }, threadPoolExecutor);
 
         CompletableFuture.allOf(skuInfoFuture, skuAttrFuture).join();
 
         ops.put(cartItem.getSkuId().toString(), cartItem);
+        ops.expire(30, TimeUnit.DAYS);
 
         return cartItem;
     }
@@ -116,5 +119,18 @@ public class CartServiceImpl implements CartService {
         }
 
         return redisTemplate.boundHashOps(key);
+    }
+
+    /**
+     * 根据商品规格id获取购物车内容
+     * @param skuId 商品规格id@return CartItem
+     * @author Clover You
+     * @date 2022/2/18 10:09 下午
+     */
+    @Override
+    public CartItem getCartItem(Long skuId) {
+        BoundHashOperations<String, String, Object> ops = getCartOps();
+        CartItem cartItem = (CartItem) ops.get(skuId.toString());
+        return cartItem;
     }
 }

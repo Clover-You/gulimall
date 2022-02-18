@@ -1,6 +1,7 @@
 package top.ctong.gulimall.cart.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
  * @email 2621869236@qq.com
  * @create 2022-02-18 8:02 下午
  */
-@Component
+@Configuration
 public class RedisTemplateConfig {
 
     @Bean

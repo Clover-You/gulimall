@@ -33,4 +33,12 @@ public interface CartService {
      * @date 2022/2/18 6:12 下午
      */
     CartItem addToCart(Long skuId, Integer num);
+
+    /**
+     * 根据商品规格id获取购物车内容
+     * @param skuId 商品规格id@return CartItem
+     * @author Clover You
+     * @date 2022/2/18 10:09 下午
+     */
+    CartItem getCartItem(Long skuId);
 }
