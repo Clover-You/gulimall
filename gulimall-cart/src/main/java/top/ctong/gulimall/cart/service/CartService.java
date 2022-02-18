@@ -1,12 +1,4 @@
-package top.ctong.gulimall.cart;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+package top.ctong.gulimall.cart.service;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,18 +12,11 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 购物车
+ * 购物车服务
  * </p>
  * @author Clover You
- * @create 2022/2/17 5:31 下午
+ * @email 2621869236@qq.com
+ * @create 2022-02-17 9:46 下午
  */
-@EnableRedisHttpSession
-@EnableDiscoveryClient
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
-public class GulimallCartApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(GulimallCartApplication.class, args);
-    }
-
+public interface CartService {
 }
