@@ -41,10 +41,11 @@ public class CartController {
     public String cartListPage(HttpSession session) {
         Object userInfo = session.getAttribute(SessionKeyConstant.LOGIN_USER);
         UserInfoTo userInfoTo = CartInterceptor.THREAD_LOCAL.get();
-        if (userInfo == null) {
-            return "redirect:http://gulimall.com";
-        }
         return "cartList";
     }
 
+    @GetMapping("/addToCart")
+    public String addToCart() {
+        return "success";
+    }
 }
