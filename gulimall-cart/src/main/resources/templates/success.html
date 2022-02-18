@@ -78,7 +78,7 @@
                     <div class="success-lcol">
                         <div class="success-top"><b class="succ-icon"></b>
                             <h3 class="ftx-02">商品已成功加入购物车</h3></div>
-                        <div class="p-item">
+                        <div class="p-item" th:if="${item!=null}">
                             <div class="p-img">
                                 <a href="/javascript:;" target="_blank">
                                     <img
@@ -88,12 +88,12 @@
                                     >
                                 </a>
                             </div>
-                            <div class="p-info">
+                            <div class="p-info" >
                                 <div class="p-name">
                                     <a th:href="'http://item.gmall.com/'+${item?.skuId }+'.html'"
                                        th:text="${item?.title}">TCL 55A950C 55英寸32核人工智能 HDR曲面超薄4K电视金属机身（枪色）</a>
                                 </div>
-                                <div class="p-extra"><span class="txt" th:text="'数量：'+${item.count}">  数量：1</span></div>
+                                <div class="p-extra"><span class="txt" th:text="'数量：'+${item?.count}">  数量：1</span></div>
                             </div>
                             <div class="clr"></div>
                         </div>
