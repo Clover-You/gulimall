@@ -5,8 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import top.ctong.gulimall.cart.feign.ProductFeignServer;
 import top.ctong.gulimall.cart.interceptor.CartInterceptor;
 import top.ctong.gulimall.cart.service.CartService;
@@ -17,7 +18,6 @@ import top.ctong.gulimall.common.utils.R;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class CartServiceImpl implements CartService {
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private RedisTemplate<String, ?> redisTemplate;
 
     @Autowired
     private ProductFeignServer productFeignServer;
@@ -63,7 +63,16 @@ public class CartServiceImpl implements CartService {
      */
     @Override
     public CartItem addToCart(Long skuId, Integer num) {
-        BoundHashOperations<String, Object, Object> ops = getCartOps();
+        BoundHashOperations<String, String, Object> ops = getCartOps();
+        // 如果购物车中有这个数据，那么就直接对购物车中的数量加上当前添加的数量
+        String cacheSkuInfo = (String) ops.get(skuId.toString());
+        if (StringUtils.hasText(cacheSkuInfo)) {
+            CartItem cartItem = JSON.parseObject(cacheSkuInfo, CartItem.class);
+            cartItem.setCount(cartItem.getCount() + num);
+            ops.put(cartItem.getSkuId().toString(), cartItem);
+            return cartItem;
+        }
+        // 如果购物车没有数据，那么查询该商品保存到购物车
         CartItem cartItem = new CartItem();
 
         CompletableFuture<Void> skuInfoFuture = CompletableFuture.runAsync(() -> {
@@ -86,7 +95,7 @@ public class CartServiceImpl implements CartService {
 
         CompletableFuture.allOf(skuInfoFuture, skuAttrFuture).join();
 
-        ops.put(cartItem.getSkuId().toString(), JSON.toJSONString(cartItem));
+        ops.put(cartItem.getSkuId().toString(), cartItem);
 
         return cartItem;
     }
@@ -97,7 +106,7 @@ public class CartServiceImpl implements CartService {
      * @author Clover You
      * @date 2022/2/18 6:24 下午
      */
-    private BoundHashOperations<String, Object, Object> getCartOps() {
+    private BoundHashOperations<String, String, Object> getCartOps() {
         UserInfoTo userInfoTo = CartInterceptor.THREAD_LOCAL.get();
         String key = "";
         if (userInfoTo.getUserId() != null) {
