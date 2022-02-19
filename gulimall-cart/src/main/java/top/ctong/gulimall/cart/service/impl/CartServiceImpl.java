@@ -15,14 +15,11 @@ import top.ctong.gulimall.cart.vo.Cart;
 import top.ctong.gulimall.cart.vo.CartItem;
 import top.ctong.gulimall.common.utils.R;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -67,7 +64,7 @@ public class CartServiceImpl implements CartService {
      */
     @Override
     public CartItem addToCart(Long skuId, Integer num) {
-        BoundHashOperations<String, String, Object> ops = getCartOps();
+        BoundHashOperations<String, String, CartItem> ops = getCartOps();
         // 如果购物车中有这个数据，那么就直接对购物车中的数量加上当前添加的数量
         CartItem cartItem = (CartItem) ops.get(skuId.toString());
         if (cartItem != null) {
@@ -111,7 +108,7 @@ public class CartServiceImpl implements CartService {
      * @author Clover You
      * @date 2022/2/18 6:24 下午
      */
-    private BoundHashOperations<String, String, Object> getCartOps() {
+    private BoundHashOperations<String, String, CartItem> getCartOps() {
         UserInfoTo userInfoTo = CartInterceptor.THREAD_LOCAL.get();
         String key = "";
         if (userInfoTo.getUserId() != null) {
@@ -131,8 +128,8 @@ public class CartServiceImpl implements CartService {
      */
     @Override
     public CartItem getCartItem(Long skuId) {
-        BoundHashOperations<String, String, Object> ops = getCartOps();
-        CartItem cartItem = (CartItem) ops.get(skuId.toString());
+        BoundHashOperations<String, String, CartItem> ops = getCartOps();
+        CartItem cartItem = ops.get(skuId.toString());
         return cartItem;
     }
 
@@ -196,5 +193,36 @@ public class CartServiceImpl implements CartService {
     @Override
     public void clearCacheCartByKey(String cacheKey) {
         redisTemplate.delete(cacheKey);
+    }
+
+    /**
+     * 更改购物项选中状态
+     * @param skuId 商品规格id
+     * @param check 选中状态
+     * @author Clover You
+     * @date 2022/2/19 5:07 下午
+     */
+    @Override
+    public void checkedItem(Long skuId, Boolean check) {
+        CartItem cartItem = getCartItem(skuId);
+        if (cartItem == null || cartItem.getCheck().equals(check)) {
+            return;
+        }
+        cartItem.setCheck(check);
+        // 更新该购物项
+        updateCartItem(cartItem);
+
+    }
+
+    /**
+     * 更新购物项
+     * @param cartItem 购物项
+     * @author Clover You
+     * @date 2022/2/19 5:16 下午
+     */
+    private void updateCartItem(CartItem cartItem) {
+        Long skuId = cartItem.getSkuId();
+        BoundHashOperations<String, String, CartItem> cartOps = getCartOps();
+        cartOps.put(skuId.toString(), cartItem);
     }
 }

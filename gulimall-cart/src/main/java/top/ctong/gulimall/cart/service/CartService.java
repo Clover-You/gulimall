@@ -58,4 +58,13 @@ public interface CartService {
      * @date 2022/2/19 4:10 下午
      */
     void clearCacheCartByKey(String cacheKey);
+
+    /**
+     * 更改购物项选中状态
+     * @param skuId 商品规格id
+     * @param check 选中状态
+     * @author Clover You
+     * @date 2022/2/19 5:07 下午
+     */
+    void checkedItem(Long skuId, Boolean check);
 }

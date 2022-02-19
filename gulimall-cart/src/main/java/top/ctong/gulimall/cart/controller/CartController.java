@@ -13,6 +13,7 @@ import top.ctong.gulimall.cart.to.UserInfoTo;
 import top.ctong.gulimall.cart.vo.Cart;
 import top.ctong.gulimall.cart.vo.CartItem;
 import top.ctong.gulimall.common.constant.SessionKeyConstant;
+import top.ctong.gulimall.common.utils.R;
 
 import javax.servlet.http.HttpSession;
 
@@ -83,5 +84,20 @@ public class CartController {
         CartItem cartItem = cartService.getCartItem(skuId);
         model.addAttribute("item", cartItem);
         return "success";
+    }
+
+    /**
+     * 更新购物项选中状态
+     * @param check 选中状态
+     * @param skuId 购物项id
+     * @return String
+     * @author Clover You
+     * @date 2022/2/19 5:19 下午
+     */
+    @GetMapping("/checkItem")
+    public String itemChecked(@RequestParam(required = true, value = "check") Integer check,
+                              @RequestParam(required = true, value = "skuId") Long skuId) {
+        cartService.checkedItem(skuId, check == 1);
+        return "redirect:http://cart.gulimall.com/cart.html";
     }
 }

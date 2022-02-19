@@ -99,9 +99,16 @@
 
                     <div>
                         <ol>
-                            <li><input type="checkbox" class="check" th:value="${cartInfo.skuId}"
-                                       onchange="checkSku(this)"
-                                       th:checked="(${cartInfo.check})?'true':'false'"/></li>
+                            <li>
+                                <input
+                                  type="checkbox"
+                                  class="check itemChecked"
+                                  th:attr="skuId=${cartInfo.skuId}"
+                                  th:value="${cartInfo.skuId}"
+                                  onchange="checkSku(this)"
+                                  th:checked="(${cartInfo.check})?'true':'false'"
+                                />
+                            </li>
                             <li>
                                 <dt><img th:src="${cartInfo?.image}" src="/static/cart/img/shop1.jpg" alt=""></dt>
                                 <dd th:onclick="'toItem('+${cartInfo.skuId}+')'">
@@ -772,6 +779,13 @@
         $(this).children("p").children("img").attr("src", "/cart/img/one_mian_gwc2.png")
     }).mouseout(function () {
         $(this).children("p").children("img").attr("src", "/cart/img/one_mian_gwc1.png")
+    })
+
+    $(".itemChecked").on("change", function () {
+        const skuId = $(this).attr("skuId")
+        const check = $(this).prop("checked")
+        const url = `http://cart.gulimall.com/checkItem?skuId=${skuId}&check=${check ? 1 : 0}`
+        location.href = url
     })
 </script>
 </html>
