@@ -1,26 +1,28 @@
 package top.ctong.gulimall.cart.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import top.ctong.gulimall.cart.feign.ProductFeignServer;
 import top.ctong.gulimall.cart.interceptor.CartInterceptor;
 import top.ctong.gulimall.cart.service.CartService;
 import top.ctong.gulimall.cart.to.SkuInfoTo;
 import top.ctong.gulimall.cart.to.UserInfoTo;
+import top.ctong.gulimall.cart.vo.Cart;
 import top.ctong.gulimall.cart.vo.CartItem;
-import top.ctong.gulimall.common.constant.CartConstant;
 import top.ctong.gulimall.common.utils.R;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -132,5 +134,67 @@ public class CartServiceImpl implements CartService {
         BoundHashOperations<String, String, Object> ops = getCartOps();
         CartItem cartItem = (CartItem) ops.get(skuId.toString());
         return cartItem;
+    }
+
+    /**
+     * 获取购物车所有数据
+     * @return Cart
+     * @author Clover You
+     * @date 2022/2/19 3:21 下午
+     */
+    @Override
+    public Cart getCart() {
+        Cart cart = new Cart();
+        UserInfoTo userInfoTo = CartInterceptor.THREAD_LOCAL.get();
+        String opsKey = CART_PREFIX + userInfoTo.getUserKey();
+        String userCacheKey = CART_PREFIX + userInfoTo.getUserId();
+
+        // 获取临时购物车
+        List<CartItem> byCache = getCartItemsByCache(opsKey);
+
+        if (userInfoTo.getUserId() != null) {
+            // 线上购物车和临时购物车合并
+            if (!byCache.isEmpty()) {
+                for (CartItem cartItem : byCache) {
+                    addToCart(cartItem.getSkuId(), cartItem.getCount());
+                }
+            }
+            List<CartItem> myCart = getCartItemsByCache(userCacheKey);
+            cart.setItems(myCart);
+        } else {
+            cart.setItems(byCache);
+        }
+
+        // 如果已登录、清除临时购物车
+        if (userInfoTo.getUserId() != null) {
+            clearCacheCartByKey(opsKey);
+        }
+        return cart;
+    }
+
+    /**
+     * 获取缓存中的购物车数据
+     * @param opsKey 购物车键
+     * @author Clover You
+     * @date 2022/2/19 3:41 下午
+     */
+    private List<CartItem> getCartItemsByCache(String opsKey) {
+        BoundHashOperations<String, String, CartItem> ops = redisTemplate.boundHashOps(opsKey);
+        List<CartItem> values = ops.values();
+        if (values != null && !values.isEmpty()) {
+            return values;
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * 通过缓存键清空购物车
+     * @param cacheKey 购物车缓存键
+     * @author Clover You
+     * @date 2022/2/19 4:10 下午
+     */
+    @Override
+    public void clearCacheCartByKey(String cacheKey) {
+        redisTemplate.delete(cacheKey);
     }
 }

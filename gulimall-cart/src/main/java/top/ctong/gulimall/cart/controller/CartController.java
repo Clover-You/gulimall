@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ctong.gulimall.cart.interceptor.CartInterceptor;
 import top.ctong.gulimall.cart.service.CartService;
 import top.ctong.gulimall.cart.to.UserInfoTo;
+import top.ctong.gulimall.cart.vo.Cart;
 import top.ctong.gulimall.cart.vo.CartItem;
 import top.ctong.gulimall.common.constant.SessionKeyConstant;
 
@@ -46,9 +47,9 @@ public class CartController {
      * @date 2022/2/17 10:18 下午
      */
     @GetMapping("/cart.html")
-    public String cartListPage(HttpSession session) {
-        Object userInfo = session.getAttribute(SessionKeyConstant.LOGIN_USER);
-        UserInfoTo userInfoTo = CartInterceptor.THREAD_LOCAL.get();
+    public String cartListPage(Model model) {
+        Cart cart = cartService.getCart();
+        model.addAttribute("cart", cart);
         return "cartList";
     }
 

@@ -56,6 +56,13 @@ public class Cart {
      */
     private BigDecimal reduce;
 
+    public BigDecimal getReduce() {
+        if (reduce == null) {
+            return new BigDecimal("0.00");
+        }
+        return reduce;
+    }
+
     /**
      * 获取购物车商品总数
      * @return Integer
@@ -98,7 +105,7 @@ public class Cart {
             .map(CartItem::getTotalPrice).reduce(new BigDecimal("0.00"), BigDecimal::add);
 
         final int zero = 0;
-        if (totalPrice.compareTo(new BigDecimal(zero)) < 0) {
+        if (totalPrice == null || totalPrice.compareTo(new BigDecimal(zero)) < 0) {
             return new BigDecimal("0.00");
         }
 

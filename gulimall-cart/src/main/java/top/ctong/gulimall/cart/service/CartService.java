@@ -1,5 +1,6 @@
 package top.ctong.gulimall.cart.service;
 
+import top.ctong.gulimall.cart.vo.Cart;
 import top.ctong.gulimall.cart.vo.CartItem;
 
 import java.util.concurrent.ExecutionException;
@@ -41,4 +42,20 @@ public interface CartService {
      * @date 2022/2/18 10:09 下午
      */
     CartItem getCartItem(Long skuId);
+
+    /**
+     * 获取购物车所有数据
+     * @return Cart
+     * @author Clover You
+     * @date 2022/2/19 3:21 下午
+     */
+    Cart getCart();
+
+    /**
+     * 通过缓存键清空购物车
+     * @param cacheKey 购物车缓存键
+     * @author Clover You
+     * @date 2022/2/19 4:10 下午
+     */
+    void clearCacheCartByKey(String cacheKey);
 }
