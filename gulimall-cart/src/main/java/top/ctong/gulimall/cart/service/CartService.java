@@ -67,4 +67,13 @@ public interface CartService {
      * @date 2022/2/19 5:07 下午
      */
     void checkedItem(Long skuId, Boolean check);
+
+    /**
+     * 修改购物项数量
+     * @param skuId 购物项id
+     * @param num 数量
+     * @author Clover You
+     * @date 2022/2/19 5:38 下午
+     */
+    void countItem(Long skuId, Integer num);
 }

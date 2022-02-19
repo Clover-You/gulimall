@@ -100,4 +100,19 @@ public class CartController {
         cartService.checkedItem(skuId, check == 1);
         return "redirect:http://cart.gulimall.com/cart.html";
     }
+
+    /**
+     * 修改购物项数量
+     * @param skuId 购物项id
+     * @param num 数量
+     * @return String
+     * @author Clover You
+     * @date 2022/2/19 5:38 下午
+     */
+    @GetMapping("/countItem")
+    public String countItem(@RequestParam(required = true, value = "skuId") Long skuId,
+                            @RequestParam(required = true, value = "num") Integer num) {
+        cartService.countItem(skuId, num);
+        return "redirect:http://cart.gulimall.com/cart.html";
+    }
 }

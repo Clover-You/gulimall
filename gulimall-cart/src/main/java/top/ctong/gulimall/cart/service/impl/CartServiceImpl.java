@@ -66,7 +66,7 @@ public class CartServiceImpl implements CartService {
     public CartItem addToCart(Long skuId, Integer num) {
         BoundHashOperations<String, String, CartItem> ops = getCartOps();
         // 如果购物车中有这个数据，那么就直接对购物车中的数量加上当前添加的数量
-        CartItem cartItem = (CartItem) ops.get(skuId.toString());
+        CartItem cartItem = ops.get(skuId.toString());
         if (cartItem != null) {
             cartItem.setCount(cartItem.getCount() + num);
             ops.put(cartItem.getSkuId().toString(), cartItem);
@@ -224,5 +224,22 @@ public class CartServiceImpl implements CartService {
         Long skuId = cartItem.getSkuId();
         BoundHashOperations<String, String, CartItem> cartOps = getCartOps();
         cartOps.put(skuId.toString(), cartItem);
+    }
+
+    /**
+     * 修改购物项数量
+     * @param skuId 购物项id
+     * @param num 数量
+     * @author Clover You
+     * @date 2022/2/19 5:38 下午
+     */
+    @Override
+    public void countItem(Long skuId, Integer num) {
+        CartItem cartItem = getCartItem(skuId);
+        if (cartItem == null) {
+            return;
+        }
+        cartItem.setCount(num);
+        updateCartItem(cartItem);
     }
 }
