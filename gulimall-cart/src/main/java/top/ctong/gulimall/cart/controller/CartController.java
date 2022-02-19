@@ -115,4 +115,17 @@ public class CartController {
         cartService.countItem(skuId, num);
         return "redirect:http://cart.gulimall.com/cart.html";
     }
+
+    /**
+     * 删除购物项
+     * @param skuId 购物项id
+     * @return String
+     * @author Clover You
+     * @date 2022/2/19 7:19 下午
+     */
+    @GetMapping("/deleteItem")
+    public String deleteItem(@RequestParam(required = true, value = "skuId") Long skuId) {
+        cartService.deleteItemBySkuId(skuId);
+        return "redirect:http://cart.gulimall.com/cart.html";
+    }
 }

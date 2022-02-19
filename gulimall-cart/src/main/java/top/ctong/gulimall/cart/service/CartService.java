@@ -76,4 +76,12 @@ public interface CartService {
      * @date 2022/2/19 5:38 下午
      */
     void countItem(Long skuId, Integer num);
+
+    /**
+     * 通过购物项id删除购物项
+     * @param skuId 购物项id
+     * @author Clover You
+     * @date 2022/2/19 7:20 下午
+     */
+    void deleteItemBySkuId(Long skuId);
 }

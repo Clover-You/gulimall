@@ -242,4 +242,28 @@ public class CartServiceImpl implements CartService {
         cartItem.setCount(num);
         updateCartItem(cartItem);
     }
+
+    /**
+     * 通过购物项id删除购物项
+     * @param skuId 购物项id
+     * @author Clover You
+     * @date 2022/2/19 7:20 下午
+     */
+    @Override
+    public void deleteItemBySkuId(Long skuId) {
+        deleteCartItemBySkuId(skuId);
+    }
+
+    /**
+     * 通过购物项id删除购物项
+     * @param skuId
+     * @author Clover You
+     * @date 2022/2/19 7:24 下午
+     */
+    private void deleteCartItemBySkuId(Long skuId) {
+        BoundHashOperations<String, String, CartItem> ops = getCartOps();
+        ops.delete(skuId.toString());
+    }
+
+
 }

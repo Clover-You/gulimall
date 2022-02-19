@@ -132,7 +132,7 @@
                                 <p class="zj" th:text="'￥'+${cartInfo?.totalPrice}">￥22995.00</p>
                             </li>
                             <li>
-                                <p>删除</p>
+                                <p class="deleteItemBtn" th:attr="skuId=${cartInfo.skuId}">删除</p>
                             </li>
                         </ol>
                     </div>
@@ -187,7 +187,7 @@
         </dl>
     </div>
     <div>
-        <button type="button">删除</button>
+        <button type="button" onclick="deleteItem()">删除</button>
 
     </div>
 </div>
@@ -794,5 +794,13 @@
         const url = `http://cart.gulimall.com/countItem?skuId=${skuId}&num=${num}`
         location.href = url
     })
+
+    function deleteItem(){
+        location.href = `http://cart.gulimall.com/deleteItem?skuId=${deleteId}`
+    }
+
+    $(".deleteItemBtn").click(function () {
+        deleteId = $(this).attr('skuId')
+    });
 </script>
 </html>
