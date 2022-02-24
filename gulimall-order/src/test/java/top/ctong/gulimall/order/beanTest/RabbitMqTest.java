@@ -7,7 +7,6 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.ctong.gulimall.order.User;
 
 import java.util.HashMap;
 
@@ -86,18 +85,9 @@ public class RabbitMqTest {
     @Test
     @DisplayName("send message test")
     public void sendMessage() {
-//        String halo = "hello world";
-//        Message message = new Message(halo.getBytes());
-//        rabbitTemplate.send("hello.java.queue", message);
-        for (int i = 0; i < 4; i++) {
-            User user = new User();
-            user.setName("Clover You");
-            rabbitTemplate.convertAndSend(
-                "hello.java.TopicExchange",
-                "hello.java.queue",
-                user
-            );
-        }
+        String halo = "hello world";
+        Message message = new Message(halo.getBytes());
+        rabbitTemplate.send("hello.java.queue", message);
 
     }
 
