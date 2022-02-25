@@ -136,7 +136,7 @@ public class CartController {
      * @author Clover You
      * @date 2022/2/25 2:42 下午
      */
-    @GetMapping("CurrentUserCartItem")
+    @GetMapping("/CurrentUserCartItem")
     public R getCurrentUserCartItem() {
         List<CartItem> list = cartService.getUserCartItems();
         return R.ok().setData(list);

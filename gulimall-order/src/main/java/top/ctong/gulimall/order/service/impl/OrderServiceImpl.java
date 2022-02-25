@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -20,10 +21,12 @@ import top.ctong.gulimall.order.components.GuliThreadExecutor;
 import top.ctong.gulimall.order.components.interceptor.LoginInterceptor;
 import top.ctong.gulimall.order.dao.OrderDao;
 import top.ctong.gulimall.order.entity.OrderEntity;
+import top.ctong.gulimall.order.feign.CartFeignService;
 import top.ctong.gulimall.order.feign.MemberFeignService;
 import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.to.MemberAddressTo;
 import top.ctong.gulimall.order.vo.OrderConfirmVo;
+import top.ctong.gulimall.order.vo.OrderItemVo;
 
 
 /**
@@ -49,6 +52,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     private MemberFeignService memberFeignService;
+
+    @Autowired
+    private CartFeignService cartFeignService;
 
     @Autowired
     private GuliThreadExecutor executor;
@@ -81,10 +87,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 List<MemberAddressTo> addresses = memberReceiveAddress.getData(new TypeReference<List<MemberAddressTo>>() {
                 });
                 vo.setAddress(addresses);
+                return;
             }
+
+            vo.setAddress(new ArrayList<>(0));
         });
 
-        CompletableFuture.allOf(memberFuture);
+        // 获取购物项
+        CompletableFuture<Void> cartItemFuture = CompletableFuture.runAsync(() -> {
+            R cartItem = cartFeignService.getCurrentUserCartItem();
+            if (cartItem.getCode() != 0) {
+                vo.setItems(new ArrayList<>(0));
+                return;
+            }
+            List<OrderItemVo> itemData = cartItem.getData(new TypeReference<List<OrderItemVo>>() {
+            });
+            vo.setItems(itemData);
+        });
+
+        // 积分设置
+        vo.setIntegration(mrv.getIntegration());
+
+        CompletableFuture.allOf(memberFuture, cartItemFuture);
         return vo;
     }
 

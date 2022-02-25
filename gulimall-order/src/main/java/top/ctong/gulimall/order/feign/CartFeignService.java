@@ -2,7 +2,6 @@ package top.ctong.gulimall.order.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import top.ctong.gulimall.common.utils.R;
 
 /**
@@ -17,22 +16,21 @@ import top.ctong.gulimall.common.utils.R;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 会员模块远程调用
+ * 购物车远程接口
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2022-02-25 2:06 下午
+ * @create 2022-02-25 3:11 下午
  */
-@FeignClient("gulimall-member")
-public interface MemberFeignService {
+@FeignClient("gulimall-cart")
+public interface CartFeignService {
+
     /**
-     * 根据会员id远程查询会员所有地址
-     * @param memberId 会员id
+     * 获取当前用户购物项
      * @return R
      * @author Clover You
-     * @date 2022/2/25 2:31 下午
+     * @date 2022/2/25 3:04 下午
      */
-    @GetMapping("/member/memberreceiveaddress/{memberId}/addresses")
-    R getMemberReceiveAddress(@PathVariable("memberId") Long memberId);
-
+    @GetMapping("/CurrentUserCartItem")
+    R getCurrentUserCartItem();
 }

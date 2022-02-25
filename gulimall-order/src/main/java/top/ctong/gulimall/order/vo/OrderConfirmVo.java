@@ -1,6 +1,9 @@
 package top.ctong.gulimall.order.vo;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
 import top.ctong.gulimall.order.to.MemberAddressTo;
 
 import java.math.BigDecimal;
@@ -45,10 +48,43 @@ public class OrderConfirmVo {
     /**
      * 订单总额
      */
+    @Setter(AccessLevel.NONE)
     private BigDecimal totalPrice;
 
     /**
      * 最终价格（因付价格）
      */
+    @Setter(AccessLevel.NONE)
     private BigDecimal payPrice;
+
+    /**
+     * 防止重复提交令牌
+     */
+    private String orderToken;
+
+    /**
+     * 计算总价
+     * @return BigDecimal
+     * @author Clover You
+     * @date 2022/2/25 3:21 下午
+     */
+    public BigDecimal getTotalPrice() {
+        if (items == null || items.isEmpty()) {
+            return new BigDecimal("0.00");
+        }
+        return items.stream().map(OrderItemVo::getPrice).reduce(
+            new BigDecimal("0.00"),
+            BigDecimal::add
+        );
+    }
+
+    /**
+     * 应付价格
+     * @return BigDecimal
+     * @author Clover You
+     * @date 2022/2/25 3:22 下午
+     */
+    public BigDecimal getPayPrice() {
+        return getTotalPrice();
+    }
 }
