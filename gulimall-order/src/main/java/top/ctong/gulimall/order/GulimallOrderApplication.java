@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
@@ -25,6 +26,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * @author Clover You
  * @create 2021/11/16 16:30
  */
+@EnableFeignClients(basePackages = "top.ctong.gulimall.order.feign")
 @EnableRedisHttpSession
 @EnableRabbit
 @EnableDiscoveryClient

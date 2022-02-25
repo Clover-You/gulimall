@@ -11,6 +11,7 @@ import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.order.dao.OrderDao;
 import top.ctong.gulimall.order.entity.OrderEntity;
 import top.ctong.gulimall.order.service.OrderService;
+import top.ctong.gulimall.order.vo.OrderConfirmVo;
 
 
 /**
@@ -43,6 +44,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 订单确认信息
+     * @return OrderConfirmVo
+     * @author Clover You
+     * @date 2022/2/25 2:03 下午
+     */
+    @Override
+    public OrderConfirmVo confirmOrder() {
+        OrderConfirmVo vo = new OrderConfirmVo();
+        return vo;
     }
 
 }

@@ -1,12 +1,6 @@
-package top.ctong.gulimall.order.web;
+package top.ctong.gulimall.order.to;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import top.ctong.gulimall.order.service.OrderService;
-import top.ctong.gulimall.order.vo.OrderConfirmVo;
+import lombok.Data;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,30 +14,56 @@ import top.ctong.gulimall.order.vo.OrderConfirmVo;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 页面映射前端控制器
+ * 用户收货地址
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2022-02-24 8:17 下午
+ * @create 2022-02-25 11:09 AM
  */
-@Controller
-@Slf4j
-public class PageController {
-
-    @Autowired
-    private OrderService orderService;
-
+@Data
+public class MemberAddressTo {
     /**
-     * 订单结算页
-     * @return String
-     * @author Clover You
-     * @date 2022/2/25 10:22 AM
+     * id
      */
-    @GetMapping("/toTrade")
-    public String toTradePage(Model model) {
-        OrderConfirmVo data = orderService.confirmOrder();
-        model.addAttribute("data", data);
-        return "confirm";
-    }
-
+    private Long id;
+    /**
+     * member_id
+     */
+    private Long memberId;
+    /**
+     * 收货人姓名
+     */
+    private String name;
+    /**
+     * 电话
+     */
+    private String phone;
+    /**
+     * 邮政编码
+     */
+    private String postCode;
+    /**
+     * 省份/直辖市
+     */
+    private String province;
+    /**
+     * 城市
+     */
+    private String city;
+    /**
+     * 区
+     */
+    private String region;
+    /**
+     * 详细地址(街道)
+     */
+    private String detailAddress;
+    /**
+     * 省市区代码
+     */
+    private String areacode;
+    /**
+     * 是否默认
+     */
+    private Integer defaultStatus;
 }
