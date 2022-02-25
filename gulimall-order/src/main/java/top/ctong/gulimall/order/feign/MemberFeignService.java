@@ -1,6 +1,9 @@
 package top.ctong.gulimall.order.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import top.ctong.gulimall.common.utils.R;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -22,4 +25,13 @@ import org.springframework.cloud.openfeign.FeignClient;
  */
 @FeignClient("gulimall-member")
 public interface MemberFeignService {
+    /** 
+     * 根据会员id远程查询会员所有地址
+     * @param memberId 会员id
+     * @return R 
+     * @author Clover You 
+     * @date 2022/2/25 2:31 下午
+     */
+    @GetMapping("/member/memberreceiveaddress/{memberId}/addresses")
+    R getMemberReceiveAddress(@PathVariable("memberId") Long memberId);
 }
