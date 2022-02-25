@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import top.ctong.gulimall.common.utils.R;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -48,4 +49,14 @@ public interface ProductFeignServer {
      */
     @RequestMapping("/product/skusaleattrvalue/string-list/{skuId}")
     List<String> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId);
+
+    /**
+     * 通过商品id查询价格
+     * @param skuId 商品id
+     * @return BigDecimal
+     * @author Clover You
+     * @date 2022/2/25 2:56 下午
+     */
+    @GetMapping("/product/skuinfo/{skuId}/price")
+    BigDecimal getPriceBySkuId(@PathVariable("skuId") Long skuId);
 }

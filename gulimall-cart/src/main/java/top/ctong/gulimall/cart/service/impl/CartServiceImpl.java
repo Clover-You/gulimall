@@ -15,11 +15,14 @@ import top.ctong.gulimall.cart.vo.Cart;
 import top.ctong.gulimall.cart.vo.CartItem;
 import top.ctong.gulimall.common.utils.R;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -256,7 +259,7 @@ public class CartServiceImpl implements CartService {
 
     /**
      * 通过购物项id删除购物项
-     * @param skuId
+     * @param skuId 商品规格id
      * @author Clover You
      * @date 2022/2/19 7:24 下午
      */
@@ -265,5 +268,30 @@ public class CartServiceImpl implements CartService {
         ops.delete(skuId.toString());
     }
 
+    /**
+     * 获取但前登录用户的所有购物项
+     * @return List<CartItem>
+     * @author Clover You
+     * @date 2022/2/25 2:42 下午
+     */
+    @Override
+    public List<CartItem> getUserCartItems() {
+        UserInfoTo userInfo = CartInterceptor.THREAD_LOCAL.get();
+        // 如果用户已登录，那么通过user id 查询
+        if (userInfo.getUserId() != null) {
+            String userKey = CART_PREFIX + userInfo.getUserId();
+            // 获取所有购物项并过滤未被选中的购物项
+            return getCartItemsByCache(userKey).stream()
+                .filter(CartItem::getCheck).map((item) -> {
+                    // 从数据库中更新价格，因为价格可能已变化
+                    BigDecimal price = productFeignServer.getPriceBySkuId(item.getSkuId());
+                    item.setPrice(price);
+                    return item;
+                }).collect(Collectors.toList());
+        }
 
+        // 用户未登录时使用临时键查询
+//        BoundHashOperations<String, String, CartItem> ops = getCartOps();
+        return new ArrayList<>(0);
+    }
 }

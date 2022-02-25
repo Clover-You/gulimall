@@ -16,6 +16,7 @@ import top.ctong.gulimall.common.constant.SessionKeyConstant;
 import top.ctong.gulimall.common.utils.R;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -127,5 +128,17 @@ public class CartController {
     public String deleteItem(@RequestParam(required = true, value = "skuId") Long skuId) {
         cartService.deleteItemBySkuId(skuId);
         return "redirect:http://cart.gulimall.com/cart.html";
+    }
+
+    /**
+     * 获取但前登录用户的所有购物项
+     * @return R
+     * @author Clover You
+     * @date 2022/2/25 2:42 下午
+     */
+    @GetMapping("CurrentUserCartItem")
+    public R getCurrentUserCartItem() {
+        List<CartItem> list = cartService.getUserCartItems();
+        return R.ok().setData(list);
     }
 }
