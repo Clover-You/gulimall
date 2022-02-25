@@ -1,12 +1,10 @@
-package top.ctong.gulimall.product.config;
+package top.ctong.gulimall.order.config;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.session.web.http.CookieSerializer;
-import org.springframework.session.web.http.DefaultCookieSerializer;
-import top.ctong.gulimall.common.constant.CommonConstant;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.ctong.gulimall.order.components.interceptor.LoginInterceptor;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,38 +18,28 @@ import top.ctong.gulimall.common.constant.CommonConstant;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * SpringSession 配置
+ *
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2022-02-14 10:47 PM
+ * @create 2022-02-25 10:24 AM
  */
-
 @Configuration
-public class SessionConfig {
+public class GuliWebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private LoginInterceptor loginInterceptor;
 
     /**
-     * cookie 规则
-     * @return CookieSerializer
-     * @author Clover You
-     * @date 2022/2/14 11:11 PM
+     * Add Spring MVC lifecycle interceptors for pre- and post-processing of
+     * controller method invocations and resource handler requests.
+     * Interceptors can be registered to apply to all requests or be limited
+     * to a subset of URL patterns.
+     * @param registry
      */
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setCookieName(CommonConstant.SESSION_COOKIE_NAME);
-        serializer.setDomainName(CommonConstant.SESSION_COOKIE_DOMAIN_NAME);
-        return serializer;
-    }
-
-    /**
-     * 数据序列化规则
-     * @return RedisSerializer<?>
-     * @author Clover You
-     * @date 2022/2/14 11:10 PM
-     */
-    @Bean
-    public RedisSerializer<?> springSessionDefaultRedisSerializer() {
-        return new GenericJackson2JsonRedisSerializer();
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**");
+        WebMvcConfigurer.super.addInterceptors(registry);
     }
 }

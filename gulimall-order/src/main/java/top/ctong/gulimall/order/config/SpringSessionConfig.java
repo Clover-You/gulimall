@@ -37,8 +37,8 @@ public class SpringSessionConfig {
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setCookieName(CommonConstant.SESSION_COOKIE_NAME);
         serializer.setDomainName(CommonConstant.SESSION_COOKIE_DOMAIN_NAME);
-        serializer.setCookiePath(CommonConstant.SESSION_COOKIE_NAME);
         return serializer;
     }
 

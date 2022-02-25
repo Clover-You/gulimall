@@ -1,12 +1,13 @@
-package top.ctong.gulimall.product.config;
+package top.ctong.gulimall.order.components;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.session.web.http.CookieSerializer;
-import org.springframework.session.web.http.DefaultCookieSerializer;
-import top.ctong.gulimall.common.constant.CommonConstant;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,38 +21,32 @@ import top.ctong.gulimall.common.constant.CommonConstant;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * SpringSession 配置
+ * 线程配置
  * </p>
+ *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2022-02-14 10:47 PM
+ * @create 2022-02-06 9:59 下午
  */
-
-@Configuration
-public class SessionConfig {
-
-    /**
-     * cookie 规则
-     * @return CookieSerializer
-     * @author Clover You
-     * @date 2022/2/14 11:11 PM
-     */
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setCookieName(CommonConstant.SESSION_COOKIE_NAME);
-        serializer.setDomainName(CommonConstant.SESSION_COOKIE_DOMAIN_NAME);
-        return serializer;
-    }
+@Component
+@EnableConfigurationProperties(ThreadPoolConfigProperties.class)
+public class GuliThreadExecutor {
 
     /**
-     * 数据序列化规则
-     * @return RedisSerializer<?>
+     * 自定义线程池
+     * @return ThreadPoolExecutor
      * @author Clover You
-     * @date 2022/2/14 11:10 PM
+     * @date 2022/2/6 10:10 下午
      */
     @Bean
-    public RedisSerializer<?> springSessionDefaultRedisSerializer() {
-        return new GenericJackson2JsonRedisSerializer();
+    public ThreadPoolExecutor threadPoolExecutor(ThreadPoolConfigProperties poolConfig) {
+        return new ThreadPoolExecutor(
+                poolConfig.getCorePoolSize(),
+                poolConfig.getMaximumPoolSize(),
+                poolConfig.getKeepAliveTime(),
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(poolConfig.getQueueSize()),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
     }
 }

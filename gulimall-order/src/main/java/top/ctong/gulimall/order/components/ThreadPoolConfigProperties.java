@@ -1,9 +1,7 @@
-package top.ctong.gulimall.order.web;
+package top.ctong.gulimall.order.components;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -17,25 +15,46 @@ import org.springframework.web.bind.annotation.PathVariable;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 页面映射前端控制器
+ * 线程池自动配置
  * </p>
+ *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2022-02-24 8:17 下午
+ * @create 2022-02-06 10:11 下午
  */
-@Controller
-@Slf4j
-public class PageController {
+@Data
+@ConfigurationProperties("gulimall.thread")
+public class ThreadPoolConfigProperties {
 
     /**
-     * 订单结算页
-     * @return String
-     * @author Clover You
-     * @date 2022/2/25 10:22 AM
+     * 核心线程数
      */
-    @GetMapping("/toTrade")
-    public String toTradePage() {
-        return "confirm";
+    private Integer corePoolSize;
+
+    /**
+     * 自大线程数
+     */
+    private Integer maximumPoolSize;
+
+    /**
+     * 线程池阻塞队列大小
+     */
+    private Integer queueSize;
+
+    /**
+     * 扩容线程最大空闲时间，单位ms
+     */
+    private Integer keepAliveTime;
+
+    public ThreadPoolConfigProperties() {
+        int cpuCoreCount = Runtime.getRuntime().availableProcessors();
+        // 核心线程数默认使用最大CPU核心数 + 2
+        this.corePoolSize = cpuCoreCount + 2;
+        // 扩容数默认使用CPU核心数*20
+        this.maximumPoolSize = cpuCoreCount * 20;
+        // 阻塞队列大小默认10w
+        this.queueSize = 100000;
+        // 最大空闲时间
+        this.keepAliveTime = 10;
     }
 
 }

@@ -22,6 +22,10 @@ spring:
   redis:
     host: 192.168.135.128
 
+  # spring session 配置
+  session:
+    store-type: redis
+
   # 配置数据源
   datasource:
     username: root
@@ -43,3 +47,9 @@ spring:
 
   thymeleaf:
     cache: false
+# 谷粒商城配置项
+gulimall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10

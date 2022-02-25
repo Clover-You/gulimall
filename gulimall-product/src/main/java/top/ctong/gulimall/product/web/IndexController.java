@@ -62,7 +62,6 @@ public class IndexController {
      */
     @GetMapping({"/", "/index", "/index.html"})
     public String indexPage(Model model, HttpSession session) {
-        Object loginUser = session.getAttribute("loginUser");
         // 查询所有一级分类
         List<CategoryEntity> list = categoryService.getLeve1Category();
         if (log.isDebugEnabled()) {
