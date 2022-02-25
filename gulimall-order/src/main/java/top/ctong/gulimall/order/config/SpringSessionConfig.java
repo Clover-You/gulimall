@@ -1,11 +1,12 @@
-package top.ctong.gulimall.order;
+package top.ctong.gulimall.order.config;
 
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import top.ctong.gulimall.common.constant.CommonConstant;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -17,23 +18,28 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 订单模块
+ * spring session config
  * </p>
- *
  * @author Clover You
- * @create 2021/11/16 16:30
+ * @email 2621869236@qq.com
+ * @create 2022-02-25 8:24 上午
  */
-@EnableRedisHttpSession
-@EnableRabbit
-@EnableDiscoveryClient
-@MapperScan("top.ctong.gulimall.order.dao")
-@SpringBootApplication
-public class GulimallOrderApplication {
+@Configuration
+public class SpringSessionConfig {
 
-    public static void main(String[] args) {
-        SpringApplication.run(GulimallOrderApplication.class, args);
+    @Bean
+    public RedisSerializer<?> springSessionDefaultRedisSerializer() {
+        return new GenericJackson2JsonRedisSerializer();
+    }
+
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setDomainName(CommonConstant.SESSION_COOKIE_DOMAIN_NAME);
+        serializer.setCookiePath(CommonConstant.SESSION_COOKIE_NAME);
+        return serializer;
     }
 
 }

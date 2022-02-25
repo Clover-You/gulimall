@@ -1,21 +1,3 @@
-server:
-  port: 9010
-
-spring:
-  # 配置数据源
-  datasource:
-    username: root
-    password: 123
-    url: jdbc:mysql://192.168.135.128:3306/gulimall_oms?useSSH=false
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.135.128:8848
-  application:
-    name: gulimall-order
-
 mybatis-plus:
   # 全局配置id类型自增
   global-config:
@@ -23,3 +5,41 @@ mybatis-plus:
       id-type: auto
   # mybatis的sql映射文件
   mapper-locations: classpath:/mapper/**/*.Dao.xml
+
+server:
+  port: 9010
+
+spring:
+  application:
+    name: gulimall-order
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.135.128:8848
+
+  # redis 配置
+  redis:
+    host: 192.168.135.128
+
+  # 配置数据源
+  datasource:
+    username: root
+    password: 123
+    url: jdbc:mysql://192.168.135.128:3306/gulimall_oms?useSSH=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  rabbitmq:
+    host: 192.168.135.128
+    listener:
+      simple:
+        acknowledge-mode: manual
+    port: 5672
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    virtual-host: /
+
+  thymeleaf:
+    cache: false
