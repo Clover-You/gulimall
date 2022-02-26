@@ -12,6 +12,7 @@ import top.ctong.gulimall.ware.entity.WareInfoEntity;
 import top.ctong.gulimall.ware.service.WareInfoService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.ware.vo.FareVo;
 
 
 /**
@@ -103,8 +104,8 @@ public class WareInfoController {
      */
     @GetMapping("/fare")
     public R getFare(@RequestParam("addrId") Long addrId) {
-        BigDecimal fee = wareInfoService.getFare(addrId);
-        return R.ok().setData(fee);
+        FareVo fare = wareInfoService.getFare(addrId);
+        return R.ok().setData(fare);
     }
 
 }

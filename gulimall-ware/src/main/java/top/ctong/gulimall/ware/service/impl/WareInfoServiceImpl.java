@@ -20,6 +20,7 @@ import top.ctong.gulimall.ware.entity.WareInfoEntity;
 import top.ctong.gulimall.ware.feign.MemberFeignService;
 import top.ctong.gulimall.ware.service.WareInfoService;
 import top.ctong.gulimall.ware.to.MemberAddressTo;
+import top.ctong.gulimall.ware.vo.FareVo;
 
 
 /**
@@ -77,7 +78,8 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
      * @date 2022/2/26 3:07 下午
      */
     @Override
-    public BigDecimal getFare(Long addrId) {
+    public FareVo getFare(Long addrId) {
+        FareVo fareVo = new FareVo();
         try {
             R info = memberFeignService.getAddrInfo(addrId);
             if (info.getCode() != 0) {
@@ -87,9 +89,11 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
             });
             String phone = data.getPhone();
             String substring = phone.substring(phone.length() - 1);
-            return new BigDecimal(substring);
+            fareVo.setAddress(data);
+            fareVo.setFare(new BigDecimal(substring));
         } catch (Exception e) {
-            return new BigDecimal("0.0");
+            fareVo.setFare(new BigDecimal("0.0"));
         }
+        return fareVo;
     }
 }

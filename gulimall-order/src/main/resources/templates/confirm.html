@@ -594,7 +594,7 @@
     </div>
 
     <!--地址-->
-    <div class="top-3 addr-item" th:each="item : ${data?.address}" >
+    <div class="top-3 addr-item" th:each="item : ${data?.address}">
         <p th:attr="def=${item.defaultStatus},addrId=${item.id}">[[${item?.name}]]</p><span>[[${item?.name}]]  [[${item?.province}]][[${item?.city}]][[${item?.region}]]  [[${item?.detailAddress}]]  [[${item?.phone}]]</span>
     </div>
     <p class="p2">更多地址︾</p>
@@ -732,7 +732,8 @@
 
     <div class="yfze">
         <p class="yfze_a"><span class="z">应付总额：</span><span class="hq" id="payPrice">￥[[${data?.payPrice}]]</span></p>
-        <p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>
+        <p class="yfze_b">寄送至： <span class="yfze_b" id="reciveAddressEle"></span> 收货人：<span class="yfze_b"
+                                                                                            id="reciverEle"></span></p>
     </div>
     <button class="tijiao">提交订单</button>
 </div>
@@ -984,8 +985,12 @@
     function getFare(addrId) {
         const totalPrice = [[${data.totalPrice}]]
         $.get("/api/ware/wareinfo/fare?addrId=" + addrId, function (r) {
-            $("#fare").text(r.data)
-            $("#payPrice").text(Number(r.data) + Number(totalPrice))
+            console.log(r)
+            $("#fare").text(r.data.fare)
+            $("#payPrice").text(Number(r.data.fare) + Number(totalPrice))
+            const {province, city, region, detailAddress, name, phone} = r.data.address;
+            $("#reciveAddressEle").text(province + " " + city + region + detailAddress)
+            $("#reciverEle").text(name + " " + phone)
         });
     }
 
