@@ -667,7 +667,7 @@
                 <p>[[${item.title}]]
                     <span style="color: red;"> [[${item.price}]]</span>
                     <span> x[[${item.count}]] </span>
-                    <span>[[${item.hasStock ? '有货' : '无货'}]]</span>
+                    <span>[[${data.stocks[item.skuId]?'有货':'无货'}]]</span>
                 </p>
                 <p><span>[[${item.weight}]]kg</span></p>
                 <p class="tui-1"><img src="/static/order/confirm/img/i_07.png"/>支持7天无理由退货</p>

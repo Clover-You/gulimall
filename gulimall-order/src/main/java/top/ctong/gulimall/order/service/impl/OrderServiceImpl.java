@@ -1,5 +1,6 @@
 package top.ctong.gulimall.order.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -26,8 +28,11 @@ import top.ctong.gulimall.order.dao.OrderDao;
 import top.ctong.gulimall.order.entity.OrderEntity;
 import top.ctong.gulimall.order.feign.CartFeignService;
 import top.ctong.gulimall.order.feign.MemberFeignService;
+import top.ctong.gulimall.order.feign.ProductFeignService;
+import top.ctong.gulimall.order.feign.WmsFeignService;
 import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.to.MemberAddressTo;
+import top.ctong.gulimall.order.to.SkuHasStockTo;
 import top.ctong.gulimall.order.vo.OrderConfirmVo;
 import top.ctong.gulimall.order.vo.OrderItemVo;
 
@@ -62,6 +67,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Autowired
     private ThreadPoolExecutor executor;
 
+    @Autowired
+    private ProductFeignService productFeignService;
+
+    @Autowired
+    private WmsFeignService wmsFeignService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<OrderEntity> page = this.page(
@@ -82,7 +93,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public OrderConfirmVo confirmOrder() {
         MemberRespVo mrv = LoginInterceptor.THREAD_LOCAL.get();
         OrderConfirmVo vo = new OrderConfirmVo();
+        // 获取当前线程ThreadLocal
         RequestAttributes myReqContext = RequestContextHolder.currentRequestAttributes();
+
         // 查询会员所有收货地址
         CompletableFuture<Void> memberFuture = CompletableFuture.runAsync(() -> {
             RequestContextHolder.setRequestAttributes(myReqContext);
@@ -108,6 +121,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             List<OrderItemVo> itemData = cartItem.getData(new TypeReference<List<OrderItemVo>>() {
             });
             vo.setItems(itemData);
+        }, executor);
+
+        // 库存设置
+        cartItemFuture.thenRunAsync(() -> {
+            List<Long> skuIds = vo.getItems().stream().map(OrderItemVo::getSkuId).collect(Collectors.toList());
+            R stock = wmsFeignService.getSkuHasStock(skuIds);
+            if (stock.getCode() != 0) {
+                return;
+            }
+            List<SkuHasStockTo> list = stock.getData(new TypeReference<List<SkuHasStockTo>>() {
+            });
+            Map<Long, Boolean> stocks = list.stream().collect(Collectors.toMap(
+                SkuHasStockTo::getSkuId,
+                SkuHasStockTo::getHasStock
+            ));
+
+            vo.setStocks(stocks);
         }, executor);
 
         // 积分设置

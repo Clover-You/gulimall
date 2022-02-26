@@ -8,6 +8,7 @@ import top.ctong.gulimall.order.to.MemberAddressTo;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -67,6 +68,11 @@ public class OrderConfirmVo {
      */
     @Setter(AccessLevel.NONE)
     private Integer itemCount;
+
+    /**
+     * 库存信息
+     */
+    private Map<Long, Boolean> stocks;
 
     /**
      * 计算总价
