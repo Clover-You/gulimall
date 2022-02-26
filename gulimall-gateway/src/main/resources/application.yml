@@ -17,6 +17,7 @@ spring:
             - Path=/api/ware/**
           filters:
             - RewritePath=/api/(?<path>.*),/$\{path}
+
         - id: member_route
           uri: lb://gulimall-member
           predicates:

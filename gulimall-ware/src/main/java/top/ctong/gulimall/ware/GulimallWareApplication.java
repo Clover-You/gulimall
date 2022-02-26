@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @EnableDiscoveryClient
-@EnableFeignClients("top.ctong.gulimall.common.feign")
+@EnableFeignClients("top.ctong.gulimall.ware.feign")
 @MapperScan("top.ctong.gulimall.ware.dao")
 @SpringBootApplication
 public class GulimallWareApplication {

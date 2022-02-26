@@ -1,12 +1,6 @@
-package top.ctong.gulimall.ware.service;
+package top.ctong.gulimall.ware.to;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.ware.entity.WareInfoEntity;
-
-import java.math.BigDecimal;
-import java.util.Map;
-
+import lombok.Data;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,26 +12,58 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 仓库信息
+ * 用户收货地址
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-16 16:12:37
+ * @create 2022-02-25 11:09 AM
  */
-public interface WareInfoService extends IService<WareInfoEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
-
+@Data
+public class MemberAddressTo {
     /**
-     * 通过用户地址查询运费信息
-     * @param addrId 地址id
-     * @return BigDecimal
-     * @author Clover You
-     * @date 2022/2/26 3:07 下午
+     * id
      */
-    BigDecimal getFare(Long addrId);
+    private Long id;
+    /**
+     * member_id
+     */
+    private Long memberId;
+    /**
+     * 收货人姓名
+     */
+    private String name;
+    /**
+     * 电话
+     */
+    private String phone;
+    /**
+     * 邮政编码
+     */
+    private String postCode;
+    /**
+     * 省份/直辖市
+     */
+    private String province;
+    /**
+     * 城市
+     */
+    private String city;
+    /**
+     * 区
+     */
+    private String region;
+    /**
+     * 详细地址(街道)
+     */
+    private String detailAddress;
+    /**
+     * 省市区代码
+     */
+    private String areacode;
+    /**
+     * 是否默认
+     */
+    private Integer defaultStatus;
 }
-

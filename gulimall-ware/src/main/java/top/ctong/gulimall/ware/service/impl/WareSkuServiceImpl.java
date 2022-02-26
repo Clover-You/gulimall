@@ -14,7 +14,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.StringUtils;
-import top.ctong.gulimall.common.feign.ProductFeignService;
 import top.ctong.gulimall.common.to.SkuInfoTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
@@ -22,6 +21,7 @@ import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.ware.dao.WareSkuDao;
 import top.ctong.gulimall.ware.entity.WareSkuEntity;
+import top.ctong.gulimall.ware.feign.ProductFeignService;
 import top.ctong.gulimall.ware.service.WareSkuService;
 import top.ctong.gulimall.ware.vo.SkuHasStockVo;
 

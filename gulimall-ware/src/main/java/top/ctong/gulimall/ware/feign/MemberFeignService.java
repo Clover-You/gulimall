@@ -1,12 +1,9 @@
-package top.ctong.gulimall.ware.service;
+package top.ctong.gulimall.ware.feign;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.ware.entity.WareInfoEntity;
-
-import java.math.BigDecimal;
-import java.util.Map;
-
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import top.ctong.gulimall.common.utils.R;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,26 +15,23 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 仓库信息
+ * 会员模块远程调用接口
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-16 16:12:37
+ * @create 2022-02-26 3:08 下午
  */
-public interface WareInfoService extends IService<WareInfoEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
-
+@FeignClient("gulimall-member")
+public interface MemberFeignService {
     /**
-     * 通过用户地址查询运费信息
-     * @param addrId 地址id
-     * @return BigDecimal
+     * 根据id查询收货地址信息
+     * @param id 地址id
+     * @return R
      * @author Clover You
-     * @date 2022/2/26 3:07 下午
+     * @date 2022/2/26 3:11 下午
      */
-    BigDecimal getFare(Long addrId);
+    @RequestMapping("/member/memberreceiveaddress/info/{id}")
+    R getAddrInfo(@PathVariable("id") Long id);
 }
-

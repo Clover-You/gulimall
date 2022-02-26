@@ -1,7 +1,10 @@
 package top.ctong.gulimall.ware.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,9 +14,12 @@ import org.springframework.util.StringUtils;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
+import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.ware.dao.WareInfoDao;
 import top.ctong.gulimall.ware.entity.WareInfoEntity;
+import top.ctong.gulimall.ware.feign.MemberFeignService;
 import top.ctong.gulimall.ware.service.WareInfoService;
+import top.ctong.gulimall.ware.to.MemberAddressTo;
 
 
 /**
@@ -37,6 +43,9 @@ import top.ctong.gulimall.ware.service.WareInfoService;
 @Service("wareInfoService")
 public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity> implements WareInfoService {
 
+    @Autowired
+    private MemberFeignService memberFeignService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         String key = (String) params.get("key");
@@ -50,14 +59,37 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
                 // 啥也不干
             }
             queryWrapper.or().like("name", key)
-                    .or().like("address", key).or().like("areacode", key);
+                .or().like("address", key).or().like("areacode", key);
         }
         IPage<WareInfoEntity> page = this.page(
-                new Query<WareInfoEntity>().getPage(params),
-                queryWrapper
+            new Query<WareInfoEntity>().getPage(params),
+            queryWrapper
         );
 
         return new PageUtils(page);
     }
 
+    /**
+     * 通过用户地址查询运费信息
+     * @param addrId 地址id
+     * @return BigDecimal
+     * @author Clover You
+     * @date 2022/2/26 3:07 下午
+     */
+    @Override
+    public BigDecimal getFare(Long addrId) {
+        try {
+            R info = memberFeignService.getAddrInfo(addrId);
+            if (info.getCode() != 0) {
+                return null;
+            }
+            MemberAddressTo data = info.getData("memberReceiveAddress", new TypeReference<MemberAddressTo>() {
+            });
+            String phone = data.getPhone();
+            String substring = phone.substring(phone.length() - 1);
+            return new BigDecimal(substring);
+        } catch (Exception e) {
+            return new BigDecimal("0.0");
+        }
+    }
 }
