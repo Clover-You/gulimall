@@ -63,6 +63,12 @@ public class OrderConfirmVo {
     private String orderToken;
 
     /**
+     * 商品数量总计
+     */
+    @Setter(AccessLevel.NONE)
+    private Integer itemCount;
+
+    /**
      * 计算总价
      * @return BigDecimal
      * @author Clover You
@@ -72,7 +78,7 @@ public class OrderConfirmVo {
         if (items == null || items.isEmpty()) {
             return new BigDecimal("0.00");
         }
-        return items.stream().map(OrderItemVo::getPrice).reduce(
+        return items.stream().map(OrderItemVo::getTotalPrice).reduce(
             new BigDecimal("0.00"),
             BigDecimal::add
         );
@@ -86,5 +92,12 @@ public class OrderConfirmVo {
      */
     public BigDecimal getPayPrice() {
         return getTotalPrice();
+    }
+
+    public Integer getItemCount() {
+        if (items == null) {
+            return 0;
+        }
+        return items.stream().map(OrderItemVo::getCount).reduce(0, Integer::sum);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ctong.gulimall.cart.interceptor.CartInterceptor;
 import top.ctong.gulimall.cart.service.CartService;
@@ -136,6 +137,7 @@ public class CartController {
      * @author Clover You
      * @date 2022/2/25 2:42 下午
      */
+    @ResponseBody
     @GetMapping("/CurrentUserCartItem")
     public R getCurrentUserCartItem() {
         List<CartItem> list = cartService.getUserCartItems();

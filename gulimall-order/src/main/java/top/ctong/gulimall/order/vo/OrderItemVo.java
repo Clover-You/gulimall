@@ -67,6 +67,16 @@ public class OrderItemVo {
     private BigDecimal totalPrice;
 
     /**
+     * 是否有货
+     */
+    private Boolean hasStock = true;
+
+    /**
+     * 重量(kg)
+     */
+    private BigDecimal weight;
+
+    /**
      * 总价计算
      * @return BigDecimal
      * @author Clover You
@@ -77,5 +87,18 @@ public class OrderItemVo {
             return new BigDecimal(0);
         }
         return this.price.multiply(new BigDecimal(this.count));
+    }
+
+    /**
+     * 商品重量
+     * @return BigDecimal
+     * @author Clover You
+     * @date 2022/2/26 9:05 上午
+     */
+    public BigDecimal getWeight() {
+        if (weight == null) {
+            return new BigDecimal("0.00");
+        }
+        return weight;
     }
 }

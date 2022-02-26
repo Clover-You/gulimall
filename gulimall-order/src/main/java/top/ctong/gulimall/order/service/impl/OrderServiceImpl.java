@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
@@ -57,7 +60,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private CartFeignService cartFeignService;
 
     @Autowired
-    private GuliThreadExecutor executor;
+    private ThreadPoolExecutor executor;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -79,9 +82,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public OrderConfirmVo confirmOrder() {
         MemberRespVo mrv = LoginInterceptor.THREAD_LOCAL.get();
         OrderConfirmVo vo = new OrderConfirmVo();
-
+        RequestAttributes myReqContext = RequestContextHolder.currentRequestAttributes();
         // 查询会员所有收货地址
         CompletableFuture<Void> memberFuture = CompletableFuture.runAsync(() -> {
+            RequestContextHolder.setRequestAttributes(myReqContext);
             R memberReceiveAddress = memberFeignService.getMemberReceiveAddress(mrv.getId());
             if (memberReceiveAddress.getCode() == 0) {
                 List<MemberAddressTo> addresses = memberReceiveAddress.getData(new TypeReference<List<MemberAddressTo>>() {
@@ -89,12 +93,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 vo.setAddress(addresses);
                 return;
             }
-
             vo.setAddress(new ArrayList<>(0));
-        });
+
+        }, executor);
 
         // 获取购物项
         CompletableFuture<Void> cartItemFuture = CompletableFuture.runAsync(() -> {
+            RequestContextHolder.setRequestAttributes(myReqContext);
             R cartItem = cartFeignService.getCurrentUserCartItem();
             if (cartItem.getCode() != 0) {
                 vo.setItems(new ArrayList<>(0));
@@ -103,12 +108,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             List<OrderItemVo> itemData = cartItem.getData(new TypeReference<List<OrderItemVo>>() {
             });
             vo.setItems(itemData);
-        });
+        }, executor);
 
         // 积分设置
         vo.setIntegration(mrv.getIntegration());
-
-        CompletableFuture.allOf(memberFuture, cartItemFuture);
+        CompletableFuture.allOf(memberFuture, cartItemFuture).join();
         return vo;
     }
 
