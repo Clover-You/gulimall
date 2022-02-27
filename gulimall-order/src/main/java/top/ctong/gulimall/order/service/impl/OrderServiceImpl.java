@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -198,8 +199,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
 
         ORDER_SUBMIT_VO_THREAD_LOCAL.set(vo);
-        CreateOrderTo order = createOrder();
 
+        CreateOrderTo order = createOrder();
+        resp.setOrder(order);
+
+        // 验证订单价格
+        OrderEntity orderEntity = order.getOrder();
+        BigDecimal payAmount = orderEntity.getPayAmount();
+        // 如果差价在小于0.01
+        if (Math.abs(vo.getPayPrice().subtract(payAmount).doubleValue()) >= 0.01) {
+            resp.setCode(2);
+            return resp;
+        }
+
+        // TODO 保存订单
 
         //#endregion
         return resp;
@@ -223,11 +236,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      */
     private CreateOrderTo createOrder() {
         CreateOrderTo order = new CreateOrderTo();
-        //#region 创建订单
-        String orderNo = IdWorker.getTimeId();
         OrderEntity orderEntity = new OrderEntity();
+
+        //创建订单
+        String orderNo = createOrder(order, orderEntity);
+
+        // 获取当前用户购物车数据
+        List<OrderItemEntity> orderItemEntities = buildOrderItems(orderNo);
+        order.setOrderItems(orderItemEntities);
+
+        // 计算订单价格
+        computeOrderPrice(order, orderEntity);
+
+        return order;
+    }
+
+    /**
+     * 创建订单基础信息
+     * @param order 订单实体
+     * @param orderEntity 订单信息实体
+     * @return String
+     * @author Clover You
+     * @date 2022/2/27 4:45 下午
+     */
+    private String createOrder(CreateOrderTo order, OrderEntity orderEntity) {
+        String orderNo = IdWorker.getTimeId();
         orderEntity.setOrderSn(orderNo);
         orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        orderEntity.setAutoConfirmDay(7);
+        orderEntity.setDeleteStatus(0);
 
         OrderSubmitVo osVo = ORDER_SUBMIT_VO_THREAD_LOCAL.get();
 
@@ -262,15 +299,56 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setReceiverPhone(address.getPhone());
         // 收货人姓名
         orderEntity.setReceiverName(address.getName());
-        //#endregion
+        return orderNo;
+    }
 
-        // 获取当前用户购物车数据
-        List<OrderItemEntity> orderItemEntities = buildOrderItems(orderNo);
+    /**
+     * 计算订单价格
+     * @param order 订单信息
+     * @param orderEntity 订单详细
+     * @author Clover You
+     * @date 2022/2/27 4:42 下午
+     */
+    private void computeOrderPrice(CreateOrderTo order, OrderEntity orderEntity) {
+        List<OrderItemEntity> orderItemEntities = order.getOrderItems();
+        // 订单总额、应付总额、运费金额、促销优化金额（促销价、满减、阶梯价）、积分抵扣金额、优惠券抵扣金额
+        // 计算订单总价 (单价 * 数量 + n)
+        BigDecimal orderTotalPrice = new BigDecimal("0.00");
+        // 促销优惠金额
+        BigDecimal promotionAmount = new BigDecimal("0.00");
+        // 积分抵扣金额
+        BigDecimal integrationAmount = new BigDecimal("0.00");
+        // 优惠卷金额
+        BigDecimal couponAmount = new BigDecimal("0.00");
+        // 订单能获取的积分
+        Integer giftIntegration = 0;
+        // 订单能获取的成长值
+        Integer giftGrowth = 0;
+        for (OrderItemEntity itemEntity : orderItemEntities) {
+            orderTotalPrice = orderTotalPrice.add(itemEntity.getRealAmount());
+            promotionAmount = promotionAmount.add(itemEntity.getPromotionAmount());
+            integrationAmount = integrationAmount.add(itemEntity.getIntegrationAmount());
+            couponAmount = couponAmount.add(itemEntity.getCouponAmount());
+            giftIntegration += itemEntity.getGiftIntegration();
+            giftGrowth += itemEntity.getGiftGrowth();
 
-        //#region TODO 验证订单价格
+        }
+        orderEntity.setTotalAmount(orderTotalPrice);
+        orderEntity.setPromotionAmount(promotionAmount);
+        orderEntity.setIntegrationAmount(integrationAmount);
+        orderEntity.setCouponAmount(couponAmount);
 
-        //#endregion
-        return order;
+        orderEntity.setIntegration(giftIntegration);
+        orderEntity.setGrowth(giftGrowth);
+
+        BigDecimal farePrice = new BigDecimal("0.00");
+        if (order.getFare() != null) {
+            farePrice = order.getFare();
+        }
+        orderEntity.setFreightAmount(farePrice);
+
+        // 应付金额
+        orderEntity.setPayAmount(orderTotalPrice.add(farePrice));
     }
 
     /**
@@ -344,6 +422,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //  积分信息
         entity.setGiftGrowth(data.getPrice().intValue());
         entity.setGiftIntegration(data.getPrice().intValue());
+
+        // 订单项价格
+        entity.setPromotionAmount(new BigDecimal("0"));
+        entity.setCouponAmount(new BigDecimal("0"));
+        entity.setIntegrationAmount(new BigDecimal("0"));
+        // 订单项总价
+        BigDecimal skuTotalPrice = entity.getSkuPrice().multiply(new BigDecimal(entity.getSkuQuantity()));
+        // 但前订单项实际价格
+        BigDecimal realPrice = skuTotalPrice.subtract(entity.getPromotionAmount())
+            .subtract(entity.getCouponAmount())
+            .subtract(entity.getIntegrationAmount());
+        entity.setRealAmount(realPrice);
 
         // 等待品牌查询完成
         brandInfoFuture.join();

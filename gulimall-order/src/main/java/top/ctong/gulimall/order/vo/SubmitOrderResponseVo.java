@@ -2,6 +2,7 @@ package top.ctong.gulimall.order.vo;
 
 import lombok.Data;
 import top.ctong.gulimall.order.entity.OrderEntity;
+import top.ctong.gulimall.order.to.CreateOrderTo;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -27,7 +28,7 @@ public class SubmitOrderResponseVo {
     /**
      * 订单信息
      */
-    private OrderEntity order;
+    private CreateOrderTo order;
 
     /**
      * 成功状态码：0 成功
