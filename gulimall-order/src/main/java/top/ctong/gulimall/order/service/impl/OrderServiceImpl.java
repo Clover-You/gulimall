@@ -264,10 +264,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setReceiverName(address.getName());
         //#endregion
 
-        //#region 创建订单项
         // 获取当前用户购物车数据
         List<OrderItemEntity> orderItemEntities = buildOrderItems(orderNo);
-        //#endregion
 
         //#region TODO 验证订单价格
 
@@ -291,13 +289,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         });
         if (dataList == null || dataList.isEmpty()) {
             log.error("create order service ===>> cart is empty...");
+            return new ArrayList<>(0);
         }
-        List<OrderItemEntity> itemEntityList = dataList.stream().map(data -> {
+        return dataList.stream().map(data -> {
             OrderItemEntity itemEntity = buildOrderItem(data);
             itemEntity.setOrderSn(orderNo);
             return itemEntity;
         }).collect(Collectors.toList());
-        return itemEntityList;
     }
 
     /**
@@ -308,11 +306,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @date 2022/2/27 2:48 下午
      */
     private OrderItemEntity buildOrderItem(OrderItemVo data) {
-        // TODO 构建订单项
+        // 构建订单项
         OrderItemEntity entity = new OrderItemEntity();
         entity.setSkuId(data.getSkuId());
 
-        // TODO 商品 spu 信息
+        //  商品 spu 信息
         R spuInfoR = productFeignService.getSpuInfoBySkuId(data.getSkuId());
         SpuInfoTo spuInfo = spuInfoR.getData(new TypeReference<SpuInfoTo>() {
         });
@@ -324,12 +322,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             });
             entity.setSpuBrand(brandInfo.getName());
         }, executor);
+        // 如果有异常，那么将品牌id作为品牌名称
+        brandInfoFuture.whenComplete((v, e) -> {
+            entity.setSpuBrand(spuInfo.getBrandId().toString());
+        });
 
         entity.setSpuId(spuInfo.getId());
         entity.setSpuName(spuInfo.getSpuName());
-        spuInfo.setSpuDescription(spuInfo.getSpuDescription());
 
-        // TODO 商品 SKU 信息
+        // 商品 SKU 信息
         entity.setSkuId(data.getSkuId());
         entity.setSkuName(data.getTitle());
         entity.setSkuAttrsVals(
@@ -340,7 +341,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         entity.setSkuPrice(data.getPrice());
         entity.setSkuQuantity(data.getCount());
 
-        // TODO 积分信息
+        //  积分信息
         entity.setGiftGrowth(data.getPrice().intValue());
         entity.setGiftIntegration(data.getPrice().intValue());
 
