@@ -26,7 +26,7 @@ import java.util.List;
  * @create 2022-02-27 10:00 上午
  */
 @Data
-public class CreateOrderTo {
+public class OrderCreateTo {
 
     /**
      * 订单信息

@@ -2,6 +2,7 @@ package top.ctong.gulimall.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -35,6 +37,7 @@ import top.ctong.gulimall.order.feign.CartFeignService;
 import top.ctong.gulimall.order.feign.MemberFeignService;
 import top.ctong.gulimall.order.feign.ProductFeignService;
 import top.ctong.gulimall.order.feign.WmsFeignService;
+import top.ctong.gulimall.order.service.OrderItemService;
 import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.to.*;
 import top.ctong.gulimall.order.vo.*;
@@ -58,6 +61,7 @@ import top.ctong.gulimall.order.vo.*;
  * @email 2621869236@qq.com
  * @create 2021-11-16 16:11:06
  */
+@Slf4j
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
@@ -78,6 +82,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private OrderItemService orderItemService;
 
     /**
      * 保存订单提交时的数据
@@ -200,7 +207,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         ORDER_SUBMIT_VO_THREAD_LOCAL.set(vo);
 
-        CreateOrderTo order = createOrder();
+        OrderCreateTo order = createOrder();
         resp.setOrder(order);
 
         // 验证订单价格
@@ -213,9 +220,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
 
         // TODO 保存订单
-
+        saveOrder(order);
         //#endregion
         return resp;
+    }
+
+    /**
+     * 保存订单
+     * @param order 订单信息
+     * @author Clover You
+     * @date 2022/2/27 8:04 下午
+     */
+    private void saveOrder(OrderCreateTo order) {
+        List<OrderItemEntity> orderItems = order.getOrderItems();
+        OrderEntity orderInfo = order.getOrder();
+        orderInfo.setModifyTime(new Date());
+        this.save(orderInfo);
+        Long orderId = orderInfo.getId();
+        orderItems.forEach((item) -> item.setOrderId(orderId));
+        orderItemService.saveBatch(orderItems);
     }
 
     /**
@@ -225,7 +248,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @date 2022/2/27 9:35 上午
      */
     private String getVerificationLuaScriptForOrderToken() {
-        return "if redis.call('get', KEYS[1]) == ARGV[1] then redis.call('del', KEYS[1]) else return 0";
+        return "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
     }
 
     /**
@@ -234,8 +257,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @author Clover You
      * @date 2022/2/27 10:02 上午
      */
-    private CreateOrderTo createOrder() {
-        CreateOrderTo order = new CreateOrderTo();
+    private OrderCreateTo createOrder() {
+        OrderCreateTo order = new OrderCreateTo();
         OrderEntity orderEntity = new OrderEntity();
 
         //创建订单
@@ -259,7 +282,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @author Clover You
      * @date 2022/2/27 4:45 下午
      */
-    private String createOrder(CreateOrderTo order, OrderEntity orderEntity) {
+    private String createOrder(OrderCreateTo order, OrderEntity orderEntity) {
         String orderNo = IdWorker.getTimeId();
         orderEntity.setOrderSn(orderNo);
         orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
@@ -267,6 +290,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setDeleteStatus(0);
 
         OrderSubmitVo osVo = ORDER_SUBMIT_VO_THREAD_LOCAL.get();
+        MemberRespVo mrv = LoginInterceptor.THREAD_LOCAL.get();
+        // 设置会员id
+        orderEntity.setMemberId(mrv.getId());
+
 
         // 设置地址
         Long addrId = osVo.getAddrId();
@@ -309,7 +336,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @author Clover You
      * @date 2022/2/27 4:42 下午
      */
-    private void computeOrderPrice(CreateOrderTo order, OrderEntity orderEntity) {
+    private void computeOrderPrice(OrderCreateTo order, OrderEntity orderEntity) {
         List<OrderItemEntity> orderItemEntities = order.getOrderItems();
         // 订单总额、应付总额、运费金额、促销优化金额（促销价、满减、阶梯价）、积分抵扣金额、优惠券抵扣金额
         // 计算订单总价 (单价 * 数量 + n)

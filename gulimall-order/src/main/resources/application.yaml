@@ -6,10 +6,13 @@ mybatis-plus:
   # mybatis的sql映射文件
   mapper-locations: classpath:/mapper/**/*.Dao.xml
 
+
 server:
   port: 9010
 
 spring:
+  profiles:
+    active: dev
   application:
     name: gulimall-order
 
