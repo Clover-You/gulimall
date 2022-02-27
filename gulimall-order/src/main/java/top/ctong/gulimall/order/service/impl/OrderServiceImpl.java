@@ -1,9 +1,7 @@
 package top.ctong.gulimall.order.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -26,7 +24,6 @@ import top.ctong.gulimall.common.utils.Query;
 
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.common.vo.MemberRespVo;
-import top.ctong.gulimall.order.components.GuliThreadExecutor;
 import top.ctong.gulimall.order.components.interceptor.LoginInterceptor;
 import top.ctong.gulimall.order.constant.OrderConstant;
 import top.ctong.gulimall.order.dao.OrderDao;
@@ -38,12 +35,8 @@ import top.ctong.gulimall.order.feign.MemberFeignService;
 import top.ctong.gulimall.order.feign.ProductFeignService;
 import top.ctong.gulimall.order.feign.WmsFeignService;
 import top.ctong.gulimall.order.service.OrderService;
-import top.ctong.gulimall.order.to.CreateOrderTo;
-import top.ctong.gulimall.order.to.MemberAddressTo;
-import top.ctong.gulimall.order.to.SkuHasStockTo;
+import top.ctong.gulimall.order.to.*;
 import top.ctong.gulimall.order.vo.*;
-
-import javax.sound.sampled.Line;
 
 
 /**
@@ -273,6 +266,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         //#region 创建订单项
         // 获取当前用户购物车数据
+        List<OrderItemEntity> orderItemEntities = buildOrderItems(orderNo);
+        //#endregion
+
+        //#region TODO 验证订单价格
+
+        //#endregion
+        return order;
+    }
+
+    /**
+     * 构建订单项
+     * @param orderNo 订单号
+     * @return OrderItemEntity
+     * @author Clover You
+     * @date 2022/2/27 11:09 上午
+     */
+    private List<OrderItemEntity> buildOrderItems(String orderNo) {
         R userCartInfoR = cartFeignService.getCurrentUserCartItem();
         if (!userCartInfoR.getCode().equals(0)) {
             log.error("create order service ===>> user cart query fail...");
@@ -287,21 +297,55 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             itemEntity.setOrderSn(orderNo);
             return itemEntity;
         }).collect(Collectors.toList());
-        //#endregion
-        return order;
+        return itemEntityList;
     }
 
-    /** 
-     * 构建订单项
-     * @param data 订单项信息
-     * @return OrderItemEntity 
-     * @author Clover You 
-     * @date 2022/2/27 11:09 上午
+    /**
+     * 构建指定订单项
+     * @param data 订单项数据
+     * @return OrderItemEntity
+     * @author Clover You
+     * @date 2022/2/27 2:48 下午
      */
     private OrderItemEntity buildOrderItem(OrderItemVo data) {
+        // TODO 构建订单项
         OrderItemEntity entity = new OrderItemEntity();
         entity.setSkuId(data.getSkuId());
-        // TODO 构建订单项
+
+        // TODO 商品 spu 信息
+        R spuInfoR = productFeignService.getSpuInfoBySkuId(data.getSkuId());
+        SpuInfoTo spuInfo = spuInfoR.getData(new TypeReference<SpuInfoTo>() {
+        });
+
+        // 获取品牌名称
+        CompletableFuture<Void> brandInfoFuture = CompletableFuture.runAsync(() -> {
+            R brandInfoR = productFeignService.getBrandInfo(spuInfo.getBrandId());
+            BrandInfoTo brandInfo = brandInfoR.getData(new TypeReference<BrandInfoTo>() {
+            });
+            entity.setSpuBrand(brandInfo.getName());
+        }, executor);
+
+        entity.setSpuId(spuInfo.getId());
+        entity.setSpuName(spuInfo.getSpuName());
+        spuInfo.setSpuDescription(spuInfo.getSpuDescription());
+
+        // TODO 商品 SKU 信息
+        entity.setSkuId(data.getSkuId());
+        entity.setSkuName(data.getTitle());
+        entity.setSkuAttrsVals(
+            // 将一个集合转为字符串通过指定分隔符分割
+            StringUtils.collectionToDelimitedString(data.getSkuAttr(), ";")
+        );
+        entity.setSkuPic(data.getImage());
+        entity.setSkuPrice(data.getPrice());
+        entity.setSkuQuantity(data.getCount());
+
+        // TODO 积分信息
+        entity.setGiftGrowth(data.getPrice().intValue());
+        entity.setGiftIntegration(data.getPrice().intValue());
+
+        // 等待品牌查询完成
+        brandInfoFuture.join();
         return entity;
     }
 }
