@@ -104,4 +104,17 @@ public class SpuInfoController {
         return R.ok();
     }
 
+    /** 
+     * 根据SkuId查询spu信息
+     * @param skuId 商品id
+     * @return R 
+     * @author Clover You 
+     * @date 2022/2/27 3:16 下午
+     */
+    @PostMapping("/select/{skuId}")
+    public R getSpuInfoBySkuId(@PathVariable("skuId") Long skuId) {
+        SpuInfoEntity spuInfo = spuInfoService.getSpuInfoBySkuId(skuId);
+        return R.ok().setData(spuInfo);
+    }
+
 }

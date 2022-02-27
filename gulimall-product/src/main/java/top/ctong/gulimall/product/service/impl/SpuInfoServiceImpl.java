@@ -347,4 +347,21 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             this.baseMapper.updateStatus(spuId, ProductConstant.SpuStatusEnum.SPU_UP.getCode());
         }
     }
+
+    /**
+     * 根据skuId 查询 spu信息
+     * @param skuId 商品id
+     * @return SpuInfoEntity
+     * @author Clover You
+     * @date 2022/2/27 3:17 下午
+     */
+    @Override
+    public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
+        SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
+        Long spuId = skuInfo.getSpuId();
+        SpuInfoEntity spuInfoEntity = baseMapper.selectOne(
+            new QueryWrapper<SpuInfoEntity>().eq("id", spuId)
+        );
+        return spuInfoEntity;
+    }
 }

@@ -23,7 +23,6 @@ import java.util.Map;
  * <p>
  * spu信息
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
@@ -32,7 +31,7 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    /** 
+    /**
      * 保存spu信息
      * @param vo spu信息
      * @author Clover You
@@ -48,7 +47,7 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
      */
     void saveBaseSpuInfo(SpuInfoEntity spuInfo);
 
-    /** 
+    /**
      * 根据条件查询SPU信息
      * @param params 自定义条件
      * @return PageUtils
@@ -64,5 +63,14 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
      * @date 2021/12/22 09:17
      */
     void up(Long spuId);
+
+    /**
+     * 根据skuId 查询 spu信息
+     * @param skuId 商品id
+     * @return SpuInfoEntity
+     * @author Clover You
+     * @date 2022/2/27 3:17 下午
+     */
+    SpuInfoEntity getSpuInfoBySkuId(Long skuId);
 }
 
