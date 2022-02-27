@@ -1,14 +1,4 @@
-package top.ctong.gulimall.order.service;
-
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.order.entity.OrderEntity;
-import top.ctong.gulimall.order.vo.OrderConfirmVo;
-import top.ctong.gulimall.order.vo.OrderSubmitVo;
-import top.ctong.gulimall.order.vo.SubmitOrderResponseVo;
-
-import java.util.Map;
-
+package top.ctong.gulimall.order.enume;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,33 +10,71 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 订单
+ * 订单状态
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-16 16:11:06
+ * @create 2022-02-27 10:14 上午
  */
-public interface OrderService extends IService<OrderEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
+public enum OrderStatusEnum {
+    /**
+     * 待付款
+     */
+    CREATE_NEW(0, "待付款"),
 
     /**
-     * 查询订单确认信息
-     * @return OrderConfirmVo
-     * @author Clover You
-     * @date 2022/2/25 2:03 下午
+     * 已付款
      */
-    OrderConfirmVo confirmOrder();
+    PAYED(1, "已付款"),
 
     /**
-     * 创建订单（下单）
-     * @param vo 订单信息
-     * @return SubmitOrderResponseVo
-     * @author Clover You
-     * @date 2022/2/27 9:17 上午
+     * 已发货
      */
-    SubmitOrderResponseVo submitOrder(OrderSubmitVo vo);
+    SENSED(2, "已发货"),
+
+    /**
+     * 已完成
+     */
+    RECEIVED(3, "已完成"),
+
+    /**
+     * 已取消
+     */
+    CANCELED(4, "已取消"),
+
+    /**
+     * 售后中
+     */
+    SERVICING(5, "售后中"),
+
+    /**
+     * 售后完成
+     */
+    SERVICED(6, "售后完成");
+
+    /**
+     * 状态吗
+     */
+    private final Integer code;
+
+    /**
+     * 信息
+     */
+    private final String msg;
+
+    OrderStatusEnum(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
 }
-

@@ -1,14 +1,10 @@
-package top.ctong.gulimall.order.service;
+package top.ctong.gulimall.order.beanTest;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.order.entity.OrderEntity;
-import top.ctong.gulimall.order.vo.OrderConfirmVo;
-import top.ctong.gulimall.order.vo.OrderSubmitVo;
-import top.ctong.gulimall.order.vo.SubmitOrderResponseVo;
-
-import java.util.Map;
-
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,33 +16,31 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 订单
+ * 工具类测试
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-16 16:11:06
+ * @create 2022-02-27 10:06 上午
  */
-public interface OrderService extends IService<OrderEntity> {
+@Slf4j
+@SpringBootTest
+public class UtilsTest {
 
-    PageUtils queryPage(Map<String, Object> params);
+    @Test
+    @DisplayName("Test the IdWorker utils provide by mybatis-plus")
+    void IdWorkerTest() {
+        String uuid = IdWorker.get32UUID();
+        String timeId = IdWorker.getTimeId();
+        long id = IdWorker.getId();
+        String idStr = IdWorker.getIdStr();
+        String millisecond = IdWorker.getMillisecond();
+        log.info("uuid: ===> {}", uuid);
+        log.info("timeId: ===> {}", timeId);
+        log.info("id: ===> {}", id);
+        log.info("idStr: ===> {}", idStr);
+        log.info("millisecond: ===> {}", millisecond);
+    }
 
-    /**
-     * 查询订单确认信息
-     * @return OrderConfirmVo
-     * @author Clover You
-     * @date 2022/2/25 2:03 下午
-     */
-    OrderConfirmVo confirmOrder();
-
-    /**
-     * 创建订单（下单）
-     * @param vo 订单信息
-     * @return SubmitOrderResponseVo
-     * @author Clover You
-     * @date 2022/2/27 9:17 上午
-     */
-    SubmitOrderResponseVo submitOrder(OrderSubmitVo vo);
 }
-

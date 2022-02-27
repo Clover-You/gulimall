@@ -735,7 +735,12 @@
         <p class="yfze_b">寄送至： <span class="yfze_b" id="reciveAddressEle"></span> 收货人：<span class="yfze_b"
                                                                                             id="reciverEle"></span></p>
     </div>
-    <button class="tijiao">提交订单</button>
+    <form action="http://order.gulimall.com/submitOrder" method="post">
+        <input name="orderToken" th:value="${data.orderToken}" hidden/>
+        <input name="payPrice" id="payPriceInp" th:value="${data.totalPrice}" hidden/>
+        <input name="addrId" id="formAddrId" hidden/>
+        <button class="tijiao" type="submit">提交订单</button>
+    </form>
 </div>
 </div>
 
@@ -979,18 +984,19 @@
             "border": "2px solid red"
         })
         const addrId = $(".addr-item p[def=1]").attr(`addrId`)
+        $("#formAddrId").val(addrId)
         getFare(addrId);
     }
 
     function getFare(addrId) {
         const totalPrice = [[${data.totalPrice}]]
         $.get("/api/ware/wareinfo/fare?addrId=" + addrId, function (r) {
-            console.log(r)
             $("#fare").text(r.data.fare)
             $("#payPrice").text(Number(r.data.fare) + Number(totalPrice))
             const {province, city, region, detailAddress, name, phone} = r.data.address;
             $("#reciveAddressEle").text(province + " " + city + region + detailAddress)
             $("#reciverEle").text(name + " " + phone)
+            $("#payPriceInp").val(Number(r.data.fare) + Number(totalPrice))
         });
     }
 
@@ -1001,6 +1007,7 @@
         const addrId = $(this).attr(`addrId`)
         getFare(addrId);
     })
+
 
 </script>
 </body>

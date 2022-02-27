@@ -1,14 +1,9 @@
-package top.ctong.gulimall.order.service;
+package top.ctong.gulimall.order.vo;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.order.entity.OrderEntity;
-import top.ctong.gulimall.order.vo.OrderConfirmVo;
-import top.ctong.gulimall.order.vo.OrderSubmitVo;
-import top.ctong.gulimall.order.vo.SubmitOrderResponseVo;
+import lombok.Data;
+import top.ctong.gulimall.order.to.MemberAddressTo;
 
-import java.util.Map;
-
+import java.math.BigDecimal;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,33 +15,25 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 订单
+ * 运费
  * </p>
  * @author Clover You
  * @email 2621869236@qq.com
- * @create 2021-11-16 16:11:06
+ * @create 2022-02-26 4:06 下午
  */
-public interface OrderService extends IService<OrderEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
-
-    /**
-     * 查询订单确认信息
-     * @return OrderConfirmVo
-     * @author Clover You
-     * @date 2022/2/25 2:03 下午
-     */
-    OrderConfirmVo confirmOrder();
+@Data
+public class FareVo {
 
     /**
-     * 创建订单（下单）
-     * @param vo 订单信息
-     * @return SubmitOrderResponseVo
-     * @author Clover You
-     * @date 2022/2/27 9:17 上午
+     * 地址信息
      */
-    SubmitOrderResponseVo submitOrder(OrderSubmitVo vo);
+    private MemberAddressTo address;
+
+    /**
+     * 运费
+     */
+    private BigDecimal fare;
+
 }
-

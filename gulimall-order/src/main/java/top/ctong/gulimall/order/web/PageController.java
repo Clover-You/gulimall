@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.vo.OrderConfirmVo;
+import top.ctong.gulimall.order.vo.OrderSubmitVo;
+import top.ctong.gulimall.order.vo.SubmitOrderResponseVo;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -46,4 +49,20 @@ public class PageController {
         return "confirm";
     }
 
+    /**
+     * 订单提交
+     * @param vo 订单数据
+     * @return String
+     * @author Clover You
+     * @date 2022/2/27 8:23 上午
+     */
+    @PostMapping("/submitOrder")
+    public String submitOrder(OrderSubmitVo vo, Model model) {
+        SubmitOrderResponseVo data = orderService.submitOrder(vo);
+        if (!data.getCode().equals(0)) {
+            return "redirect:http://order.gulimall.com/toTrade";
+        }
+        model.addAttribute("data", data);
+        return "pay";
+    }
 }

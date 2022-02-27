@@ -1,8 +1,10 @@
 package top.ctong.gulimall.order.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import top.ctong.gulimall.common.utils.R;
 
 import java.util.List;
@@ -36,4 +38,14 @@ public interface WmsFeignService {
      */
     @PostMapping("/ware/waresku/hasStock")
     R getSkuHasStock(@RequestBody List<Long> skuIds);
+
+    /**
+     * 通过用户地址查询运费信息
+     * @param addrId 地址id
+     * @return R
+     * @author Clover You
+     * @date 2022/2/26 3:06 下午
+     */
+    @GetMapping("/ware/wareinfo/fare")
+    R getFare(@RequestParam("addrId") Long addrId);
 }

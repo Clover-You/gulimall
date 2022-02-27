@@ -3,6 +3,7 @@ package top.ctong.gulimall.order.feign;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import top.ctong.gulimall.common.utils.R;
 
 /**
@@ -35,4 +36,13 @@ public interface MemberFeignService {
     @GetMapping("/member/memberreceiveaddress/{memberId}/addresses")
     R getMemberReceiveAddress(@PathVariable("memberId") Long memberId);
 
+    /**
+     * 根据收货地址id查询地址信息
+     * @param id 收货地址id
+     * @return R
+     * @author Clover You
+     * @date 2022/2/27 10:26 上午
+     */
+    @RequestMapping("/member/memberreceiveaddress/info/{id}")
+    R getAddressById(@PathVariable("id") Long id);
 }
