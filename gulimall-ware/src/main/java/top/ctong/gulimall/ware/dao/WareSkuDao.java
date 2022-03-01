@@ -5,6 +5,8 @@ import top.ctong.gulimall.ware.entity.WareSkuEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -46,4 +48,24 @@ public interface WareSkuDao extends BaseMapper<WareSkuEntity> {
      * @date 2021/12/22 10:55
      */
     Long getSkuStock(@Param("id") Long id);
+
+    /**
+     * 查询该商品在哪个仓库有库存
+     * @param skuId 商品id
+     * @return List<Long>
+     * @author Clover You
+     * @date 2022/3/1 8:10 上午
+     */
+    List<Long> listWareIdHasSkuStock(@Param("skuId") Long skuId);
+
+    /**
+     * 锁定指定库存
+     * @param skuId 商品id
+     * @param wareId 库存id
+     * @param lockCount 锁定数量
+     * @return Long
+     * @author Clover You
+     * @date 2022/3/1 8:47 上午
+     */
+    Long lockSkuStock(@Param("skuId") Long skuId, @Param("wareId") Long wareId, @Param("lockCount") Integer lockCount);
 }

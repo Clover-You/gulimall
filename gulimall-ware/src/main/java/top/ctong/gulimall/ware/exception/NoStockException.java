@@ -1,7 +1,7 @@
 package top.ctong.gulimall.ware.exception;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -13,23 +13,34 @@ import lombok.EqualsAndHashCode;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 处理异常并返回json
+ * 库存不足异常
  * </p>
  * @author Clover You
- * @create 2021-12-13 10:55
+ * @email 2621869236@qq.com
+ * @create 2022-03-01 8:29 上午
  */
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class HandlerExceptionReJSON extends Exception{
-    private static final long serialVersionUID = 1644958328206535695L;
+public class NoStockException extends Exception {
 
-    private int code;
+    @Getter
+    private Object obj;
 
-    public HandlerExceptionReJSON(String msg, Integer code) {
-        super(msg);
-        this.code = code;
+    public NoStockException() {
+        super("no stock...");
     }
 
+    public NoStockException(String message) {
+        super(message);
+    }
+
+    public NoStockException(String message, Object obj) {
+        super(message);
+        this.obj = obj;
+    }
+
+    public NoStockException(Object obj) {
+        this();
+        this.obj = obj;
+    }
 }

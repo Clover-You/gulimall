@@ -1,7 +1,6 @@
-package top.ctong.gulimall.ware.exception;
+package top.ctong.gulimall.ware.vo;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -13,23 +12,29 @@ import lombok.EqualsAndHashCode;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 处理异常并返回json
+ * 库存锁定结果
  * </p>
  * @author Clover You
- * @create 2021-12-13 10:55
+ * @email 2621869236@qq.com
+ * @create 2022-02-27 8:32 下午
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class HandlerExceptionReJSON extends Exception{
-    private static final long serialVersionUID = 1644958328206535695L;
+public class LockStockResultVo {
 
-    private int code;
+    /**
+     * 商品id
+     */
+    private Long skuId;
 
-    public HandlerExceptionReJSON(String msg, Integer code) {
-        super(msg);
-        this.code = code;
-    }
+    /**
+     * 成功锁定数量
+     */
+    private Integer lockedNum;
 
+    /**
+     * 是否锁定成功(可能库存不足造成失败)
+     */
+    private Boolean locked;
 }
