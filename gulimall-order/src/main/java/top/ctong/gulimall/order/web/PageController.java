@@ -57,7 +57,7 @@ public class PageController {
      * @date 2022/2/27 8:23 上午
      */
     @PostMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo vo, Model model) {
+    public String submitOrder(OrderSubmitVo vo, Model model) throws Exception {
         SubmitOrderResponseVo data = orderService.submitOrder(vo);
         if (!data.getCode().equals(0)) {
             return "redirect:http://order.gulimall.com/toTrade";

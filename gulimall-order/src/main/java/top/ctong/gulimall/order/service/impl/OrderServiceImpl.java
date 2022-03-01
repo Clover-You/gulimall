@@ -183,6 +183,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) throws Exception {
         SubmitOrderResponseVo resp = new SubmitOrderResponseVo();
+        resp.setCode(0);
         MemberRespVo mrv = LoginInterceptor.THREAD_LOCAL.get();
 
         //#region 创建订单、验证 token、验证价格、锁库存
@@ -280,31 +281,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @date 2022/2/27 10:02 上午
      */
     private OrderCreateTo createOrder() {
-        OrderCreateTo order = new OrderCreateTo();
-        OrderEntity orderEntity = new OrderEntity();
 
         //创建订单
-        String orderNo = createOrder(order, orderEntity);
-
+        OrderCreateTo orderInfo = createOrderInfo();
+        OrderEntity order = orderInfo.getOrder();
         // 获取当前用户购物车数据
-        List<OrderItemEntity> orderItemEntities = buildOrderItems(orderNo);
-        order.setOrderItems(orderItemEntities);
+        List<OrderItemEntity> orderItemEntities = buildOrderItems(order.getOrderSn());
+        orderInfo.setOrderItems(orderItemEntities);
 
         // 计算订单价格
-        computeOrderPrice(order, orderEntity);
+        computeOrderPrice(orderInfo);
 
-        return order;
+        return orderInfo;
     }
 
     /**
      * 创建订单基础信息
-     * @param order 订单实体
-     * @param orderEntity 订单信息实体
-     * @return String
+     * @return OrderCreateTo
      * @author Clover You
      * @date 2022/2/27 4:45 下午
      */
-    private String createOrder(OrderCreateTo order, OrderEntity orderEntity) {
+    private OrderCreateTo createOrderInfo() {
+        OrderCreateTo order = new OrderCreateTo();
+        OrderEntity orderEntity = new OrderEntity();
         String orderNo = IdWorker.getTimeId();
         orderEntity.setOrderSn(orderNo);
         orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
@@ -326,7 +325,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             log.error("fare query fail...");
         }
         FareVo fare = fareR.getData(
-            "memberReceiveAddress",
+            "data",
             new TypeReference<FareVo>() {
             }
         );
@@ -348,17 +347,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setReceiverPhone(address.getPhone());
         // 收货人姓名
         orderEntity.setReceiverName(address.getName());
-        return orderNo;
+
+        order.setOrder(orderEntity);
+        return order;
     }
 
     /**
      * 计算订单价格
      * @param order 订单信息
-     * @param orderEntity 订单详细
      * @author Clover You
      * @date 2022/2/27 4:42 下午
      */
-    private void computeOrderPrice(OrderCreateTo order, OrderEntity orderEntity) {
+    private void computeOrderPrice(OrderCreateTo order) {
+        OrderEntity orderEntity = order.getOrder();
         List<OrderItemEntity> orderItemEntities = order.getOrderItems();
         // 订单总额、应付总额、运费金额、促销优化金额（促销价、满减、阶梯价）、积分抵扣金额、优惠券抵扣金额
         // 计算订单总价 (单价 * 数量 + n)
@@ -445,7 +446,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         // 获取品牌名称
         CompletableFuture<Void> brandInfoFuture = CompletableFuture.runAsync(() -> {
             R brandInfoR = productFeignService.getBrandInfo(spuInfo.getBrandId());
-            BrandInfoTo brandInfo = brandInfoR.getData(new TypeReference<BrandInfoTo>() {
+            BrandInfoTo brandInfo = brandInfoR.getData("brand", new TypeReference<BrandInfoTo>() {
             });
             entity.setSpuBrand(brandInfo.getName());
         }, executor);
