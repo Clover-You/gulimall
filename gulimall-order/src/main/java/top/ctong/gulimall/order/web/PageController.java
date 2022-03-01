@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.vo.OrderConfirmVo;
 import top.ctong.gulimall.order.vo.OrderSubmitVo;
@@ -57,12 +58,27 @@ public class PageController {
      * @date 2022/2/27 8:23 上午
      */
     @PostMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo vo, Model model) throws Exception {
+    public String submitOrder(OrderSubmitVo vo, Model model, RedirectAttributes rAttr) throws Exception {
         SubmitOrderResponseVo data = orderService.submitOrder(vo);
         if (!data.getCode().equals(0)) {
+            String errorMsg = "下单失败:";
+            switch (data.getCode()) {
+                case 1:
+                    errorMsg += "订单已失效，请重新提交";
+                    break;
+                case 2:
+                    errorMsg += "订单中有商品价格已经改变了哦";
+                    break;
+                case 3:
+                    errorMsg += "下单失败，库存不足";
+                    break;
+                default:
+                    errorMsg += "未知异常";
+            }
+            rAttr.addFlashAttribute("errorMsg", errorMsg);
             return "redirect:http://order.gulimall.com/toTrade";
         }
-        model.addAttribute("data", data);
+        model.addAttribute("data", data.getOrder());
         return "pay";
     }
 }
