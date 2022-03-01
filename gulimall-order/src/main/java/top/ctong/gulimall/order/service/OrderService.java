@@ -47,6 +47,6 @@ public interface OrderService extends IService<OrderEntity> {
      * @author Clover You
      * @date 2022/2/27 9:17 上午
      */
-    SubmitOrderResponseVo submitOrder(OrderSubmitVo vo);
+    SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) throws Exception;
 }
 

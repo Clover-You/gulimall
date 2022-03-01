@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.order.to.WareSkuLockTo;
 
 import java.util.List;
 
@@ -48,4 +49,15 @@ public interface WmsFeignService {
      */
     @GetMapping("/ware/wareinfo/fare")
     R getFare(@RequestParam("addrId") Long addrId);
+
+    /**
+     * 根据库存信息锁定指定库存
+     * @param vo 库存信息
+     * @return R
+     * @author Clover You
+     * @date 2022/2/27 8:27 下午
+     */
+    @PostMapping("/ware/waresku/lock/order")
+    R orderLockStock(@RequestBody WareSkuLockTo vo);
 }
+

@@ -1,4 +1,11 @@
-package top.ctong.gulimall.order.to;/**
+package top.ctong.gulimall.order.to;
+
+import lombok.Data;
+import top.ctong.gulimall.order.vo.OrderItemVo;
+
+import java.util.List;
+
+/**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
  * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
  * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
@@ -15,5 +22,17 @@ package top.ctong.gulimall.order.to;/**
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2022-02-27 8:21 下午
- */public class WareSkuLockTo {
+ */
+@Data
+public class WareSkuLockTo {
+
+    /**
+     * 订单号
+     */
+    private String orderSn;
+
+    /**
+     * 需要锁住的所有库存信息
+     */
+    private List<OrderItemVo> locks;
 }

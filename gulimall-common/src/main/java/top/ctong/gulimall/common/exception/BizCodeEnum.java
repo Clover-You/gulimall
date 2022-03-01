@@ -16,11 +16,13 @@ import lombok.Getter;
  * <p>
  * 通用错误代码
  * - 10: 通用
- *   - 001：参数校验错误
+ * - 001：参数校验错误
  * - 11：商品
  * - 12：订单
  * - 13：购物车
  * - 14：物流
+ * - 15： 用户
+ * - 21： 库存
  * </p>
  * @author Clover You
  * @create 2021-11-25 08:47
@@ -63,7 +65,12 @@ public enum BizCodeEnum {
     /**
      * 账号or密码错误
      */
-    LOGINACCT_PASSWORD_INVALID_EXCEPTION(15003, "账号密码错误！");
+    LOGINACCT_PASSWORD_INVALID_EXCEPTION(15003, "账号密码错误！"),
+
+    /**
+     * 没有库存异常
+     */
+    NO_STOCK_EXCEPTION(21000, "没有库存啦！");
 
     private final Integer code;
 

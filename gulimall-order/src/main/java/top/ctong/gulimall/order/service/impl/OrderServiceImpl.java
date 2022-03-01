@@ -179,8 +179,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @author Clover You
      * @date 2022/2/27 9:17 上午
      */
+    @Transactional
     @Override
-    public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
+    public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) throws Exception {
         SubmitOrderResponseVo resp = new SubmitOrderResponseVo();
         MemberRespVo mrv = LoginInterceptor.THREAD_LOCAL.get();
 
@@ -219,8 +220,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             return resp;
         }
 
-        // TODO 保存订单
+        // 保存订单
         saveOrder(order);
+        //#region TODO 锁定库存
+        WareSkuLockTo wareSkuLockTo = new WareSkuLockTo();
+        wareSkuLockTo.setOrderSn(order.getOrder().getOrderSn());
+        // OrderItemEntity ===>> OrderItemVo
+        List<OrderItemVo> wareLockOrderItemVo = order.getOrderItems().stream().map((item) -> {
+            OrderItemVo orderItemVo = new OrderItemVo();
+            orderItemVo.setSkuId(item.getSkuId());
+            orderItemVo.setCount(item.getSkuQuantity());
+            orderItemVo.setTitle(item.getSkuName());
+            return orderItemVo;
+        }).collect(Collectors.toList());
+        wareSkuLockTo.setLocks(wareLockOrderItemVo);
+
+        R lR = wmsFeignService.orderLockStock(wareSkuLockTo);
+        if (lR.getCode() != 0) {
+            String msg = lR.getMsg();
+            log.error("create order service ===>>{}", msg);
+            resp.setCode(3);
+            return resp;
+        }
+        //#endregion
         //#endregion
         return resp;
     }

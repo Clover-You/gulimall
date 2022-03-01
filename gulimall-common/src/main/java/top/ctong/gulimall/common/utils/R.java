@@ -13,6 +13,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
+import top.ctong.gulimall.common.exception.BizCodeEnum;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +59,13 @@ public class R extends HashMap<String, Object> {
 		R r = new R();
 		r.put("code", code);
 		r.put("msg", msg);
+		return r;
+	}
+
+	public static R error(BizCodeEnum bizCode) {
+		R r = new R();
+		r.put("code", bizCode.getCode());
+		r.put("msg", bizCode.getMsg());
 		return r;
 	}
 
