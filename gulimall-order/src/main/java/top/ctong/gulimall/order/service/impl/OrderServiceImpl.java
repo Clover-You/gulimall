@@ -2,6 +2,7 @@ package top.ctong.gulimall.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -179,6 +180,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @author Clover You
      * @date 2022/2/27 9:17 上午
      */
+    @GlobalTransactional
     @Transactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) throws Exception {
@@ -243,6 +245,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             resp.setCode(3);
             return resp;
         }
+        int i = 10 / 0;
         //#endregion
         //#endregion
         return resp;

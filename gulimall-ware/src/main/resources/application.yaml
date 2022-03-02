@@ -17,6 +17,7 @@ spring:
         enabled: false
       discovery:
         server-addr: 192.168.135.128:8848
+
   application:
     name: gulimall-ware
 

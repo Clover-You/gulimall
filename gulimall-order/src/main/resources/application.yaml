@@ -20,6 +20,9 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.135.128:8848
+#    alibaba:
+#      seata:
+#        tx-service-group:
 
   # redis 配置
   redis:
@@ -56,3 +59,9 @@ gulimall:
     core-pool-size: 20
     maximum-pool-size: 200
     keep-alive-time: 10
+
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 192.168.135.128:8848

@@ -1,14 +1,13 @@
-package top.ctong.gulimall.order;
+package top.ctong.gulimall.order.components;
 
-import io.seata.config.springcloud.EnableSeataSpringConfig;
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import com.zaxxer.hikari.HikariDataSource;
+import io.seata.rm.datasource.DataSourceProxy;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
+
+import javax.sql.DataSource;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,25 +19,22 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 订单模块
- * </p>
  *
+ * </p>
  * @author Clover You
- * @create 2021/11/16 16:30
+ * @email 2621869236@qq.com
+ * @create 2022-03-02 8:22 上午
  */
-@EnableAspectJAutoProxy(exposeProxy = true)
-@EnableFeignClients(basePackages = "top.ctong.gulimall.order.feign")
-@EnableRedisHttpSession
-@EnableRabbit
-@EnableDiscoveryClient
-@MapperScan("top.ctong.gulimall.order.dao")
-@SpringBootApplication
-public class GulimallOrderApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(GulimallOrderApplication.class, args);
+@Configuration
+public class SeataConfig {
+    @Bean
+    public DataSource dataSource(DataSourceProperties properties) {
+        HikariDataSource dataSource = properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+        if (StringUtils.hasText(properties.getName())) {
+            dataSource.setPoolName(properties.getName());
+        }
+        return new DataSourceProxy(dataSource);
     }
-
 }

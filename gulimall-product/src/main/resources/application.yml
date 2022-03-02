@@ -16,6 +16,11 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.135.128:8848
+
+    alibaba:
+      seata:
+        tx-service-group: gulimall-product
+
   application:
     name: gulimall-product
   jackson:
