@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "gulimall.thread.core-pool-size",
+      "type": "java.lang.String",
+      "description": "Description for gulimall.thread.core-pool-size."
+  }
+] }

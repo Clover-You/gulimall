@@ -1,13 +1,9 @@
 package top.ctong.gulimall.auth;
 
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.session.RedisSessionProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Import;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import top.ctong.gulimall.auth.feign.MemberServerFeign;
 import top.ctong.gulimall.common.feign.ThirdPartyFeignService;

@@ -60,8 +60,3 @@ gulimall:
     maximum-pool-size: 200
     keep-alive-time: 10
 
-seata:
-  registry:
-    type: nacos
-    nacos:
-      server-addr: 192.168.135.128:8848

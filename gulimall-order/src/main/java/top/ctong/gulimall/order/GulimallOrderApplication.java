@@ -1,6 +1,5 @@
 package top.ctong.gulimall.order;
 
-import io.seata.config.springcloud.EnableSeataSpringConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;

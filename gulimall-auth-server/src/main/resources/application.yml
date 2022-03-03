@@ -5,6 +5,7 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.135.128:8848
+
   redis:
     host: 192.168.135.128
     port: 6379

@@ -1,8 +1,6 @@
 package top.ctong.gulimall.order.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.initialization.qual.Initialized;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -63,7 +61,6 @@ public class RabbitConfig {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
                 log.info("==================== Confirm Callback ====================");
-//                log.info(correlationData.);
                 log.info("initRabbitTemplate");
                 log.info("ack: ===> {}", ack);
                 log.info("cause: ===> {}", cause);
