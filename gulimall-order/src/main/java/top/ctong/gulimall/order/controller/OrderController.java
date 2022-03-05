@@ -2,14 +2,13 @@ package top.ctong.gulimall.order.controller;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import top.ctong.gulimall.order.entity.OrderEntity;
 import top.ctong.gulimall.order.service.OrderService;
@@ -41,6 +40,15 @@ import top.ctong.gulimall.common.utils.R;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @GetMapping("/amqp")
+    public String testAmqp() {
+        rabbitTemplate.convertAndSend("order-event-exchange","order.create.order", UUID.randomUUID().toString());
+        return "successful";
+    }
 
     /**
      * 列表
