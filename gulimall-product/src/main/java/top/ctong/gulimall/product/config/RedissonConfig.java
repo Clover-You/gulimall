@@ -39,7 +39,7 @@ public class RedissonConfig {
     public RedissonClient redisson() {
         Config config = new Config();
         // 单节点模式
-        config.useSingleServer().setAddress("redis://192.168.135.128:6379");
+        config.useSingleServer().setAddress("redis://172.16.156.128:6379");
         return Redisson.create(config);
     }
 }

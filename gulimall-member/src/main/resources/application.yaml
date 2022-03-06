@@ -3,13 +3,13 @@ spring:
   datasource:
     username: root
     password: 123
-    url: jdbc:mysql://192.168.135.128:3306/gulimall_ums?useSSH=false
+    url: jdbc:mysql://172.16.156.128:3306/gulimall_ums?useSSH=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.135.128:8848
+        server-addr: 172.16.156.128:8848
   application:
     name: gulimall-member
 

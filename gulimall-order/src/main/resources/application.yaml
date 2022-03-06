@@ -19,14 +19,14 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.135.128:8848
+        server-addr: 172.16.156.128:8848
 #    alibaba:
 #      seata:
 #        tx-service-group:
 
   # redis 配置
   redis:
-    host: 192.168.135.128
+    host: 172.16.156.128
 
   # spring session 配置
   session:
@@ -36,11 +36,11 @@ spring:
   datasource:
     username: root
     password: 123
-    url: jdbc:mysql://192.168.135.128:3306/gulimall_oms?useSSH=false
+    url: jdbc:mysql://172.16.156.128:3306/gulimall_oms?useSSH=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   rabbitmq:
-    host: 192.168.135.128
+    host: 172.16.156.128
     listener:
       simple:
         acknowledge-mode: manual

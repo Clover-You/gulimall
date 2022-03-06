@@ -46,7 +46,7 @@ public class GuliMallElasticSearchConfig {
     public RestHighLevelClient restHighLevelClient() {
         return new RestHighLevelClient(
             RestClient.builder(
-                new HttpHost("192.168.135.128", 9200, "http")
+                new HttpHost("172.16.156.128", 9200, "http")
             )
         );
     }

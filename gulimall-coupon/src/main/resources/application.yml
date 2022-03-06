@@ -3,13 +3,13 @@
 #  datasource:
 #    username: root
 #    password: 123
-#    url: jdbc:mysql://192.168.135.128:3306/gulimall_sms
+#    url: jdbc:mysql://172.16.156.128:3306/gulimall_sms
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #  cloud:
 #    nacos:
 #      discovery:
 #        # 配置nacos服务中心地址
-#        server-addr: 192.168.135.128:8848
+#        server-addr: 172.16.156.128:8848
 #
 #  application:
 #    # 注册nacos需要指定服务名
