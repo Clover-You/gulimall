@@ -18,4 +18,5 @@ buildNumber.properties
 **/.idea
 **/application-privacy.yml
 **/.DS_Store
-**/**/application-private.yaml
+**/application-private.yaml
+**/.DS_Store
