@@ -1,12 +1,8 @@
-package top.ctong.gulimall.ware.entity;
+package top.ctong.gulimall.common.to.mq;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
+import java.io.Serializable;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,50 +14,45 @@ import lombok.Data;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 库存工作单
+ * stock detail entity
  * </p>
- *
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 16:12:36
+ * @email cloveryou02@163.com
+ * @create 2022-03-06 4:45 下午
  */
 @Data
-@TableName("wms_ware_order_task_detail")
-public class WareOrderTaskDetailEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class StockDetailTo implements Serializable {
+    private static final long serialVersionUID = 5302914889719558087L;
+    /**
+     * id
+     */
+    private Long id;
+    /**
+     * sku_id
+     */
+    private Long skuId;
+    /**
+     * sku_name
+     */
+    private String skuName;
+    /**
+     * 购买个数
+     */
+    private Integer skuNum;
+    /**
+     * 工作单id
+     */
+    private Long taskId;
 
-	/**
-	 * id
-	 */
-	@TableId
-	private Long id;
-	/**
-	 * sku_id
-	 */
-	private Long skuId;
-	/**
-	 * sku_name
-	 */
-	private String skuName;
-	/**
-	 * 购买个数
-	 */
-	private Integer skuNum;
-	/**
-	 * 工作单id
-	 */
-	private Long taskId;
+    /**
+     * 仓库id
+     */
+    private Long wareId;
 
-	/**
-	 * 仓库id
-	 */
-	private Long wareId;
-
-	/**
-	 * 锁定状态 1锁定 2解锁 3已扣减
-	 */
-	private Integer lockStatus;
-
+    /**
+     * 锁定状态 1锁定 2解锁 3已扣减
+     */
+    private Integer lockStatus;
 }

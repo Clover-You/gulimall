@@ -1,34 +1,43 @@
 package top.ctong.gulimall.ware.service.impl;
 
-import com.google.gson.Gson;
-
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import lombok.Data;
+import lombok.Setter;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.ctong.gulimall.common.to.SkuInfoTo;
+import top.ctong.gulimall.common.to.mq.StockDetailTo;
+import top.ctong.gulimall.common.to.mq.StockLockedTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
-
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.ware.dao.WareSkuDao;
+import top.ctong.gulimall.ware.entity.WareOrderTaskDetailEntity;
+import top.ctong.gulimall.ware.entity.WareOrderTaskEntity;
 import top.ctong.gulimall.ware.entity.WareSkuEntity;
 import top.ctong.gulimall.ware.exception.NoStockException;
 import top.ctong.gulimall.ware.feign.ProductFeignService;
+import top.ctong.gulimall.ware.service.WareOrderTaskDetailService;
+import top.ctong.gulimall.ware.service.WareOrderTaskService;
 import top.ctong.gulimall.ware.service.WareSkuService;
-import top.ctong.gulimall.ware.vo.LockStockResultVo;
 import top.ctong.gulimall.ware.vo.OrderItemVo;
 import top.ctong.gulimall.ware.vo.SkuHasStockVo;
 import top.ctong.gulimall.ware.vo.WareSkuLockVo;
+
+import java.security.KeyStore;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -52,8 +61,33 @@ import top.ctong.gulimall.ware.vo.WareSkuLockVo;
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
-    @Autowired
     private ProductFeignService productFeignService;
+
+    private WareOrderTaskService wareOrderTaskService;
+
+    private WareOrderTaskDetailService wareOrderTaskDetailService;
+
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    public void setProductFeignService(ProductFeignService productFeignService) {
+        this.productFeignService = productFeignService;
+    }
+
+    @Autowired
+    public void setWareOrderTaskService(WareOrderTaskService wareOrderTaskService) {
+        this.wareOrderTaskService = wareOrderTaskService;
+    }
+
+    @Autowired
+    public void setWareOrderTaskDetailService(WareOrderTaskDetailService wareOrderTaskDetailService) {
+        this.wareOrderTaskDetailService = wareOrderTaskDetailService;
+    }
+
+    @Autowired
+    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -137,10 +171,14 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * @author Clover You
      * @date 2022/2/27 8:35 下午
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean orderLockStock(WareSkuLockVo vo) throws NoStockException{
-//        List<LockStockResultVo> lr = new ArrayList<>(vo.getLocks().size());
+    public Boolean orderLockStock(WareSkuLockVo vo) throws NoStockException {
+        // 保存库存工作单，方便出问题后可人工回滚。--溯源
+        WareOrderTaskEntity orderTaskEntity = new WareOrderTaskEntity();
+        orderTaskEntity.setOrderSn(vo.getOrderSn());
+        wareOrderTaskService.save(orderTaskEntity);
+
         List<OrderItemVo> locks = vo.getLocks();
         // 封装库存信息
         List<SkuWareHasStock> hasStockWares = locks.stream().map((item) -> {
@@ -169,7 +207,24 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 if (affectedCount == 0) {
                     continue;
                 }
+
                 lockedFlag = true;
+                // 库存锁定成功就保存锁定详情信息
+                WareOrderTaskDetailEntity taskDetailEntity = new WareOrderTaskDetailEntity();
+                taskDetailEntity.setWareId(wareId);
+                taskDetailEntity.setSkuId(skuId);
+                taskDetailEntity.setLockStatus(1);
+                taskDetailEntity.setSkuNum(hasStockWare.getLockCount());
+                taskDetailEntity.setTaskId(orderTaskEntity.getId());
+                wareOrderTaskDetailService.save(taskDetailEntity);
+
+                // 库存锁定成功后告诉RabbitMQ
+                StockLockedTo stockLockedTo = new StockLockedTo();
+                StockDetailTo stockDetailTo = new StockDetailTo();
+                BeanUtils.copyProperties(taskDetailEntity, stockDetailTo);
+                stockLockedTo.setDetail(stockDetailTo);
+                stockLockedTo.setTaskId(orderTaskEntity.getId());
+                rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", stockLockedTo);
                 break;
             }
             if (!lockedFlag) {
