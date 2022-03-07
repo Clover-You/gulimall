@@ -3,8 +3,6 @@ server:
 
 
 spring:
-  profiles:
-    active: dev
   datasource:
     username: root
     password: 123
@@ -22,8 +20,7 @@ spring:
 
   application:
     name: gulimall-ware
-
-  # RabbitMQ服务地址
+    
   rabbitmq:
     host: 172.16.156.128
     listener:

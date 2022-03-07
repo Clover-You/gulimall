@@ -20,9 +20,6 @@ spring:
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
-#    alibaba:
-#      seata:
-#        tx-service-group:
 
   # redis 配置
   redis:

@@ -17,10 +17,6 @@ spring:
       discovery:
         server-addr: 172.16.156.128:8848
 
-    alibaba:
-      seata:
-        tx-service-group: gulimall-product
-
   application:
     name: gulimall-product
   jackson:

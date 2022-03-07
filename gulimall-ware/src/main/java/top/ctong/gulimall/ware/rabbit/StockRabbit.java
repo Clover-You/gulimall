@@ -1,14 +1,11 @@
-package top.ctong.gulimall.ware;
+package top.ctong.gulimall.ware.rabbit;
 
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import top.ctong.gulimall.ware.config.RabbitConfig;
+import com.rabbitmq.client.Channel;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,25 +17,15 @@ import top.ctong.gulimall.ware.config.RabbitConfig;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 库存模块
+ * 库存管理
  * </p>
- *
  * @author Clover You
- * @create 2021/11/16 16:30
+ * @email cloveryou02@163.com
+ * @create 2022-03-07 8:45 上午
  */
-@EnableRabbit
-@EnableTransactionManagement
-@EnableDiscoveryClient
-@EnableFeignClients("top.ctong.gulimall.ware.feign")
-@MapperScan("top.ctong.gulimall.ware.dao")
-@SpringBootApplication
-public class GulimallWareApplication {
-
-    public static void main(String[] args) {
-        ConfigurableApplicationContext run = SpringApplication.run(GulimallWareApplication.class, args);
-        RabbitConfig bean = run.getBean(RabbitConfig.class);
-    }
+@Component
+public class StockRabbit {
 
 }
