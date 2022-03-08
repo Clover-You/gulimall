@@ -112,4 +112,21 @@ public class AmqpMqConfig {
             null
         );
     }
+
+    /**
+     * 库存释放绑定
+     * @return Binding
+     * @author Clover You
+     * @date 2022/3/8 4:07 下午
+     */
+    @Bean
+    public Binding orderReleaseOtherBinding() {
+        return new Binding(
+            "stock.release.stock.queue",
+            Binding.DestinationType.QUEUE,
+            "order-event-exchange",
+            "order.release.other.#",
+            null
+        );
+    }
 }

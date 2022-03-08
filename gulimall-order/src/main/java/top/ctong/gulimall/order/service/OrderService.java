@@ -57,5 +57,13 @@ public interface OrderService extends IService<OrderEntity> {
      * @date 2022/3/7 4:45 下午
      */
     OrderEntity getOrderStatus(String orderSn);
+
+    /**
+     * 关闭订单
+     * @param orderEntity 订单信息
+     * @author Clover You
+     * @date 2022/3/8 9:37 上午
+     */
+    void closeOrder(OrderEntity orderEntity);
 }
 

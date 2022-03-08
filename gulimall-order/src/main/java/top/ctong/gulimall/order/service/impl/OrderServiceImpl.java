@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import top.ctong.gulimall.common.to.mq.OrderTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.common.utils.R;
@@ -83,6 +86,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     private OrderItemService orderItemService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 保存订单提交时的数据
@@ -222,7 +228,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         // 保存订单
         saveOrder(order);
-        //#region TODO 锁定库存
+        //#region 锁定库存
         WareSkuLockTo wareSkuLockTo = new WareSkuLockTo();
         wareSkuLockTo.setOrderSn(order.getOrder().getOrderSn());
         // OrderItemEntity ===>> OrderItemVo
@@ -242,8 +248,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             resp.setCode(3);
             return resp;
         }
-        int i = 10 / 0;
         //#endregion
+
+        // TODO 订单创建成功，发送消息给MQ
+        rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", orderEntity);
         //#endregion
         return resp;
     }
@@ -500,5 +508,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public OrderEntity getOrderStatus(String orderSn) {
         return baseMapper.selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+    }
+
+    /**
+     * 关闭订单
+     * @param orderEntity 订单信息
+     * @author Clover You
+     * @date 2022/3/8 9:37 上午
+     */
+    @Override
+    public void closeOrder(OrderEntity orderEntity) {
+        OrderEntity orderRealInfo = getById(orderEntity.getId());
+        // 如果执行到这该订单还是未付款，那么肯定是超时单
+        if (!orderRealInfo.getStatus().equals(OrderStatusEnum.CREATE_NEW.getCode())) {
+            return;
+        }
+
+        OrderEntity newInfo = new OrderEntity();
+        // 设置订单为取消
+        newInfo.setStatus(OrderStatusEnum.CANCELED.getCode());
+        newInfo.setId(orderRealInfo.getId());
+
+        updateById(newInfo);
+
+        OrderTo orderTo = new OrderTo();
+        BeanUtils.copyProperties(orderRealInfo, orderTo);
+
+        // 给库存服务发送消息
+        rabbitTemplate.convertAndSend(
+            "order-event-exchange",
+            "order.release.other",
+            orderTo
+        );
     }
 }
