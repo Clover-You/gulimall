@@ -98,7 +98,6 @@ public class StockRabbit {
                 channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
                 return;
             }
-
             //#region 检查当前工作单对应的订单是否存在，如果不存在则必须解锁
             Long taskId = detailMeta.getTaskId();
             // 查询库存工作单
@@ -117,7 +116,9 @@ public class StockRabbit {
             });
             if (data == null || data.getStatus() == 4) {
                 // 已被取消
-                unLockStock(detail);
+                if (detailMeta.getLockStatus() == 1) {
+                    unLockStock(detail);
+                }
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
 
@@ -138,6 +139,11 @@ public class StockRabbit {
      */
     private void unLockStock(StockDetailTo detailTo) {
         wareSkuService.unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum());
+        // 修改库存工作单状态为已解锁
+        WareOrderTaskDetailEntity entity = new WareOrderTaskDetailEntity();
+        entity.setId(detailTo.getId());
+        entity.setLockStatus(2);
+        wareOrderTaskDetailService.updateById(entity);
     }
 
     /**
