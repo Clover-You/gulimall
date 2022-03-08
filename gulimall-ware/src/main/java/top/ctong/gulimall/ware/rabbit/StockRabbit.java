@@ -1,16 +1,19 @@
 package top.ctong.gulimall.ware.rabbit;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.ctong.gulimall.common.to.mq.OrderTo;
 import top.ctong.gulimall.common.to.mq.StockDetailTo;
 import top.ctong.gulimall.common.to.mq.StockLockedTo;
 import top.ctong.gulimall.common.utils.R;
@@ -21,9 +24,9 @@ import top.ctong.gulimall.ware.feign.OrderFeignService;
 import top.ctong.gulimall.ware.service.WareOrderTaskDetailService;
 import top.ctong.gulimall.ware.service.WareOrderTaskService;
 import top.ctong.gulimall.ware.service.WareSkuService;
-import top.ctong.gulimall.ware.to.OrderTo;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -157,6 +160,39 @@ public class StockRabbit {
         R orderStatus = orderFeignService.getOrderStatus(orderSn);
         return orderStatus.getData(new TypeReference<OrderTo>() {
         });
+    }
+
+    /**
+     * <h4>补偿服务</h4>
+     *
+     * 订单服务主动推送解锁库存，防止订单服务网络抖动，
+     * 导致库存解锁服务检查时发现订单还没取消，导致永远无法解锁库存
+     * @param channel 信道
+     * @param message 消息信息
+     * @param to 订单消息
+     * @author Clover You
+     * @date 2022/3/8 4:17 下午
+     */
+    @RabbitHandler
+    @Transactional(rollbackFor = Exception.class)
+    public void handleStockLockRelease(Channel channel, Message message, OrderTo to)
+        throws IOException {
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+
+        String orderSn = to.getOrderSn();
+        WareOrderTaskEntity orderTaskEntity = wareOrderTaskService.getOrderTaskByOrderSn(orderSn);
+        // 查询还没解锁的库存信息
+        List<WareOrderTaskDetailEntity> list = wareOrderTaskDetailService.list(
+            new QueryWrapper<WareOrderTaskDetailEntity>()
+                .eq("task_id", orderTaskEntity.getId())
+                .eq("lock_status", 1)
+        );
+        for (WareOrderTaskDetailEntity detailEntity : list) {
+            StockDetailTo detail = new StockDetailTo();
+            BeanUtils.copyProperties(detailEntity, detail);
+            unLockStock(detail);
+        }
+        channel.basicAck(deliveryTag, false);
     }
 
 }
