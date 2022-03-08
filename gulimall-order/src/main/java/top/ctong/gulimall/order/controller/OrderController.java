@@ -30,7 +30,6 @@ import top.ctong.gulimall.common.utils.R;
  * <p>
  * 订单
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-16 16:11:06
@@ -46,7 +45,7 @@ public class OrderController {
 
     @GetMapping("/amqp")
     public String testAmqp() {
-        rabbitTemplate.convertAndSend("order-event-exchange","order.create.order", UUID.randomUUID().toString());
+        rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", UUID.randomUUID().toString());
         return "successful";
     }
 
@@ -55,7 +54,7 @@ public class OrderController {
      */
     @RequestMapping("/list")
     //@RequiresPermissions("order:order:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = orderService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -67,8 +66,8 @@ public class OrderController {
      */
     @RequestMapping("/info/{id}")
     //@RequiresPermissions("order:order:info")
-    public R info(@PathVariable("id") Long id){
-		OrderEntity order = orderService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        OrderEntity order = orderService.getById(id);
 
         return R.ok().put("order", order);
     }
@@ -78,8 +77,8 @@ public class OrderController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("order:order:save")
-    public R save(@RequestBody OrderEntity order){
-		orderService.save(order);
+    public R save(@RequestBody OrderEntity order) {
+        orderService.save(order);
 
         return R.ok();
     }
@@ -89,8 +88,8 @@ public class OrderController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("order:order:update")
-    public R update(@RequestBody OrderEntity order){
-		orderService.updateById(order);
+    public R update(@RequestBody OrderEntity order) {
+        orderService.updateById(order);
 
         return R.ok();
     }
@@ -100,10 +99,23 @@ public class OrderController {
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("order:order:delete")
-    public R delete(@RequestBody Long[] ids){
-		orderService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        orderService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    /**
+     * 根据订单号查询订单状态
+     * @param orderSn 订单号
+     * @return R
+     * @author Clover You
+     * @date 2022/3/7 4:42 下午
+     */
+    @GetMapping("/status/{orderSn}")
+    public R getOrderStatus(@PathVariable("orderSn") String orderSn) {
+        OrderEntity entity = orderService.getOrderStatus(orderSn);
+        return R.ok().setData(entity);
     }
 
 }

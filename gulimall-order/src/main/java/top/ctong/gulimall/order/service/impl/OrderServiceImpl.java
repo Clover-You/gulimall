@@ -489,4 +489,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         brandInfoFuture.join();
         return entity;
     }
+
+    /**
+     * 根据订单号获取订单状态
+     * @param orderSn 订单
+     * @return OrderEntity
+     * @author Clover You
+     * @date 2022/3/7 4:45 下午
+     */
+    @Override
+    public OrderEntity getOrderStatus(String orderSn) {
+        return baseMapper.selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+    }
 }

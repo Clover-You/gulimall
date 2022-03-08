@@ -48,5 +48,14 @@ public interface OrderService extends IService<OrderEntity> {
      * @date 2022/2/27 9:17 上午
      */
     SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) throws Exception;
+
+    /**
+     * 根据订单号获取订单状态
+     * @param orderSn 订单
+     * @return OrderEntity
+     * @author Clover You
+     * @date 2022/3/7 4:45 下午
+     */
+    OrderEntity getOrderStatus(String orderSn);
 }
 

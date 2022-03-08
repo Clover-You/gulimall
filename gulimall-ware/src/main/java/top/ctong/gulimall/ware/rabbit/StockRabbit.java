@@ -1,9 +1,27 @@
 package top.ctong.gulimall.ware.rabbit;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.rabbitmq.client.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.ctong.gulimall.common.to.mq.StockDetailTo;
+import top.ctong.gulimall.common.to.mq.StockLockedTo;
+import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.ware.components.RabbitComponent;
+import top.ctong.gulimall.ware.entity.WareOrderTaskDetailEntity;
+import top.ctong.gulimall.ware.entity.WareOrderTaskEntity;
+import top.ctong.gulimall.ware.feign.OrderFeignService;
+import top.ctong.gulimall.ware.service.WareOrderTaskDetailService;
+import top.ctong.gulimall.ware.service.WareOrderTaskService;
+import top.ctong.gulimall.ware.service.WareSkuService;
+import top.ctong.gulimall.ware.to.OrderTo;
 
 import java.io.IOException;
 
@@ -25,7 +43,114 @@ import java.io.IOException;
  * @email cloveryou02@163.com
  * @create 2022-03-07 8:45 上午
  */
-@Component
+@Slf4j
+@Service
+@RabbitListener(queues = RabbitComponent.STOCK_RELEASE_STOCK_QUEUE_NAME)
 public class StockRabbit {
+
+    private WareOrderTaskDetailService wareOrderTaskDetailService;
+
+    private WareOrderTaskService wareOrderTaskService;
+
+    private OrderFeignService orderFeignService;
+
+    private WareSkuService wareSkuService;
+
+    @Autowired
+    public void setWareSkuService(WareSkuService wareSkuService) {
+        this.wareSkuService = wareSkuService;
+    }
+
+    @Autowired
+    public void setOrderFeignService(OrderFeignService orderFeignService) {
+        this.orderFeignService = orderFeignService;
+    }
+
+    @Autowired
+    public void setWareOrderTaskService(WareOrderTaskService wareOrderTaskService) {
+        this.wareOrderTaskService = wareOrderTaskService;
+    }
+
+    @Autowired
+    public void setWareOrderTaskDetailService(WareOrderTaskDetailService wareOrderTaskDetailService) {
+        this.wareOrderTaskDetailService = wareOrderTaskDetailService;
+    }
+
+    /**
+     * 解锁库存
+     * @param channel 信道
+     * @param message 消息信息
+     * @param to 数据
+     * @author Clover You
+     * @date 2022/3/7 3:53 下午
+     */
+    @RabbitHandler
+    @Transactional(rollbackFor = Exception.class)
+    public void handleStockLockRelease(Channel channel, Message message, StockLockedTo to) throws IOException {
+        log.info("to data: ====>> {}", to);
+        try {
+            StockDetailTo detail = to.getDetail();
+            Long detailId = detail.getId();
+            // 通过详情id查询库存锁定详情信息
+            WareOrderTaskDetailEntity detailMeta = wareOrderTaskDetailService.getById(detailId);
+            if (detailMeta == null) {
+                // 如果查不到一个工作单，那么就可能已经自动解锁了(出现问题自动回滚了)
+                channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
+                return;
+            }
+
+            //#region 检查当前工作单对应的订单是否存在，如果不存在则必须解锁
+            Long taskId = detailMeta.getTaskId();
+            // 查询库存工作单
+            WareOrderTaskEntity taskEntity = wareOrderTaskService.getById(taskId);
+            // 订单
+            String orderSn = taskEntity.getOrderSn();
+
+            // 如果存在这个订单，那么该订单是否异常，如果异常那么就解锁库存，例如支付超时
+            // 查询订单信息
+            R orderStatus = orderFeignService.getOrderStatus(orderSn);
+            if (orderStatus.getCode() != 0) {
+                channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+                return;
+            }
+            OrderTo data = orderStatus.getData(new TypeReference<OrderTo>() {
+            });
+            if (data == null || data.getStatus() == 4) {
+                // 已被取消
+                unLockStock(detail);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            }
+
+            //#endregion
+        } catch (Exception e) {
+            // 处理时出现异常，消息重新归队
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+        }
+
+
+    }
+
+    /**
+     * 解锁库存
+     * @param detailTo 库存工作详情单
+     * @author Clover You
+     * @date 2022/3/7 7:26 下午
+     */
+    private void unLockStock(StockDetailTo detailTo) {
+        wareSkuService.unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum());
+    }
+
+    /**
+     * 通过订单号获取订单信息
+     * @param orderSn 订单号
+     * @return OrderTo
+     * @author Clover You
+     * @date 2022/3/7 7:20 下午
+     */
+    private OrderTo getOrderInfo(String orderSn) {
+        R orderStatus = orderFeignService.getOrderStatus(orderSn);
+        return orderStatus.getData(new TypeReference<OrderTo>() {
+        });
+    }
 
 }

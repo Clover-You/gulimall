@@ -56,6 +56,7 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     /**
      * 根据指定信息锁定库存
      * @param vo 商品锁定信息
+     * @throws NoStockException 无库存异常
      * @return Boolean
      * @author Clover You
      * @date 2022/2/27 8:35 下午
@@ -70,5 +71,18 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      * @date 2022/3/1 8:09 上午
      */
     List<Long> listWareIdHasSkuStock(Long skuId);
+
+
+
+    /**
+     * 解锁库存
+     * @param skuId 商品id
+     * @param wareId 库存id
+     * @param skuNum 解锁数量
+
+     * @author Clover You
+     * @date 2022/3/7 7:33 下午
+     */
+    void unLockStock(Long skuId, Long wareId, Integer skuNum);
 }
 

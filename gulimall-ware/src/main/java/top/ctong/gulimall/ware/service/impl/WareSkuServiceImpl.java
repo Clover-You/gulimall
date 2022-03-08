@@ -20,6 +20,7 @@ import top.ctong.gulimall.common.to.mq.StockLockedTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.ware.components.RabbitComponent;
 import top.ctong.gulimall.ware.dao.WareSkuDao;
 import top.ctong.gulimall.ware.entity.WareOrderTaskDetailEntity;
 import top.ctong.gulimall.ware.entity.WareOrderTaskEntity;
@@ -224,7 +225,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 BeanUtils.copyProperties(taskDetailEntity, stockDetailTo);
                 stockLockedTo.setDetail(stockDetailTo);
                 stockLockedTo.setTaskId(orderTaskEntity.getId());
-                rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", stockLockedTo);
+                rabbitTemplate.convertAndSend(
+                    RabbitComponent.STOCK_EXCHANGE_NAME,
+                    RabbitComponent.STOCK_DELAY_BINDING_KEY,
+                    stockLockedTo
+                );
                 break;
             }
             if (!lockedFlag) {
@@ -269,5 +274,18 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
          * 锁定件数
          */
         private Integer lockCount;
+    }
+
+    /**
+     * 解锁库存
+     * @param skuId 商品id
+     * @param wareId 库存id
+     * @param skuNum 解锁数量
+     * @author Clover You
+     * @date 2022/3/7 7:33 下午
+     */
+    @Override
+    public void unLockStock(Long skuId, Long wareId, Integer skuNum) {
+        baseMapper.unLockStock(skuId, wareId, skuNum);
     }
 }

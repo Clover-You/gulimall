@@ -1,6 +1,7 @@
 package top.ctong.gulimall.order.components.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.util.AntPathMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -63,6 +64,11 @@ public class LoginInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
         log.warn("订单服务---登录拦截器触发");
+        boolean match = new AntPathMatcher().match("/order/order/status/**", request.getRequestURI());
+        if (match) {
+            log.info("远程服务放行...");
+            return true;
+        }
         HttpSession session = request.getSession();
         MemberRespVo attribute = (MemberRespVo) session.getAttribute(SessionKeyConstant.LOGIN_USER);
         if (attribute == null) {

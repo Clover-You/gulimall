@@ -85,7 +85,7 @@ public class RabbitComponent {
     public Queue stockDelayQueue() {
         HashMap<String, Object> args = new HashMap<>();
         args.put("x-dead-letter-exchange", STOCK_EXCHANGE_NAME);
-        args.put("x-dead-letter-router-key", DEAD_LETTER_BINDING_KEY);
+        args.put("x-dead-letter-routing-key", DEAD_LETTER_BINDING_KEY);
         args.put("x-message-ttl", MESSAGE_TTL);
 
         return new Queue(
