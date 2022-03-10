@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import top.ctong.gulimall.cart.feign.ProductFeignServer;
 import top.ctong.gulimall.cart.interceptor.CartInterceptor;
 import top.ctong.gulimall.cart.service.CartService;
@@ -77,9 +79,12 @@ public class CartServiceImpl implements CartService {
         }
         // 如果购物车没有数据，那么查询该商品保存到购物车
         cartItem = new CartItem();
+        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
 
         CartItem finalCartItem = cartItem;
         CompletableFuture<Void> skuInfoFuture = CompletableFuture.runAsync(() -> {
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+
             R info = productFeignServer.getSkuInfoBySkuId(skuId);
             SkuInfoTo skuInfo = info.getData("skuInfo", new TypeReference<SkuInfoTo>() {
             });
@@ -93,6 +98,8 @@ public class CartServiceImpl implements CartService {
         }, threadPoolExecutor);
 
         CompletableFuture<Void> skuAttrFuture = CompletableFuture.runAsync(() -> {
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+
             List<String> skuSaleAttrValues = productFeignServer.getSkuSaleAttrValues(skuId);
             finalCartItem.setSkuAttr(skuSaleAttrValues);
         }, threadPoolExecutor);
