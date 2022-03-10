@@ -5,6 +5,7 @@ import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.order.entity.OrderEntity;
 import top.ctong.gulimall.order.vo.OrderConfirmVo;
 import top.ctong.gulimall.order.vo.OrderSubmitVo;
+import top.ctong.gulimall.order.vo.PayVo;
 import top.ctong.gulimall.order.vo.SubmitOrderResponseVo;
 
 import java.util.Map;
@@ -65,5 +66,14 @@ public interface OrderService extends IService<OrderEntity> {
      * @date 2022/3/8 9:37 上午
      */
     void closeOrder(OrderEntity orderEntity);
+
+    /**
+     * 获取订单数据并返回支付vo
+     * @param orderSn 订单
+     * @return PayVo
+     * @author Clover You
+     * @date 2022/3/10 9:29 上午
+     */
+    PayVo getOrderPayInfo(String orderSn);
 }
 

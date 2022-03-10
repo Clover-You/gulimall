@@ -541,4 +541,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             orderTo
         );
     }
+
+    /**
+     * 获取订单数据并返回支付vo
+     * @param orderSn 订单
+     * @return PayVo
+     * @author Clover You
+     * @date 2022/3/10 9:29 上午
+     */
+    @Override
+    public PayVo getOrderPayInfo(String orderSn) {
+        PayVo payVo = new PayVo();
+        OrderEntity orderEntity = this.getOne(
+            new QueryWrapper<OrderEntity>().eq("order_sn", orderSn).eq("status", 0)
+        );
+
+        String payAmount = orderEntity.getPayAmount().setScale(2, BigDecimal.ROUND_UP).toString();
+        payVo.setTotalAmount(payAmount);
+        payVo.setOutTradeNo(orderEntity.getOrderSn());
+
+        List<OrderItemEntity> orderItemList = orderItemService.list(
+            new QueryWrapper<OrderItemEntity>()
+                .eq("order_id", orderEntity.getId())
+        );
+        List<String> spuNames = orderItemList.stream().map(OrderItemEntity::getSpuName).collect(Collectors.toList());
+        payVo.setSubject(orderItemList.get(0).getSkuName() + "...");
+        payVo.setBody(spuNames.toString());
+
+        return payVo;
+    }
 }
