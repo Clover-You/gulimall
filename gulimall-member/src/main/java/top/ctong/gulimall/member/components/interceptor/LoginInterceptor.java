@@ -1,8 +1,9 @@
-package top.ctong.gulimall.member.component.interceptor;
+package top.ctong.gulimall.member.components.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.util.AntPathMatcher;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,6 +13,8 @@ import top.ctong.gulimall.common.vo.MemberRespVo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -64,6 +67,10 @@ public class LoginInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
         log.warn("订单服务---登录拦截器触发");
+        String uri = request.getRequestURI();
+        if (isAllowUri(uri)){
+            return true;
+        }
         HttpSession session = request.getSession();
         MemberRespVo attribute = (MemberRespVo) session.getAttribute(SessionKeyConstant.LOGIN_USER);
         if (attribute == null) {
@@ -107,5 +114,30 @@ public class LoginInterceptor implements HandlerInterceptor {
             THREAD_LOCAL.remove();
         }
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+    }
+
+    private String[] paths = {
+        "/member/member/oauth2/gitee/login"
+    };
+
+    /**
+     * 如果是特别允许的页面，则不需要登录
+     * @param uri 请求路径
+     * @return boolean
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/10 4:39 下午
+     */
+    private boolean isAllowUri(String uri) {
+        boolean flag = false;
+
+        for (String path : paths) {
+            if (new AntPathMatcher().match(path, uri)) {
+                flag = true;
+                break;
+            }
+        }
+
+        return flag;
     }
 }
