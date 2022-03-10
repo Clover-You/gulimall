@@ -44,6 +44,8 @@ spring:
           filters:
             # 路径重写
             - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
+
+        # ##########
         - id: search_gulimall_host_route
           uri: lb://gulimall-search
           predicates:
@@ -63,6 +65,11 @@ spring:
           uri: lb://gulimall-order
           predicates:
             - Host=order.gulimall.com
+
+        - id: gulimall_member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Host=member.gulimall.com
 
         - id: gulimall_host_route
           uri: lb://gulimall-product
