@@ -64,8 +64,7 @@ public class LoginInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
         log.warn("订单服务---登录拦截器触发");
-        boolean match = new AntPathMatcher().match("/order/order/status/**", request.getRequestURI());
-        if (match) {
+        if (isAllowUri(request.getRequestURI())) {
             log.info("远程服务放行...");
             return true;
         }
@@ -112,5 +111,30 @@ public class LoginInterceptor implements HandlerInterceptor {
             THREAD_LOCAL.remove();
         }
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+    }
+
+    private final String[] paths = {
+        "/order/order/status/**",
+    };
+
+    /**
+     * 如果是特别允许的页面，则不需要登录
+     * @param uri 请求路径
+     * @return boolean
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/10 4:39 下午
+     */
+    private boolean isAllowUri(String uri) {
+        boolean flag = false;
+
+        for (String path : paths) {
+            if (new AntPathMatcher().match(path, uri)) {
+                flag = true;
+                break;
+            }
+        }
+
+        return flag;
     }
 }

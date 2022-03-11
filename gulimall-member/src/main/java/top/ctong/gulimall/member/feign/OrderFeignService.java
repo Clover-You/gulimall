@@ -1,20 +1,12 @@
-package top.ctong.gulimall.member.web;
+package top.ctong.gulimall.member.feign;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import top.ctong.gulimall.common.utils.Constant;
-import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.R;
-import top.ctong.gulimall.member.feign.OrderFeignService;
-import top.ctong.gulimall.member.vo.OrderVo;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,42 +21,24 @@ import java.util.Map;
  * ░     ░ ░      ░  ░
  * Copyright 2022 Clover You.
  * <p>
- * 前端控制器
+ * 订单服务
  * </p>
  * @author Clover You
  * @email cloveryou02@163.com
- * @create 2022-03-10 3:55 下午
+ * @create 2022-03-11 2:08 下午
  */
-@Slf4j
-@Controller
-public class MemberWebController {
-
-    @Autowired
-    private OrderFeignService orderFeignService;
+@FeignClient("gulimall-order")
+public interface OrderFeignService {
 
     /**
-     * 订单列表页
-     * @return String
+     * 远程获取用户所有订单-分页
+     * @param params 请求参数
+     * @return R
      * @author Clover You
      * @email cloveryou02@163.com
-     * @date 2022/3/10 3:58 下午
+     * @date 2022/3/11 2:09 下午
      */
-    @GetMapping("/orderList")
-    public String orderList(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, Model model) {
-        Map<String, Object> map = new HashMap<>(1);
-        map.put(Constant.PAGE, pageNum.toString());
-        R r = orderFeignService.listWithItem(map);
-        PageUtils pageUtils = r.getData(
-            "page",
-            new TypeReference<PageUtils>() {
-            }
-        );
-
-
-        log.info("data: ====>>> {}", pageUtils);
-
-        model.addAttribute("list", pageUtils);
-        return "orderList";
-    }
+    @PostMapping("/order/order/listWithItem")
+    R listWithItem(@RequestBody Map<String, Object> params);
 
 }

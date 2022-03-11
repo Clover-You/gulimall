@@ -24,7 +24,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * @author Clover You
  * @create 2021/11/16 16:00
  */
-@EnableFeignClients(basePackages = "top.ctong.gulimall.common.feign")
+@EnableFeignClients(basePackages = "top.ctong.gulimall.member.feign")
 @EnableDiscoveryClient
 @EnableRedisHttpSession
 @MapperScan("top.ctong.gulimall.member.dao")

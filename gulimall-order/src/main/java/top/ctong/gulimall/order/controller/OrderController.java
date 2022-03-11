@@ -126,8 +126,8 @@ public class OrderController {
      * @email cloveryou02@163.com
      * @date 2022/3/11 2:06 下午
      */
-    @GetMapping("/listWithItem")
-    public R listWithItem(@RequestParam Map<String, Object> params) {
+    @PostMapping("/listWithItem")
+    public R listWithItem(@RequestBody Map<String, Object> params) {
         PageUtils page = orderService.queryPageWithItem(params);
         return R.ok().put("page", page);
     }
