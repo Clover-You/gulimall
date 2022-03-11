@@ -570,4 +570,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         return payVo;
     }
+
+    /**
+     * 分页获取用户订单
+     * @param params 请求参数
+     * @return PageUtils
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/11 1:52 下午
+     */
+    @Override
+    public PageUtils queryPageWithItem(Map<String, Object> params) {
+
+        MemberRespVo mrv = LoginInterceptor.THREAD_LOCAL.get();
+        IPage<OrderEntity> page = this.page(
+            new Query<OrderEntity>().getPage(params),
+            new QueryWrapper<OrderEntity>().eq("member_id", mrv.getId()).orderByDesc("id")
+        );
+        List<OrderEntity> list = page.getRecords().stream().map(order -> {
+            List<OrderItemEntity> item = orderItemService.list(
+                new QueryWrapper<OrderItemEntity>().eq("order_id", order.getId())
+            );
+            order.setItems(item);
+            return order;
+        }).collect(Collectors.toList());
+
+        page.setRecords(list);
+
+        return new PageUtils(page);
+    }
 }

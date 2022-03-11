@@ -118,4 +118,18 @@ public class OrderController {
         return R.ok().setData(entity);
     }
 
+    /**
+     * 分页获取用户订单
+     * @param params 请求参数
+     * @return R
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/11 2:06 下午
+     */
+    @GetMapping("/listWithItem")
+    public R listWithItem(@RequestParam Map<String, Object> params) {
+        PageUtils page = orderService.queryPageWithItem(params);
+        return R.ok().put("page", page);
+    }
+
 }

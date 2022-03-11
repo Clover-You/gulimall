@@ -75,5 +75,15 @@ public interface OrderService extends IService<OrderEntity> {
      * @date 2022/3/10 9:29 上午
      */
     PayVo getOrderPayInfo(String orderSn);
+
+    /** 
+     * 分页获取用户订单
+     * @param params 请求参数
+     * @return PageUtils 
+     * @author Clover You 
+     * @email cloveryou02@163.com
+     * @date 2022/3/11 1:52 下午
+     */
+    PageUtils queryPageWithItem(Map<String, Object> params);
 }
 
