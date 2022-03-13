@@ -115,6 +115,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private final String[] paths = {
         "/order/order/status/**",
+        "/alipay/success"
     };
 
     /**
