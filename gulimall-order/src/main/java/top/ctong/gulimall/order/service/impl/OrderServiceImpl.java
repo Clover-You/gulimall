@@ -26,6 +26,7 @@ import top.ctong.gulimall.order.constant.OrderConstant;
 import top.ctong.gulimall.order.dao.OrderDao;
 import top.ctong.gulimall.order.entity.OrderEntity;
 import top.ctong.gulimall.order.entity.OrderItemEntity;
+import top.ctong.gulimall.order.entity.PaymentInfoEntity;
 import top.ctong.gulimall.order.enume.OrderStatusEnum;
 import top.ctong.gulimall.order.feign.CartFeignService;
 import top.ctong.gulimall.order.feign.MemberFeignService;
@@ -33,6 +34,7 @@ import top.ctong.gulimall.order.feign.ProductFeignService;
 import top.ctong.gulimall.order.feign.WmsFeignService;
 import top.ctong.gulimall.order.service.OrderItemService;
 import top.ctong.gulimall.order.service.OrderService;
+import top.ctong.gulimall.order.service.PaymentInfoService;
 import top.ctong.gulimall.order.to.*;
 import top.ctong.gulimall.order.vo.*;
 
@@ -89,6 +91,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private PaymentInfoService paymentInfoService;
 
     /**
      * 保存订单提交时的数据
@@ -598,5 +603,45 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         page.setRecords(list);
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 处理支付宝支付结果
+     * @param params 支付宝异步通知参数
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/13 2:49 下午
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void handleAlipayResult(PayAsyncVo params) throws Exception {
+        // 保存交易流水信息
+        PaymentInfoEntity paymentInfoEntity = new PaymentInfoEntity();
+        paymentInfoEntity.setOrderSn(params.getOut_trade_no());
+        paymentInfoEntity.setAlipayTradeNo(params.getTrade_no());
+        paymentInfoEntity.setPaymentStatus(params.getTrade_status());
+        paymentInfoEntity.setCallbackTime(params.getNotify_time());
+        paymentInfoEntity.setCreateTime(new Date());
+        paymentInfoEntity.setTotalAmount(new BigDecimal(params.getTotal_amount()));
+        paymentInfoService.save(paymentInfoEntity);
+
+        String tradeStatus = params.getTrade_status();
+        if (!"TRADE_SUCCESS".equals(tradeStatus) && !"TRADE_FINISHED".equals(tradeStatus)) {
+            throw new Exception("支付失败");
+        }
+
+        // 订单号
+        String orderNo = params.getOut_trade_no();
+        OrderEntity orderEntity = getOrderStatus(orderNo);
+        if (orderEntity == null) {
+            throw new Exception("订单不存在");
+        }
+
+        OrderEntity entity = new OrderEntity();
+        entity.setOrderSn(orderNo);
+        entity.setId(orderEntity.getId());
+        entity.setStatus(OrderStatusEnum.PAYED.getCode());
+        entity.setPayType(1);
+        this.updateById(entity);
     }
 }

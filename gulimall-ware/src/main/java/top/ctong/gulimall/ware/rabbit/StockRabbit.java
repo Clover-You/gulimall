@@ -125,6 +125,10 @@ public class StockRabbit {
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
 
+            if (data.getStatus() == 1) {
+                // TODO 已付款扣减库存
+            }
+
             //#endregion
         } catch (Exception e) {
             // 处理时出现异常，消息重新归队

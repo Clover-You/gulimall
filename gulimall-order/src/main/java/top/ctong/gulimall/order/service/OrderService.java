@@ -3,10 +3,7 @@ package top.ctong.gulimall.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.order.entity.OrderEntity;
-import top.ctong.gulimall.order.vo.OrderConfirmVo;
-import top.ctong.gulimall.order.vo.OrderSubmitVo;
-import top.ctong.gulimall.order.vo.PayVo;
-import top.ctong.gulimall.order.vo.SubmitOrderResponseVo;
+import top.ctong.gulimall.order.vo.*;
 
 import java.util.Map;
 
@@ -76,14 +73,23 @@ public interface OrderService extends IService<OrderEntity> {
      */
     PayVo getOrderPayInfo(String orderSn);
 
-    /** 
+    /**
      * 分页获取用户订单
      * @param params 请求参数
-     * @return PageUtils 
-     * @author Clover You 
+     * @return PageUtils
+     * @author Clover You
      * @email cloveryou02@163.com
      * @date 2022/3/11 1:52 下午
      */
     PageUtils queryPageWithItem(Map<String, Object> params);
+
+    /**
+     * 处理支付宝支付结果
+     * @param params 支付宝异步通知参数
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/13 2:49 下午
+     */
+    void handleAlipayResult(PayAsyncVo params) throws Exception;
 }
 

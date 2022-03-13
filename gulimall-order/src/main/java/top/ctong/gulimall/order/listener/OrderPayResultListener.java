@@ -1,12 +1,20 @@
 package top.ctong.gulimall.order.listener;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayConfig;
+import com.alipay.api.internal.util.AlipaySignature;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.ctong.gulimall.order.components.AlipayTemplate;
+import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.vo.PayAsyncVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -31,6 +39,12 @@ import java.util.Map;
 @RestController
 public class OrderPayResultListener {
 
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private AlipayTemplate alipayTemplate;
+
     /**
      * 接受阿里支付结果通知
      * @return String 响应success告诉阿里表示成功
@@ -39,85 +53,39 @@ public class OrderPayResultListener {
      * @date 2022/3/11 3:54 下午
      */
     @PostMapping("/alipay/success")
-    public String aliPayResult(PayAsyncVo params) {
-        log.info("params: ====>> {}", JSON.toJSONString(params));
-        return "success";
-    }
+    public String aliPayResult(PayAsyncVo vo, HttpServletRequest req) {
+        try {
+            //获取支付宝POST过来反馈信息
+            Map<String,String[]> requestParams = req.getParameterMap();
+            Map<String,String> params = new HashMap<String,String>(requestParams.size());
+            for (String name : requestParams.keySet()) {
+                String[] values = (String[]) requestParams.get(name);
+                String valueStr = "";
+                for (int i = 0; i < values.length; i++) {
+                    valueStr = (i == values.length - 1) ? valueStr + values[i]
+                        : valueStr + values[i] + ",";
+                }
+                //乱码解决，这段代码在出现乱码时使用
+//                valueStr = new String(valueStr.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                params.put(name, valueStr);
+            }
 
-    /**
-     * {
-     *     "gmt_create": [
-     *         "2022-03-11 16:38:52"
-     *     ],
-     *     "charset": [
-     *         "utf-8"
-     *     ],
-     *     "gmt_payment": [
-     *         "2022-03-11 16:39:02"
-     *     ],
-     *     "notify_time": [
-     *         "2022-03-11 16:39:03"
-     *     ],
-     *     "subject": [
-     *         "华为p50 新品手机 可可茶金 8G+256G..."
-     *     ],
-     *     "sign": [
-     *         "UpJ7ob958EOCKLExRy0BRb4QVTJOnUgEwuMTTHWfVoQTZsm/ScsvNW4bxNHBNkdL6XgjSPhVK8rvQTXUDEficwlLmKW5Ga27EAx128MRcHn6E+VfvwViWT2Ea1TSpR52E9HCgSPZmdluT3G0x2OgJ5Wyppr8RYFbs+nnDj8/KOregjiwwUJyukgU/ewsNUq/yf1AdcVxBeS8tQ+Jiy+ZDSjPlc3OjNjIIo5c9YGtiUw8bOdnbat8TMbC1aPkCkl112DQJhJEWqyGQxwJhtCJTHf5YdHofXzit4gh3SSrvD+aRiiw66ltQ/JijdLjyms9AK3NJqUDh39iF6G8876sAQ=="
-     *     ],
-     *     "buyer_id": [
-     *         "2088622958068871"
-     *     ],
-     *     "body": [
-     *         "[华为p50 新品手机]"
-     *     ],
-     *     "invoice_amount": [
-     *         "6161.00"
-     *     ],
-     *     "version": [
-     *         "1.0"
-     *     ],
-     *     "notify_id": [
-     *         "2022031100222163902068870518884926"
-     *     ],
-     *     "fund_bill_list": [
-     *         "[{\"amount\":\"6161.00\",\"fundChannel\":\"ALIPAYACCOUNT\"}]"
-     *     ],
-     *     "notify_type": [
-     *         "trade_status_sync"
-     *     ],
-     *     "out_trade_no": [
-     *         "202203111638399571502202331082326017"
-     *     ],
-     *     "total_amount": [
-     *         "6161.00"
-     *     ],
-     *     "trade_status": [
-     *         "TRADE_SUCCESS"
-     *     ],
-     *     "trade_no": [
-     *         "2022031122001468870501831517"
-     *     ],
-     *     "auth_app_id": [
-     *         "2021000119633732"
-     *     ],
-     *     "receipt_amount": [
-     *         "6161.00"
-     *     ],
-     *     "point_amount": [
-     *         "0.00"
-     *     ],
-     *     "app_id": [
-     *         "2021000119633732"
-     *     ],
-     *     "buyer_pay_amount": [
-     *         "6161.00"
-     *     ],
-     *     "sign_type": [
-     *         "RSA2"
-     *     ],
-     *     "seller_id": [
-     *         "2088621957985705"
-     *     ]
-     * }
-     */
+            log.info("params ===>> {}", params);
+            boolean signVerified = AlipaySignature.rsaCheckV1(
+                params,
+                alipayTemplate.getAlipayPublicKey(),
+                alipayTemplate.getCharset(),
+                alipayTemplate.getSignType()
+            ); //调用SDK验证签名
+            log.info("signVerified ====>> {}", signVerified);
+            if (!signVerified){
+                return "签名验证失败";
+            }
+            orderService.handleAlipayResult(vo);
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "failed";
+        }
+    }
 }
