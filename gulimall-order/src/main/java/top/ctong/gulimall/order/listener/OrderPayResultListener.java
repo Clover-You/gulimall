@@ -1,7 +1,5 @@
 package top.ctong.gulimall.order.listener;
 
-import com.alibaba.fastjson.JSON;
-import com.alipay.api.AlipayConfig;
 import com.alipay.api.internal.util.AlipaySignature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,7 @@ import top.ctong.gulimall.order.service.OrderService;
 import top.ctong.gulimall.order.vo.PayAsyncVo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
