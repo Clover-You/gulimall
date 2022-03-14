@@ -1,12 +1,10 @@
-package top.ctong.gulimall.coupon.service;
+package top.ctong.gulimall.seckill.schedule;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.coupon.entity.SeckillSessionEntity;
-
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import top.ctong.gulimall.seckill.service.SeckillService;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,25 +16,31 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 秒杀活动场次
+ * 商品秒杀定时任务
+ * 计划每天凌晨三点上架最近三天需要上架的秒杀商品
  * </p>
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 15:44:41
+ * @email cloveryou02@163.com
+ * @create 2022-03-14 6:28 下午
  */
-public interface SeckillSessionService extends IService<SeckillSessionEntity> {
+@Slf4j
+@Service
+public class SeckillSkuSchedule {
 
-    PageUtils queryPage(Map<String, Object> params);
+    @Autowired
+    private SeckillService seckillService;
 
     /**
-     * 获取最近三天活动的商品
-     * @return List<SeckillSessionEntity> 商品列表
+     * 上架最近三天的秒杀商品
      * @author Clover You
      * @email cloveryou02@163.com
-     * @date 2022/3/14 6:49 下午
+     * @date 2022/3/14 6:34 下午
      */
-    List<SeckillSessionEntity> getLates3DaySession();
-}
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void uploadSeckillSkuLatest3Days() {
+        seckillService.uploadSeckillSkuLatest3Days();
+    }
 
+}

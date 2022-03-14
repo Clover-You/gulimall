@@ -1,12 +1,13 @@
-package top.ctong.gulimall.coupon.service;
+package top.ctong.gulimall.seckill.schedule;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.coupon.entity.SeckillSessionEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-
+import java.util.Date;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,25 +19,24 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 秒杀活动场次
+ * 测试定时任务
  * </p>
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 15:44:41
+ * @email cloveryou02@163.com
+ * @create 2022-03-14 4:00 下午
  */
-public interface SeckillSessionService extends IService<SeckillSessionEntity> {
+@Slf4j
+@Component
+@EnableAsync
+@EnableScheduling
+public class HelloSchedule {
 
-    PageUtils queryPage(Map<String, Object> params);
+    @Async
+    @Scheduled(cron = "10/5 * * * * ?")
+    public void hello() {
+        log.info("每分钟的第10秒启动，每5秒执行一次，当前是第 {} 秒", new Date().getSeconds());
+    }
 
-    /**
-     * 获取最近三天活动的商品
-     * @return List<SeckillSessionEntity> 商品列表
-     * @author Clover You
-     * @email cloveryou02@163.com
-     * @date 2022/3/14 6:49 下午
-     */
-    List<SeckillSessionEntity> getLates3DaySession();
 }
-

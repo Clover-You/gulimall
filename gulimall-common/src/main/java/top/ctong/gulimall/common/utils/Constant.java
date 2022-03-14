@@ -124,4 +124,9 @@ public class Constant {
         }
     }
 
+    public static class DateUtils {
+
+        public static final String YYYY_DD_MM_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+    }
+
 }

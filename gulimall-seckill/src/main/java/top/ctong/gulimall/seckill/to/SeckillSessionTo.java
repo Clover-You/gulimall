@@ -1,12 +1,9 @@
-package top.ctong.gulimall.coupon.service;
+package top.ctong.gulimall.seckill.to;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import top.ctong.gulimall.common.utils.PageUtils;
-import top.ctong.gulimall.coupon.entity.SeckillSessionEntity;
+import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -18,25 +15,44 @@ import java.util.Map;
  * ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
  * ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
  * ░     ░ ░      ░  ░
- * Copyright 2021 Clover You.
+ * Copyright 2022 Clover You.
  * <p>
- * 秒杀活动场次
+ * 活动商品
  * </p>
  * @author Clover You
- * @email 2621869236@qq.com
- * @create 2021-11-16 15:44:41
+ * @email cloveryou02@163.com
+ * @create 2022-03-14 7:14 下午
  */
-public interface SeckillSessionService extends IService<SeckillSessionEntity> {
-
-    PageUtils queryPage(Map<String, Object> params);
+@Data
+public class SeckillSessionTo {
 
     /**
-     * 获取最近三天活动的商品
-     * @return List<SeckillSessionEntity> 商品列表
-     * @author Clover You
-     * @email cloveryou02@163.com
-     * @date 2022/3/14 6:49 下午
+     * id
      */
-    List<SeckillSessionEntity> getLates3DaySession();
-}
+    private Long id;
+    /**
+     * 场次名称
+     */
+    private String name;
+    /**
+     * 每日开始时间
+     */
+    private Date startTime;
+    /**
+     * 每日结束时间
+     */
+    private Date endTime;
+    /**
+     * 启用状态
+     */
+    private Integer status;
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 
+    /**
+     * 关联商品
+     */
+    private List<SeckillSkuRelationTo> relation;
+}
