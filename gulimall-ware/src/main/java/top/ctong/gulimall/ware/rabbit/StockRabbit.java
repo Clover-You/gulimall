@@ -9,8 +9,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.ctong.gulimall.common.to.mq.OrderTo;
@@ -27,6 +25,7 @@ import top.ctong.gulimall.ware.service.WareSkuService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -117,17 +116,30 @@ public class StockRabbit {
             }
             OrderTo data = orderStatus.getData(new TypeReference<OrderTo>() {
             });
-            if (data == null || data.getStatus() == 4) {
+            if (data == null || data.getStatus() == 4 || data.getStatus() == 0) {
                 // 已被取消
                 if (detailMeta.getLockStatus() == 1) {
                     unLockStock(detail);
                 }
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            } else {
+                // 订单已经付款了
+                // 查询还没解锁的库存信息
+                List<WareOrderTaskDetailEntity> list = wareOrderTaskDetailService.list(
+                    new QueryWrapper<WareOrderTaskDetailEntity>()
+                        .eq("task_id", taskEntity.getId())
+                        .eq("lock_status", 1)
+                );
+                // 批量修改工作单库存锁定状态为已扣减
+                wareOrderTaskDetailService.updateBatchById(
+                    list.stream().map((item) -> {
+                        WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
+                        detailEntity.setId(item.getId());
+                        detailEntity.setLockStatus(3);
+                        return detailEntity;
+                    }).collect(Collectors.toList())
+                );
             }
-
-            if (data.getStatus() == 1) {
-                // TODO 已付款扣减库存
-            }
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 
             //#endregion
         } catch (Exception e) {
@@ -168,7 +180,7 @@ public class StockRabbit {
 
     /**
      * <h4>补偿服务</h4>
-     *
+     * <p>
      * 订单服务主动推送解锁库存，防止订单服务网络抖动，
      * 导致库存解锁服务检查时发现订单还没取消，导致永远无法解锁库存
      * @param channel 信道
@@ -183,14 +195,43 @@ public class StockRabbit {
         throws IOException {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
 
+
         String orderSn = to.getOrderSn();
+
+
         WareOrderTaskEntity orderTaskEntity = wareOrderTaskService.getOrderTaskByOrderSn(orderSn);
+        if (orderTaskEntity == null) {
+            channel.basicReject(deliveryTag, false);
+            return;
+        }
         // 查询还没解锁的库存信息
         List<WareOrderTaskDetailEntity> list = wareOrderTaskDetailService.list(
             new QueryWrapper<WareOrderTaskDetailEntity>()
                 .eq("task_id", orderTaskEntity.getId())
                 .eq("lock_status", 1)
         );
+
+        //#region 订单是否已付款
+        R orderInfoR = orderFeignService.getOrderStatus(orderSn);
+        if (orderInfoR.getCode() != 0) {
+            channel.basicReject(deliveryTag, true);
+        }
+        OrderTo data = orderInfoR.getData(new TypeReference<OrderTo>() {
+        });
+        if (data.getStatus() != 0 && data.getStatus() != 4 && data.getStatus() != 5) {
+            List<WareOrderTaskDetailEntity> detailEntityList = list.stream().map((item) -> {
+                WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
+                detailEntity.setId(item.getId());
+                detailEntity.setLockStatus(3);
+                return detailEntity;
+            }).collect(Collectors.toList());
+            wareOrderTaskDetailService.updateBatchById(detailEntityList);
+            channel.basicAck(deliveryTag, false);
+            return;
+        }
+        //#endregion
+
+        // 没付款且超时
         for (WareOrderTaskDetailEntity detailEntity : list) {
             StockDetailTo detail = new StockDetailTo();
             BeanUtils.copyProperties(detailEntity, detail);
