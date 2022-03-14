@@ -18,6 +18,13 @@ spring:
           filters:
             - RewritePath=/api/(?<path>.*),/$\{path}
 
+        - id: coupon_route
+          uri: lb://gulimall-coupon
+          predicates:
+            - Path=/api/coupon/**
+          filters:
+            - RewritePath=/api/(?<path>.*),/$\{path}
+
         - id: member_route
           uri: lb://gulimall-member
           predicates:
