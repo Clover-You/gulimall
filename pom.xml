@@ -21,5 +21,6 @@
         <module>gulimall-third-party</module>
         <module>gulimall-auth-server</module>
         <module>gulimall-cart</module>
+        <module>gulimall-seckill</module>
     </modules>
 </project>
