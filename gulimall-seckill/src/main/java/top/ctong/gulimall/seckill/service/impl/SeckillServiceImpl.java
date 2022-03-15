@@ -203,26 +203,28 @@ public class SeckillServiceImpl implements SeckillService {
             long startTime = Long.parseLong(times[0]);
             long endTime = Long.parseLong(times[1]);
 
-            if (time >= startTime && time <= endTime) {
-                // 获取到该时间段所有的场次id
-                List<String> ele = stringRedisTemplate.opsForList().range(key, -100, 100);
-                if (ele == null || ele.isEmpty()) {
-                    break;
-                }
-
-                BoundHashOperations<String, String, String> ops = stringRedisTemplate.boundHashOps(
-                    SECKILL_SKUS_CACHE_PREFIX
-                );
-                // 批量获取参与秒杀活动的商品根据当前场次
-                List<String> stringsSeckillSkuRedisList = ops.multiGet(ele);
-                if (stringsSeckillSkuRedisList == null) {
-                    break;
-                }
-
-                return stringsSeckillSkuRedisList.stream().map((stringsSeckillSkuRedis) -> {
-                    return JSON.parseObject(stringsSeckillSkuRedis, SeckillSkuRedisTo.class);
-                }).collect(Collectors.toList());
+            if (Boolean.FALSE.equals(time >= startTime && time <= endTime)) {
+                break;
             }
+
+            // 获取到该时间段所有的场次id
+            List<String> ele = stringRedisTemplate.opsForList().range(key, -100, 100);
+            if (ele == null || ele.isEmpty()) {
+                break;
+            }
+
+            BoundHashOperations<String, String, String> ops = stringRedisTemplate.boundHashOps(
+                SECKILL_SKUS_CACHE_PREFIX
+            );
+            // 批量获取参与秒杀活动的商品根据当前场次
+            List<String> stringsSeckillSkuRedisList = ops.multiGet(ele);
+            if (stringsSeckillSkuRedisList == null) {
+                break;
+            }
+
+            return stringsSeckillSkuRedisList.stream().map((stringsSeckillSkuRedis) -> {
+                return JSON.parseObject(stringsSeckillSkuRedis, SeckillSkuRedisTo.class);
+            }).collect(Collectors.toList());
         }
 
         return new ArrayList<>(0);
