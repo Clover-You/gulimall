@@ -5,10 +5,12 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.util.StringUtils;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
 import top.ctong.gulimall.coupon.dao.SeckillSkuRelationDao;
+import top.ctong.gulimall.coupon.entity.SeckillPromotionEntity;
 import top.ctong.gulimall.coupon.entity.SeckillSkuRelationEntity;
 import top.ctong.gulimall.coupon.service.SeckillSkuRelationService;
 
@@ -37,10 +39,20 @@ public class SeckillSkuRelationServiceImpl extends ServiceImpl<SeckillSkuRelatio
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<SeckillSkuRelationEntity> wrapper = new QueryWrapper<>();
+        String promotionSessionId = (String) params.get("promotionSessionId");
+        if (StringUtils.hasText(promotionSessionId)) {
+            wrapper.eq("promotion_session_id", promotionSessionId);
+        }
+        String key = (String) params.get("key");
+        if (StringUtils.hasText(key)) {
+//            wrapper.like("")
+        }
         IPage<SeckillSkuRelationEntity> page = this.page(
-                new Query<SeckillSkuRelationEntity>().getPage(params),
-                new QueryWrapper<SeckillSkuRelationEntity>()
+            new Query<SeckillSkuRelationEntity>().getPage(params),
+            wrapper
         );
+
 
         return new PageUtils(page);
     }
