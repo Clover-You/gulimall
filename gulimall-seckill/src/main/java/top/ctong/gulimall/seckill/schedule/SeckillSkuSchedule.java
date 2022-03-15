@@ -1,10 +1,14 @@
 package top.ctong.gulimall.seckill.schedule;
 
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import top.ctong.gulimall.seckill.service.SeckillService;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -32,6 +36,11 @@ public class SeckillSkuSchedule {
     @Autowired
     private SeckillService seckillService;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
+    private final String UPLOAD_LOCK_KEY = "seckill:upload:lock";
+
     /**
      * 上架最近三天的秒杀商品
      * @author Clover You
@@ -40,7 +49,13 @@ public class SeckillSkuSchedule {
      */
     @Scheduled(cron = "0 * * * * ?")
     public void uploadSeckillSkuLatest3Days() {
-        seckillService.uploadSeckillSkuLatest3Days();
+        RLock lock = redissonClient.getLock(UPLOAD_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            seckillService.uploadSeckillSkuLatest3Days();
+        } finally {
+            lock.unlock();
+        }
     }
 
 }

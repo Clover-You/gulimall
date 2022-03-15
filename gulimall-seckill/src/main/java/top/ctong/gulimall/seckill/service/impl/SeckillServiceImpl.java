@@ -101,6 +101,11 @@ public class SeckillServiceImpl implements SeckillService {
             );
             List<SeckillSkuRelationTo> relations = session.getRelation();
             relations.stream().forEach(relation -> {
+                // 解决幂等性
+                Boolean hasKey = ops.hasKey(relation.getSkuId().toString());
+                if (Boolean.TRUE.equals(hasKey)) {
+                    return;
+                }
 
                 SeckillSkuRedisTo redisTo = new SeckillSkuRedisTo();
                 // 获取 SKU 基本数据
@@ -146,10 +151,18 @@ public class SeckillServiceImpl implements SeckillService {
             long endTime = session.getEndTime().getTime();
             String redisKey = SESSION_CACHE_PREFIX + startTime + "_" + endTime;
 
+            Boolean hasKey = stringRedisTemplate.hasKey(redisKey);
+            if (Boolean.TRUE.equals(hasKey)) {
+                return;
+            }
+
             // 收集所有商品id
             List<String> ids = session.getRelation().stream()
                 .map((item) -> item.getSkuId().toString()).collect(Collectors.toList());
             // 缓存活动id
+            if (ids.isEmpty()) {
+                return;
+            }
             stringRedisTemplate.opsForList().leftPushAll(redisKey, ids);
         });
     }
