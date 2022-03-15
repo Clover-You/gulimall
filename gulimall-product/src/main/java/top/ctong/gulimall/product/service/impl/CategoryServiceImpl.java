@@ -92,10 +92,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
     @Override
     public List<CategoryEntity> listWithTree() {
-        // TODO 查出所有分类
+        // 查出所有分类
         // 没有查询条件selectList可为null
         List<CategoryEntity> entities = baseMapper.selectList(null);
-        // TODO 组装成树形结构
+        // 组装成树形结构
         // 找到所有一级分类
         List<CategoryEntity> level1Menus = entities.stream().filter((category) -> category.getParentCid() == 0).map(
             menu -> {
@@ -119,7 +119,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
     @Override
     public void removeMenuByIds(List<Long> asList) {
-        // TODO 检查当前菜单是否有子菜单
+        // 检查当前菜单是否有子菜单
         baseMapper.deleteBatchIds(asList);
     }
 

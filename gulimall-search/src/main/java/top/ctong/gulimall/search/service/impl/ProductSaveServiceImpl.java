@@ -51,7 +51,6 @@ public class ProductSaveServiceImpl implements ProductSaveService {
      */
     @Override
     public boolean productStatusUp(List<SkuEsModel> skuEsModelList) throws IOException {
-        // TODO 建立 product 索引与映射关系
 //        IndexRequest _indexReqest  = new IndexRequest(EsConstant.INDEX.PRODUCT);
 //        _indexReqest
 

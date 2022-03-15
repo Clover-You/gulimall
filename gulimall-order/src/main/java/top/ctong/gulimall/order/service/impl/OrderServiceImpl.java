@@ -255,7 +255,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
         //#endregion
 
-        // TODO 订单创建成功，发送消息给MQ
+        // 订单创建成功，发送消息给MQ
         rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", orderEntity);
         //#endregion
         return resp;

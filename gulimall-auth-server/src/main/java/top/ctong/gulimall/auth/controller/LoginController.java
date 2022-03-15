@@ -79,7 +79,7 @@ public class LoginController {
 
         // 检查redis中是否存在验证码
         String cacheData = redisTemplate.opsForValue().get(redisCacheKey);
-        // TODO 接口防刷
+        // 接口防刷
         if (StringUtils.hasText(cacheData)) {
             String[] split = cacheData.split(REDIS_CACHE_CODE_SEPARATOR);
             long alive = System.currentTimeMillis() - Long.parseLong(split[1]);

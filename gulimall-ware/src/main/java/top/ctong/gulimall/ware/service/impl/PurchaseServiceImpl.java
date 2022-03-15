@@ -171,10 +171,10 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
      * @author Clover You
      * @date 2021/12/13 15:41
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void done(PurchaseDoneVo vo) {
-        // TODO 改变采购项的状态
+        // 改变采购项的状态
         // 是否有失败
         boolean flag = true;
         List<PurchaseItemDoneVo> items = vo.getItems();
@@ -188,7 +188,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
             } else {
                 detailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getStatus());
 
-                // TODO 将成功采购的进行入库
+                // 将成功采购的进行入库
                 // 查询当前采购项详细信息
                 PurchaseDetailEntity detailInfo = purchaseDetailService.getById(item.getItemId());
                 wareSkuService.addStock(detailInfo.getSkuId(),detailInfo.getWareId(), detailInfo.getSkuNum());
@@ -198,7 +198,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         }
         purchaseDetailService.updateBatchById(updates);
 
-        // TODO 改变采购单状态
+        // 改变采购单状态
         Long purchaseId = vo.getId();
         PurchaseEntity purchaseEntity = new PurchaseEntity();
         purchaseEntity.setId(purchaseId);
