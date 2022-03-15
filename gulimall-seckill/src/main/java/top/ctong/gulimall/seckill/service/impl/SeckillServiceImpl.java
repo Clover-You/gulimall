@@ -2,7 +2,6 @@ package top.ctong.gulimall.seckill.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.PrivateKeyResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
@@ -132,13 +131,8 @@ public class SeckillServiceImpl implements SeckillService {
                 ops.put(relation.getSkuId().toString(), jsonStr);
 
                 // 设置一个分布式信号量，用于断流缓解数据库压力(限流)
-                if (Boolean.FALSE.equals(
-                    stringRedisTemplate.hasKey(SKU_STOCK_SEMAPHORE + randomToken)
-                )) {
-                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomToken);
-                    semaphore.trySetPermits(relation.getSeckillCount());
-                }
-
+                RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomToken);
+                semaphore.trySetPermits(relation.getSeckillCount());
             });
         });
     }
