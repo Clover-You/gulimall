@@ -52,6 +52,12 @@ spring:
             # 路径重写
             - RewritePath=/api/(?<path>.*),/renren-fast/$\{path}
 
+        - id: seckill_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Path=/api/seckill
+          filters:
+            - RewritePath=/api/(?<path>.*),/$\{path}
         # ##########
         - id: search_gulimall_host_route
           uri: lb://gulimall-search
@@ -77,6 +83,11 @@ spring:
           uri: lb://gulimall-member
           predicates:
             - Host=member.gulimall.com
+
+        - id: gulimall_seckill_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Host=seckill.gulimall.com
 
         - id: gulimall_host_route
           uri: lb://gulimall-product
