@@ -38,7 +38,7 @@ public class SeckillSkuSchedule {
      * @email cloveryou02@163.com
      * @date 2022/3/14 6:34 下午
      */
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     public void uploadSeckillSkuLatest3Days() {
         seckillService.uploadSeckillSkuLatest3Days();
     }

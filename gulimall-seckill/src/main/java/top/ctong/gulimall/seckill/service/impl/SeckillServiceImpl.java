@@ -2,14 +2,14 @@ package top.ctong.gulimall.seckill.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.PrivateKeyResolver;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
+import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.seckill.feign.CouponFeignService;
@@ -55,11 +55,14 @@ public class SeckillServiceImpl implements SeckillService {
     @Autowired
     private ProductFeignService productFeignService;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
+    private static final String SKU_STOCK_SEMAPHORE = "seckill:stock:";
+
     private static final String SESSION_CACHE_PREFIX = "seckill:sessions:";
 
-    private static final String SECKILL_SKUS_CACHE_PREFIX = "seckill:skus:";
-
-    private RedissonClient redissonClient;
+    private static final String SECKILL_SKUS_CACHE_PREFIX = "seckill:skus";
 
     /**
      * 上架最近三天秒杀商品
@@ -78,9 +81,9 @@ public class SeckillServiceImpl implements SeckillService {
         List<SeckillSessionTo> data = rResult.getData(new TypeReference<List<SeckillSessionTo>>() {
         });
 
-        // TODO 缓存秒杀信息
+        // 缓存秒杀信息
         saveSessionInfos(data);
-        // TODO 缓存商品信息
+        // 缓存商品信息
         saveSessionSkuInfos(data);
     }
 
@@ -100,28 +103,32 @@ public class SeckillServiceImpl implements SeckillService {
             relations.stream().forEach(relation -> {
 
                 SeckillSkuRedisTo redisTo = new SeckillSkuRedisTo();
-                // TODO 获取 SKU 基本数据
+                // 获取 SKU 基本数据
                 R skuR = productFeignService.getSkuInfoById(relation.getSkuId());
-                if (skuR.getCode() != null) {
+                if (skuR.getCode() != 0) {
                     return;
                 }
                 SkuInfoVo skuInfo = skuR.getData("skuInfo", new TypeReference<SkuInfoVo>() {
                 });
                 redisTo.setSkuInfo(skuInfo);
 
-                // TODO 秒杀信息
+                // 秒杀信息
                 BeanUtils.copyProperties(relation, redisTo);
 
-                // TODO 设置开始和结束时间、随机码
+                // 设置开始和结束时间、随机码
                 skuInfo.setStartTime(session.getStartTime().getTime());
                 skuInfo.setEndTime(session.getEndTime().getTime());
 
-                // TODO 设置随机码，在商品活动开始前开始设置，避免秒杀接口暴露后随意下单
+                // 设置随机码，在商品活动开始前开始设置，避免秒杀接口暴露后随意下单
                 String randomToken = UUID.randomUUID().toString().replace("-", "");
                 redisTo.setRandomCode(randomToken);
 
+                // 设置一个分布式信号量，用于断流缓解数据库压力(限流)
+                RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomToken);
+                semaphore.trySetPermits(relation.getSeckillCount());
                 String jsonStr = JSONObject.toJSONString(redisTo);
-                ops.put(relation.getId(), jsonStr);
+
+                ops.put(relation.getSkuId().toString(), jsonStr);
             });
         });
     }
@@ -141,7 +148,7 @@ public class SeckillServiceImpl implements SeckillService {
 
             // 收集所有商品id
             List<String> ids = session.getRelation().stream()
-                .map((item) -> item.getId().toString()).collect(Collectors.toList());
+                .map((item) -> item.getSkuId().toString()).collect(Collectors.toList());
             // 缓存活动id
             stringRedisTemplate.opsForList().leftPushAll(redisKey, ids);
         });

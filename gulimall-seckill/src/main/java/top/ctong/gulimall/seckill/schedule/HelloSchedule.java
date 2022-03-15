@@ -28,7 +28,7 @@ import java.util.Date;
  * @create 2022-03-14 4:00 下午
  */
 @Slf4j
-@Component
+//@Component
 @EnableAsync
 @EnableScheduling
 public class HelloSchedule {
