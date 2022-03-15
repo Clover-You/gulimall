@@ -76,7 +76,7 @@ public class SeckillSessionServiceImpl extends ServiceImpl<SeckillSessionDao, Se
         QueryWrapper<SeckillSessionEntity> wrapper = new QueryWrapper<>();
         LocalDate nowDate = LocalDate.now();
         // 拿到未来三天的日期
-        LocalDate tomorrowDate = nowDate.plusDays(1);
+        LocalDate tomorrowDate = nowDate.plusDays(0);
         LocalDate threeDays = nowDate.plusDays(2);
 
         LocalTime minTime = LocalTime.MIN;
