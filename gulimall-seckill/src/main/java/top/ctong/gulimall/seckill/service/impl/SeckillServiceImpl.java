@@ -100,8 +100,9 @@ public class SeckillServiceImpl implements SeckillService {
             );
             List<SeckillSkuRelationTo> relations = session.getRelation();
             relations.stream().forEach(relation -> {
+                String targetKey = relation.getPromotionSessionId() + "_" + relation.getSkuId().toString();
                 // 解决幂等性
-                Boolean hasKey = ops.hasKey(relation.getSkuId().toString());
+                Boolean hasKey = ops.hasKey(targetKey);
                 if (Boolean.TRUE.equals(hasKey)) {
                     return;
                 }
@@ -128,7 +129,7 @@ public class SeckillServiceImpl implements SeckillService {
                 redisTo.setRandomCode(randomToken);
 
                 String jsonStr = JSONObject.toJSONString(redisTo);
-                ops.put(relation.getSkuId().toString(), jsonStr);
+                ops.put(targetKey, jsonStr);
 
                 // 设置一个分布式信号量，用于断流缓解数据库压力(限流)
                 RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomToken);
@@ -157,7 +158,9 @@ public class SeckillServiceImpl implements SeckillService {
 
             // 收集所有商品id
             List<String> ids = session.getRelation().stream()
-                .map((item) -> item.getSkuId().toString()).collect(Collectors.toList());
+                .map((item) ->
+                    item.getPromotionSessionId() + "_" + item.getSkuId().toString()
+                ).collect(Collectors.toList());
             // 缓存活动id
             if (ids.isEmpty()) {
                 return;
