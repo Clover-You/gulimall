@@ -128,12 +128,17 @@ public class SeckillServiceImpl implements SeckillService {
                 String randomToken = UUID.randomUUID().toString().replace("-", "");
                 redisTo.setRandomCode(randomToken);
 
-                // 设置一个分布式信号量，用于断流缓解数据库压力(限流)
-                RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomToken);
-                semaphore.trySetPermits(relation.getSeckillCount());
                 String jsonStr = JSONObject.toJSONString(redisTo);
-
                 ops.put(relation.getSkuId().toString(), jsonStr);
+
+                // 设置一个分布式信号量，用于断流缓解数据库压力(限流)
+                if (Boolean.FALSE.equals(
+                    stringRedisTemplate.hasKey(SKU_STOCK_SEMAPHORE + randomToken)
+                )) {
+                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomToken);
+                    semaphore.trySetPermits(relation.getSeckillCount());
+                }
+
             });
         });
     }
