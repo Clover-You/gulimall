@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.seckill.service.SeckillService;
@@ -48,11 +49,11 @@ public class SeckillController {
         return R.ok().setData(list);
     }
 
-    /** 
+    /**
      * 通过商品id查询当前商品是否参与秒杀活动
      * @param skuId 商品id
-     * @return R 
-     * @author Clover You 
+     * @return R
+     * @author Clover You
      * @email cloveryou02@163.com
      * @date 2022/3/16 9:25 上午
      */
@@ -62,8 +63,21 @@ public class SeckillController {
         return R.ok().setData(data);
     }
 
-    @GetMapping
-    public R kill() {
+    /**
+     * 秒杀商品
+     * @param killId 秒杀id
+     * @param key 随机码
+     * @param num 秒杀数量
+     * @return R
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 4:00 下午
+     */
+    @GetMapping("/kill")
+    public R secKill(@RequestParam("killId") String killId,
+                     @RequestParam("key") String key,
+                     @RequestParam("num") String num) {
+        return R.ok();
 
     }
 

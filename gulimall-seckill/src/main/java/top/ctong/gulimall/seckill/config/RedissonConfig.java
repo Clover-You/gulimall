@@ -53,7 +53,7 @@ public class RedissonConfig {
     }
 
     @Bean
-    public RedisSerializer<?> redisSerializer() {
+    public RedisSerializer<?> springSessionDefaultRedisSerializer() {
         return new GenericJackson2JsonRedisSerializer();
     }
 
