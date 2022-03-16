@@ -62,4 +62,9 @@ public class SeckillController {
         return R.ok().setData(data);
     }
 
+    @GetMapping
+    public R kill() {
+
+    }
+
 }

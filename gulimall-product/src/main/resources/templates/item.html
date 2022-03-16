@@ -444,11 +444,11 @@
 
                 <div class="imgbox">
                     <div class="probox">
-                        <img class="img1" alt="" th:src="${skuItem.skuInfo.skuDefaultImg}">
+                        <img class="img1" alt="" th:src="${skuItem.skuInfo?.skuDefaultImg}">
                         <div class="hoverbox"></div>
                     </div>
                     <div class="showbox">
-                        <img class="img1" alt="" th:src="${skuItem.skuInfo.skuDefaultImg}">
+                        <img class="img1" alt="" th:src="${skuItem.skuInfo?.skuDefaultImg}">
                     </div>
                 </div>
 
@@ -488,10 +488,10 @@
 
             </div>
             <div class="box-two">
-                <div class="box-name" th:text="${skuItem.skuInfo.skuTitle + skuItem.skuInfo.skuSubtitle}">
+                <div class="box-name" th:text="${skuItem.skuInfo?.skuTitle?:'' + skuItem.skuInfo?.skuSubtitle}">
                     华为 HUAWEI Mate 10 6GB+128GB 亮黑色 移动联通电信4G手机 双卡双待
                 </div>
-                <div class="box-hide" th:text="${ skuItem.skuInfo.skuSubtitle}">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
+                <div class="box-hide" th:text="${ skuItem.skuInfo?.skuSubtitle}">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
                 </div>
                 <div class="box-yuyue">
                     <div class="yuyue-one">
@@ -517,15 +517,16 @@
                         <li>京东价</li>
                         <li>
                             <span>￥</span>
-                            <span th:text="${#numbers.formatDecimal(skuItem.skuInfo.price, 3, 2)}">4499.00</span>
+                            <span th:text="${#numbers.formatDecimal(skuItem.skuInfo?.price, 3, 2)}">4499.00</span>
                         </li>
                         <li
                           style="color: #ff4141" th:if="${skuItem.seckillInfo!=null}"
                         >
-                            <span th:if="${#dates.createNow().getTime() < skuItem.seckillInfo.skuInfo.startTime}">
-                                该商品在 [[${#dates.format(new java.util.Date(skuItem.seckillInfo.skuInfo.startTime), "yyyy-MM-dd HH:mm")}]] 开始秒杀
+                            <span th:if="${#dates.createNow().getTime() < skuItem.seckillInfo.skuInfo?.startTime}">
+                                该商品在 [[${#dates.format(new java.util.Date(skuItem.seckillInfo.skuInfo?.startTime), "yyyy-MM-dd HH:mm")}]] 开始秒杀
                             </span>
-                            <span th:if="${#dates.createNow().getTime() > skuItem.seckillInfo.skuInfo.startTime && #dates.createNow().getTime() < skuItem.seckillInfo.skuInfo.endTime}">
+                            <span
+                              th:if="${#dates.createNow().getTime() > skuItem.seckillInfo.skuInfo?.startTime && #dates.createNow().getTime() < skuItem.seckillInfo.skuInfo?.endTime}">
                                 该商品在正在参与秒杀，秒杀价：[[${#numbers.formatDecimal(skuItem.seckillInfo.seckillPrice, 3, 2)}]]
                             </span>
 
@@ -623,7 +624,7 @@
                             <dd th:each="value : ${attr.valueWithSkuIdVos}">
                                 <a
                                   class="sku_attr_value"
-                                  th:attr="skus=${value.skuIds},class=${#lists.contains(#strings.listSplit(value.skuIds, ','), skuItem.skuInfo.skuId.toString())? 'sku_attr_value checked' : 'sku_attr_value'}"
+                                  th:attr="skus=${value.skuIds},class=${#lists.contains(#strings.listSplit(value.skuIds, ','), skuItem.skuInfo?.skuId.toString())? 'sku_attr_value checked' : 'sku_attr_value'}"
                                 >
                                     <!--                                    <img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg"/> [[${value.attrValues}]]-->
                                     [[${value.attrValues}]]
@@ -651,8 +652,19 @@
 
                         </div>
                     </div>
-                    <div class="box-btns-two">
-                        <a href="javascript:void 0;" id="addToCart" th:attr="skuId=${skuItem.skuInfo.skuId}">
+                    <div class="box-btns-two"
+                         th:if="${#dates.createNow().getTime() > skuItem.seckillInfo?.skuInfo?.startTime && #dates.createNow().getTime() < skuItem.seckillInfo?.skuInfo?.endTime}">
+                        <a
+                          href="javascript:void 0;"
+                          id="secKillA"
+                          th:attr="skuId=${skuItem.skuInfo?.skuId},sessionId=${skuItem.seckillInfo.promotionSessionId},code=${skuItem.seckillInfo.randomCode}"
+                        >
+                            立即抢购
+                        </a>
+                    </div>
+                    <div class="box-btns-two"
+                         th:if="${#dates.createNow().getTime() < skuItem?.seckillInfo?.skuInfo?.startTime || #dates.createNow().getTime() > skuItem?.seckillInfo?.skuInfo?.endTime || skuItem?.seckillInfo==null}">
+                        <a href="javascript:void 0;" id="addToCart" th:attr="skuId=${skuItem?.skuInfo?.skuId}">
                             加入购物车
                         </a>
                     </div>
@@ -1566,6 +1578,19 @@
         const url = `http://cart.gulimall.com/addToCart?skuId=${skuId}&num=${numInput}`;
         location.href = url;
         return false;
+    })
+
+    $("#secKillA").click(function() {
+        const isLogin = [[${session.loginUser != null}]]
+        const skuId = $(this).attr("skuid")
+        const sessionId = $(this).attr("sessionid")
+        const code = $(this).attr("code")
+        const numInput = $("#numInput").val()
+        if (!isLogin) {
+            alert("请登录！")
+            return;
+        }
+        location.href = `http://seckill.gulimall.com/kill?killId=${sessionId}_${skuId}&key=${code}&num=${numInput}`
     })
 </script>
 
