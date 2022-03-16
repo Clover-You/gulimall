@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import top.ctong.gulimall.product.entity.SkuImagesEntity;
 import top.ctong.gulimall.product.entity.SkuInfoEntity;
 import top.ctong.gulimall.product.entity.SpuInfoDescEntity;
+import top.ctong.gulimall.product.to.SeckillSkuRedisTo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -63,6 +64,11 @@ public class SkuItemVo {
      * 基本属性
      */
     private List<SpuItemBaseAttrVo> groupAttrs;
+
+    /**
+     * 秒杀优惠信息
+     */
+    private SeckillSkuRedisTo seckillInfo;
 
     @ToString
     @Data

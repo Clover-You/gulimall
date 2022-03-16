@@ -22,6 +22,7 @@ import top.ctong.gulimall.seckill.to.SeckillSkuRelationTo;
 import top.ctong.gulimall.seckill.vo.SkuInfoVo;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -230,4 +231,40 @@ public class SeckillServiceImpl implements SeckillService {
         return new ArrayList<>(0);
     }
 
+    /**
+     * 通过商品id查询当前商品是否参与秒杀活动
+     * @param skuId 商品id
+     * @return SeckillSkuRedisTo
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 9:27 上午
+     */
+    @Override
+    public SeckillSkuRedisTo getSkuSeckillInfo(Long skuId) {
+        String regx = "\\d_" + skuId + "$";
+        BoundHashOperations<String, String, String> ops = stringRedisTemplate.boundHashOps(SECKILL_SKUS_CACHE_PREFIX);
+        Set<String> keys = ops.keys();
+
+        if (keys == null || keys.isEmpty()) {
+            return null;
+        }
+
+        for (String key : keys) {
+            boolean matches = Pattern.matches(regx, key);
+            if (!matches) {
+                continue;
+            }
+            String json = ops.get(key);
+            SeckillSkuRedisTo to = JSON.parseObject(json, SeckillSkuRedisTo.class);
+            SkuInfoVo skuInfo = to.getSkuInfo();
+            Long startTime = skuInfo.getStartTime();
+            Long endTime = skuInfo.getEndTime();
+            long currentTimeMillis = System.currentTimeMillis();
+            if (!(currentTimeMillis >= startTime && currentTimeMillis < endTime)) {
+                to.setRandomCode("");
+            }
+            return to;
+        }
+        return null;
+    }
 }

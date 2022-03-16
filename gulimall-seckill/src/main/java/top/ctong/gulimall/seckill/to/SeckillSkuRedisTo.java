@@ -3,6 +3,8 @@ package top.ctong.gulimall.seckill.to;
 import lombok.Data;
 import top.ctong.gulimall.seckill.vo.SkuInfoVo;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -57,6 +59,7 @@ public class SeckillSkuRedisTo {
     /**
      * 商品详情信息
      */
+    @NotNull
     private SkuInfoVo skuInfo;
 
     /**

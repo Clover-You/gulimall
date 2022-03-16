@@ -519,8 +519,16 @@
                             <span>￥</span>
                             <span th:text="${#numbers.formatDecimal(skuItem.skuInfo.price, 3, 2)}">4499.00</span>
                         </li>
-                        <li>
-                            预约享资格
+                        <li
+                          style="color: #ff4141" th:if="${skuItem.seckillInfo!=null}"
+                        >
+                            <span th:if="${#dates.createNow().getTime() < skuItem.seckillInfo.skuInfo.startTime}">
+                                该商品在 [[${#dates.format(new java.util.Date(skuItem.seckillInfo.skuInfo.startTime), "yyyy-MM-dd HH:mm")}]] 开始秒杀
+                            </span>
+                            <span th:if="${#dates.createNow().getTime() > skuItem.seckillInfo.skuInfo.startTime && #dates.createNow().getTime() < skuItem.seckillInfo.skuInfo.endTime}">
+                                该商品在正在参与秒杀，秒杀价：[[${#numbers.formatDecimal(skuItem.seckillInfo.seckillPrice, 3, 2)}]]
+                            </span>
+
                         </li>
                         <li>
                             <a href="">
@@ -1552,7 +1560,7 @@
         $("a[class='sku_attr_value checked']").parent().css({border: 'solid 1px red'})
     })
 
-    $("#addToCart").click(function() {
+    $("#addToCart").click(function () {
         const numInput = $("#numInput").val()
         const skuId = $(this).attr('skuId')
         const url = `http://cart.gulimall.com/addToCart?skuId=${skuId}&num=${numInput}`;

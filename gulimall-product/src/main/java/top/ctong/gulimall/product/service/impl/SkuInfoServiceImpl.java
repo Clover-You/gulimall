@@ -1,5 +1,6 @@
 package top.ctong.gulimall.product.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,15 @@ import org.springframework.util.StringUtils;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
+import top.ctong.gulimall.common.utils.R;
 import top.ctong.gulimall.product.dao.SkuInfoDao;
 import top.ctong.gulimall.product.entity.SkuImagesEntity;
 import top.ctong.gulimall.product.entity.SkuInfoEntity;
 import top.ctong.gulimall.product.entity.SpuImagesEntity;
 import top.ctong.gulimall.product.entity.SpuInfoDescEntity;
+import top.ctong.gulimall.product.feign.SeckillFeignService;
 import top.ctong.gulimall.product.service.*;
+import top.ctong.gulimall.product.to.SeckillSkuRedisTo;
 import top.ctong.gulimall.product.vo.SkuItemVo;
 
 
@@ -43,7 +47,6 @@ import top.ctong.gulimall.product.vo.SkuItemVo;
  * <p>
  * sku信息
  * </p>
- *
  * @author Clover You
  * @email 2621869236@qq.com
  * @create 2021-11-15 09:51:26
@@ -66,11 +69,14 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Autowired
     private ThreadPoolExecutor threadPoolExecutor;
 
+    @Autowired
+    private SeckillFeignService seckillFeignService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SkuInfoEntity> page = this.page(
-                new Query<SkuInfoEntity>().getPage(params),
-                new QueryWrapper<SkuInfoEntity>()
+            new Query<SkuInfoEntity>().getPage(params),
+            new QueryWrapper<SkuInfoEntity>()
         );
 
         return new PageUtils(page);
@@ -78,7 +84,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     /**
      * 保存sku信息
-     *
      * @param skuInfoEntity sku信息
      * @author Clover You
      * @date 2021/12/9 16:32
@@ -90,7 +95,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     /**
      * 根据自定义条件通过sku信息查询商品信息
-     *
      * @param params 自定义条件
      * @return PageUtils
      * @author Clover You
@@ -136,15 +140,14 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             }
         }
         IPage<SkuInfoEntity> iPage = this.page(
-                new Query<SkuInfoEntity>().getPage(params),
-                wrapper
+            new Query<SkuInfoEntity>().getPage(params),
+            wrapper
         );
         return new PageUtils(iPage);
     }
 
     /**
      * 通过规格id查询所有属性信息
-     *
      * @param spuId 规格id
      * @return List<SkuInfoEntity>
      * @author Clover You
@@ -158,7 +161,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     /**
      * 通过id查询sku详细信息
-     *
      * @param skuId sku id
      * @return SkuItemVo
      * @author Clovou
@@ -196,12 +198,23 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         CompletableFuture<Void> attrGroupFuture = future.thenAcceptAsync((res) -> {
             // 5. 获取spu规格参数信息
             List<SkuItemVo.SpuItemBaseAttrVo> attrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(
-                    res.getSpuId(),
-                    res.getCatalogId()
+                res.getSpuId(),
+                res.getCatalogId()
             );
             skuItemVo.setGroupAttrs(attrGroupVos);
         });
-        CompletableFuture.allOf(future, imgFuture, saleAttrFuture, spuDescFuture, attrGroupFuture).join();
+
+        // 获取商品秒杀信息
+        CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
+            R skuSeckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
+            if (skuSeckillInfo.getCode().equals(0)) {
+                SeckillSkuRedisTo data = skuSeckillInfo.getData(new TypeReference<SeckillSkuRedisTo>() {
+                });
+                skuItemVo.setSeckillInfo(data);
+            }
+        }, threadPoolExecutor);
+
+        CompletableFuture.allOf(future, imgFuture, saleAttrFuture, spuDescFuture, attrGroupFuture, seckillFuture).join();
         return skuItemVo;
     }
 }

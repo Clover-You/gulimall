@@ -1,8 +1,9 @@
-package top.ctong.gulimall.seckill.service;
+package top.ctong.gulimall.product.feign;
 
-import top.ctong.gulimall.seckill.to.SeckillSkuRedisTo;
-
-import java.util.List;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import top.ctong.gulimall.common.utils.R;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -20,34 +21,19 @@ import java.util.List;
  * </p>
  * @author Clover You
  * @email cloveryou02@163.com
- * @create 2022-03-14 6:37 下午
+ * @create 2022-03-16 9:44 上午
  */
-public interface SeckillService {
-
-    /**
-     * 上架最近三天秒杀商品
-     * @author Clover You
-     * @email cloveryou02@163.com
-     * @date 2022/3/14 6:40 下午
-     */
-    void uploadSeckillSkuLatest3Days();
-
-    /**
-     * 获取当前能参与秒杀活动的商品的信息
-     * @return List<SeckillSkuRedisTo>
-     * @author Clover You
-     * @email cloveryou02@163.com
-     * @date 2022/3/15 3:39 下午
-     */
-    List<SeckillSkuRedisTo> getCurrentSeckiilSkus();
-
+@FeignClient("gulimall-seckill")
+public interface SeckillFeignService {
     /**
      * 通过商品id查询当前商品是否参与秒杀活动
      * @param skuId 商品id
-     * @return SeckillSkuRedisTo
+     * @return R
      * @author Clover You
      * @email cloveryou02@163.com
-     * @date 2022/3/16 9:27 上午
+     * @date 2022/3/16 9:25 上午
      */
-    SeckillSkuRedisTo getSkuSeckillInfo(Long skuId);
+    @GetMapping("/sku/seckill/{skuId}")
+    R getSkuSeckillInfo(@PathVariable("skuId") Long skuId);
+
 }

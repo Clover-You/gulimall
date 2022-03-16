@@ -531,37 +531,6 @@
                 <div class="swiper-slide">
                     <ul id="seckill-content"></ul>
                 </div>
-                <div class="swiper-slide">
-                    <ul>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img6.jpg" alt="">
-                            <p>Apple iMac 21.5英寸一体机（2017新款四核Core i5 处理器/8GB内存/1TB/RP555显卡/4K屏 MNDY2CH/A） Apple iMac
-                                21.5英寸一体机（2017新款四核Core i5 处理</p>
-                            <span>¥9588.00</span><s>¥10288.00</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img7.jpg" alt="">
-                            <p>中柏（Jumper）EZpad 4S Pro 10.6英寸二合一平板电脑（X5 z</p>
-                            <span>¥848.00</span><s>¥899.00</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img8.jpg" alt="">
-                            <p>飞利浦（PHILIPS）电动牙刷HX6761/03亮白型成人充电式声波震动牙刷粉色 飞利浦（PHILIPS）电动牙刷HX6761/03亮白型成人充电式声波
-                            </p>
-                            <span>¥379.00</span><s>¥698.00</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img9.jpg" alt="">
-                            <p>美的(Midea) 258升 变频智能三门冰箱 一级能效 风冷无霜 中门</p>
-                            <span>¥3088.00</span><s>¥3299.00</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img10.jpg" alt="">
-                            <p>【第二件减50元】蒙羊 内蒙古羔羊羊肋排 2.4斤</p>
-                            <span>¥99.90</span><s>¥199.00</s>
-                        </li>
-                    </ul>
-                </div>
             </div>
             <div class="swiper-button-prev second_list">
                 <p></p>
@@ -604,12 +573,11 @@
             const {skuTitle, price, skuDefaultImg} = data.skuInfo;
             let dom =
                 `
-            <li>
+            <li onclick="location.href='http://gulimall.com/${data.skuId}.html'">
                 <img src="${skuDefaultImg}" height="130" width="130" alt="${skuTitle}">
                     <p>${skuTitle}</p>
                     <span>¥${data.seckillPrice}</span><s>¥${price}</s>
             </li>`
-            console.log("dom: ",dom)
             $("#seckill-content").append(dom);
         }
     })

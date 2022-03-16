@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import top.ctong.gulimall.common.feign.CouponFeignService;
 import top.ctong.gulimall.common.feign.SearchFeignService;
 import top.ctong.gulimall.common.feign.WareFeignService;
+import top.ctong.gulimall.product.feign.SeckillFeignService;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -33,7 +34,9 @@ import top.ctong.gulimall.common.feign.WareFeignService;
 @EnableRedisHttpSession
 @EnableTransactionManagement
 @EnableDiscoveryClient
-@EnableFeignClients(clients = {CouponFeignService.class, WareFeignService.class, SearchFeignService.class})
+@EnableFeignClients(
+    clients = {CouponFeignService.class, WareFeignService.class, SearchFeignService.class, SeckillFeignService.class}
+)
 @MapperScan("top.ctong.gulimall.product.dao")
 @SpringBootApplication
 public class GulimallProductApplication {
