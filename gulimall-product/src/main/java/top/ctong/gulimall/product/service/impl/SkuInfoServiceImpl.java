@@ -18,6 +18,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 
@@ -169,6 +171,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Cacheable(key = "'skuId::' + #root.args[0]", cacheNames = "item")
     @Override
     public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+
         SkuItemVo skuItemVo = new SkuItemVo();
         CompletableFuture<SkuInfoEntity> future = CompletableFuture.supplyAsync(() -> {
             // 1. sku 基本信息 pms_sku_info
@@ -206,6 +210,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         // 获取商品秒杀信息
         CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
+            RequestContextHolder.setRequestAttributes(requestAttributes);
             R skuSeckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
             if (skuSeckillInfo.getCode().equals(0)) {
                 SeckillSkuRedisTo data = skuSeckillInfo.getData(new TypeReference<SeckillSkuRedisTo>() {

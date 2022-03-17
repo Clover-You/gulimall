@@ -1,4 +1,14 @@
-package top.ctong.gulimall.product.component.interceptor.request;/**
+package top.ctong.gulimall.product.component.interceptor.request;
+
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
  * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
  * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
@@ -15,5 +25,17 @@ package top.ctong.gulimall.product.component.interceptor.request;/**
  * @author Clover You
  * @email cloveryou02@163.com
  * @create 2022-03-17 8:14 上午
- */public class FeignFullContent {
+ */
+@Component
+public class FeignFullContent implements RequestInterceptor {
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+        ServletRequestAttributes reqAttr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (reqAttr == null) {
+            return;
+        }
+        HttpServletRequest request = reqAttr.getRequest();
+        String cookie = request.getHeader("Cookie");
+        requestTemplate.header("Cookie", cookie);
+    }
 }

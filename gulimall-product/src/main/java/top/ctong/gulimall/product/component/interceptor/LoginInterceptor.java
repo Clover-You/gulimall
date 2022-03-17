@@ -1,4 +1,12 @@
-package top.ctong.gulimall.product.component.interceptor;/**
+package top.ctong.gulimall.product.component.interceptor;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
  * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒      ██╔══██╗██║   ██║██╔════╝
  * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░      ██████╔╝██║   ██║██║  ███╗
@@ -15,5 +23,12 @@ package top.ctong.gulimall.product.component.interceptor;/**
  * @author Clover You
  * @email cloveryou02@163.com
  * @create 2022-03-17 8:13 上午
- */public class LoginInterceptor {
+ */
+@Component
+public class LoginInterceptor implements HandlerInterceptor {
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        return true;
+    }
 }
