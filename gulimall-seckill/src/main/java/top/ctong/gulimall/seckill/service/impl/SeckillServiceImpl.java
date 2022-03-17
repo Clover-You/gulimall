@@ -319,7 +319,7 @@ public class SeckillServiceImpl implements SeckillService {
             return null;
         }
 
-        if (num > seckillSku.getSeckillLimit()) {
+        if (seckillSku.getSeckillLimit() != null && num > seckillSku.getSeckillLimit()) {
             // 购买数量不允许超出秒杀最大限制件数
             return null;
         }
@@ -337,14 +337,7 @@ public class SeckillServiceImpl implements SeckillService {
         //#endregion
 
         RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + key);
-        boolean tryAcquire = false;
-        try {
-            // 快速等待
-            tryAcquire = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        boolean tryAcquire = semaphore.tryAcquire(num);
         if (!tryAcquire) {
             // 被抢光了
             return null;
