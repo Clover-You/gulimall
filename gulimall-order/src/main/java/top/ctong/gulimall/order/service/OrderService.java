@@ -1,6 +1,7 @@
 package top.ctong.gulimall.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.ctong.gulimall.common.to.mq.SeckillOrderTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.order.entity.OrderEntity;
 import top.ctong.gulimall.order.vo.*;
@@ -91,5 +92,14 @@ public interface OrderService extends IService<OrderEntity> {
      * @date 2022/3/13 2:49 下午
      */
     void handleAlipayResult(PayAsyncVo params) throws Exception;
+
+    /**
+     * 创建秒杀单订单
+     * @param seckillOrderTo 秒杀单信息
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 6:13 下午
+     */
+    void createSeckillOrder(SeckillOrderTo seckillOrderTo);
 }
 

@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import top.ctong.gulimall.common.to.mq.OrderTo;
+import top.ctong.gulimall.common.to.mq.SeckillOrderTo;
 import top.ctong.gulimall.common.utils.PageUtils;
 import top.ctong.gulimall.common.utils.Query;
 import top.ctong.gulimall.common.utils.R;
@@ -643,5 +644,44 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         entity.setStatus(OrderStatusEnum.PAYED.getCode());
         entity.setPayType(1);
         this.updateById(entity);
+    }
+
+    /**
+     * 创建秒杀单订单
+     * @param seckillOrderTo 秒杀单信息
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 6:13 下午
+     */
+    @Transactional
+    @Override
+    public void createSeckillOrder(SeckillOrderTo seckillOrderTo) {
+        // TODO 创建订单号
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(seckillOrderTo.getOrderSn());
+        orderEntity.setMemberId(seckillOrderTo.getMemberId());
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        BigDecimal payAmount = seckillOrderTo.getSeckillPrice().multiply(
+            new BigDecimal(seckillOrderTo.getNum())
+        );
+        orderEntity.setPayAmount(payAmount);
+        orderEntity.setCreateTime(new Date());
+        this.save(orderEntity);
+
+        // 保存订单项
+        OrderItemEntity orderItemEntity = new OrderItemEntity();
+        orderItemEntity.setOrderSn(seckillOrderTo.getOrderSn());
+        orderItemEntity.setOrderId(orderEntity.getId());
+        orderItemEntity.setRealAmount(payAmount);
+        orderItemEntity.setSkuQuantity(seckillOrderTo.getNum());
+
+//        R skuR = productFeignService.getSpuInfoBySkuId(seckillOrderTo.getSkuId());
+//        if (skuR.getCode() != 0) {
+//            return;
+//        }
+//        skuR.getData(new TypeReference<SpuInfoTo>() {
+//        })
+
+        orderItemService.save(orderItemEntity);
     }
 }

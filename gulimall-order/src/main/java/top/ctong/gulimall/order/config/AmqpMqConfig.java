@@ -129,4 +129,32 @@ public class AmqpMqConfig {
             null
         );
     }
+
+    /**
+     * 秒杀服务削峰队列
+     * @return Queue
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 6:00 下午
+     */
+    @Bean
+    public Queue orderSeckillOrderQueue() {
+        return new Queue(
+            "order.seckill.order.queue",
+            true,
+            false,
+            false
+        );
+    }
+
+    @Bean
+    public Binding orderSeckillOrderBinding() {
+        return new Binding(
+            "order.seckill.order.queue",
+            Binding.DestinationType.QUEUE,
+            "order-event-exchange",
+            "order.seckill.order",
+            null
+        );
+    }
 }

@@ -76,7 +76,8 @@ public class SeckillController {
     @GetMapping("/kill")
     public R secKill(@RequestParam("killId") String killId,
                      @RequestParam("key") String key,
-                     @RequestParam("num") String num) {
+                     @RequestParam("num") Integer num) {
+        String orderSn = seckillService.kill(killId, key, num);
         return R.ok();
 
     }

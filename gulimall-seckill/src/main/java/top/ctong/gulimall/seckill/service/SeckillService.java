@@ -50,4 +50,16 @@ public interface SeckillService {
      * @date 2022/3/16 9:27 上午
      */
     SeckillSkuRedisTo getSkuSeckillInfo(Long skuId);
+
+    /**
+     * 秒杀商品
+     * @param killId 秒杀信息
+     * @param key 随机码
+     * @param num 数量
+     * @return String
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 4:37 下午
+     */
+    String kill(String killId, String key, Integer num);
 }

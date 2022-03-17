@@ -2,17 +2,23 @@ package top.ctong.gulimall.seckill.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import top.ctong.gulimall.common.to.mq.SeckillOrderTo;
 import top.ctong.gulimall.common.utils.R;
+import top.ctong.gulimall.common.vo.MemberRespVo;
+import top.ctong.gulimall.seckill.component.interceptor.LoginInterceptor;
 import top.ctong.gulimall.seckill.feign.CouponFeignService;
 import top.ctong.gulimall.seckill.feign.ProductFeignService;
 import top.ctong.gulimall.seckill.service.SeckillService;
@@ -22,6 +28,7 @@ import top.ctong.gulimall.seckill.to.SeckillSkuRelationTo;
 import top.ctong.gulimall.seckill.vo.SkuInfoVo;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -61,6 +68,9 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Autowired
     private RedisTemplate<String, ?> redisTemplate;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 秒杀商品的库存
@@ -266,5 +276,88 @@ public class SeckillServiceImpl implements SeckillService {
             return to;
         }
         return null;
+    }
+
+    /**
+     * 秒杀商品
+     * @param killId 秒杀信息
+     * @param key 随机码
+     * @param num 数量
+     * @return String
+     * @author Clover You
+     * @email cloveryou02@163.com
+     * @date 2022/3/16 4:37 下午
+     */
+    @Override
+    public String kill(String killId, String key, Integer num) {
+        MemberRespVo mrv = LoginInterceptor.USER_INFO.get();
+
+        BoundHashOperations<String, String, String> ops = stringRedisTemplate.boundHashOps(SECKILL_SKUS_CACHE_PREFIX);
+        String targetSkuJson = ops.get(killId);
+        if (!StringUtils.hasText(targetSkuJson)) {
+            return null;
+        }
+        SeckillSkuRedisTo seckillSku = JSON.parseObject(targetSkuJson, SeckillSkuRedisTo.class);
+
+        //#region 校验信息合法性
+        SkuInfoVo skuInfo = seckillSku.getSkuInfo();
+        // 校验时间
+        Long startTime = skuInfo.getStartTime();
+        Long endTime = skuInfo.getEndTime();
+        long currentTimeMillis = System.currentTimeMillis();
+        if (currentTimeMillis < startTime || currentTimeMillis > endTime) {
+            // 活动已经结束
+            return null;
+        }
+
+        // 加上一个小再过期
+        long ttl = (endTime - currentTimeMillis) + 600000;
+
+        // 校验随机码
+        if (!seckillSku.getRandomCode().equals(key)) {
+            // 随机码校验错误
+            return null;
+        }
+
+        if (num > seckillSku.getSeckillLimit()) {
+            // 购买数量不允许超出秒杀最大限制件数
+            return null;
+        }
+
+        // 是否已经购买过
+        String buyFlag = mrv.getId() + "_" + killId;
+        Boolean aBoolean = stringRedisTemplate.opsForValue().setIfAbsent(buyFlag, num.toString(), ttl, TimeUnit.MILLISECONDS);
+        if (Boolean.FALSE.equals(aBoolean)) {
+            // 如果已经买过了，那么检查已购买的数量加上当前购买的数量是否超出合法件数
+            String numStr = stringRedisTemplate.opsForValue().get(buyFlag);
+            if ((Integer.parseInt(numStr) + num) > seckillSku.getSeckillLimit()) {
+                return null;
+            }
+        }
+        //#endregion
+
+        RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + key);
+        boolean tryAcquire = false;
+        try {
+            // 快速等待
+            tryAcquire = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+        if (!tryAcquire) {
+            // 被抢光了
+            return null;
+        }
+        // 快速下单
+        String orderSn = IdWorker.getTimeId();
+        SeckillOrderTo seckillOrderTo = new SeckillOrderTo();
+        BeanUtils.copyProperties(seckillSku, seckillOrderTo);
+        seckillOrderTo.setOrderSn(orderSn);
+        seckillOrderTo.setMemberId(mrv.getId());
+        seckillOrderTo.setNum(num);
+        rabbitTemplate.convertAndSend("order-event-exchange","order.seckill.order",seckillOrderTo);
+        log.info("订单号：====>> {}", orderSn);
+        return orderSn;
     }
 }
