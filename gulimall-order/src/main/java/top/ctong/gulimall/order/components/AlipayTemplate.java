@@ -52,7 +52,7 @@ public class AlipayTemplate {
      * 服务器[异步通知]页面路径  需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
      * 请求返回页
      */
-    private String notifyUrl = "http://uuynex.natappfree.cc/alipay/success";
+    private String notifyUrl = "http://c585mm.natappfree.cc/alipay/success";
 
     /**
      * 页面跳转同步通知页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
