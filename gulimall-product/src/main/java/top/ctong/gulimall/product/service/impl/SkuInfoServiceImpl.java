@@ -168,7 +168,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
      * @author Clovou
      * @date 2022/2/4 8:03 下午
      */
-    @Cacheable(key = "'skuId::' + #root.args[0]", cacheNames = "item")
+//    @Cacheable(key = "'skuId::' + #root.args[0]", cacheNames = "item")
     @Override
     public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
@@ -210,7 +210,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         // 获取商品秒杀信息
         CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
-            try {
+//            try {
                 RequestContextHolder.setRequestAttributes(requestAttributes);
                 R skuSeckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
                 if (skuSeckillInfo.getCode().equals(0)) {
@@ -218,9 +218,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
                     });
                     skuItemVo.setSeckillInfo(data);
                 }
-            } catch (Exception e) {
-
-            }
+//            } catch (Exception e) {
+//
+//            }
 
         }, threadPoolExecutor);
 

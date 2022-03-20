@@ -1,11 +1,11 @@
-package top.ctong.gulimall.common.config;
+package top.ctong.gulimall.member.config;
 
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import top.ctong.gulimall.common.exception.BizCodeEnum;
 import top.ctong.gulimall.common.utils.R;
 
@@ -40,7 +40,8 @@ public class SentinelConfig {
      * @email cloveryou02@163.com
      * @date 2022/3/20 9:18 上午
      */
-    @Component
+    @ConditionalOnMissingBean({BlockExceptionHandler.class, CustomBlockException.class})
+    @Configuration
     public static class CustomBlockException implements BlockExceptionHandler {
         @Override
         public void handle(HttpServletRequest httpServletRequest,
