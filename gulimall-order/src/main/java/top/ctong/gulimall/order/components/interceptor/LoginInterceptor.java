@@ -12,6 +12,7 @@ import top.ctong.gulimall.common.vo.MemberRespVo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.function.LongFunction;
 
 /**
  * █████▒█      ██  ▄████▄   ██ ▄█▀     ██████╗ ██╗   ██╗ ██████╗
@@ -64,6 +65,7 @@ public class LoginInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
         log.warn("订单服务---登录拦截器触发");
+        log.info("request.getRequestURI(): ===>> {}", request.getRequestURI());
         if (isAllowUri(request.getRequestURI())) {
             log.info("远程服务放行...");
             return true;
@@ -115,7 +117,8 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private final String[] paths = {
         "/order/order/status/**",
-        "/alipay/success"
+        "/alipay/success",
+        "/error"
     };
 
     /**

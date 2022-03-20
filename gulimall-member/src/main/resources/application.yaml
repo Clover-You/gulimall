@@ -10,6 +10,10 @@ spring:
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
+
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
   application:
     name: gulimall-member
 
@@ -32,3 +36,9 @@ mybatis-plus:
       id-type: auto
   # 指定mybatis的sql映射文件路径
   mapper-locations: classpath:/mapper/**/*Dao.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

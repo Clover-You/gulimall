@@ -20,6 +20,9 @@ spring:
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
 
   # redis 配置
   redis:
@@ -56,4 +59,8 @@ gulimall:
     core-pool-size: 20
     maximum-pool-size: 200
     keep-alive-time: 10
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

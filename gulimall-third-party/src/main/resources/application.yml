@@ -5,6 +5,9 @@ spring:
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
   profiles:
     active: private
 

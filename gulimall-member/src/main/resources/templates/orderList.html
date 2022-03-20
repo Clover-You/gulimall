@@ -214,7 +214,7 @@
                     </tr>
                     <tr class="tr" th:each="orderItem, itemStat:${item.items}">
                         <td colspan="3" style="    border-right: 1px solid #ccc;">
-                            <img th:src="${orderItem.skuPic}" width="70" alt="" class="img">
+                            <img th:src="${orderItem?.skuPic}" width="70" alt="" class="img">
                             <div>
                                 <p th:text="${orderItem.skuName}">MUXIWEIERPU皮手套男冬季加绒保暖户外骑<br/>
                                     车开车触摸屏全指防寒全指手套 黑色 均码</p>

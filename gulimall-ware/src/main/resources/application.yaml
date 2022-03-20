@@ -19,6 +19,9 @@ spring:
         enabled: false
       discovery:
         server-addr: 172.16.156.128:8848
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
 
   application:
     name: gulimall-ware
@@ -44,3 +47,8 @@ mybatis-plus:
 logging:
   level:
     top.ctong.gulimall.ware: debug
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

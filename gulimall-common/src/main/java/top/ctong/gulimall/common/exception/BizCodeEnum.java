@@ -38,6 +38,10 @@ public enum BizCodeEnum {
      */
     ILLEGAL_OPERATION(10002, "非法操作数据"),
     /**
+     * 当前服务器正忙
+     */
+    TO_MANY_REQUEST(10003, "当前服务器正忙"),
+    /**
      * 未知异常
      */
     UNKNOWN_EXCEPTION(10000, "未知异常"),

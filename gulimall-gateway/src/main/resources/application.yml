@@ -5,6 +5,11 @@ spring:
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
+
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
+
     gateway:
       routes:
 #        - id: search_route
@@ -95,3 +100,9 @@ spring:
             - Host=**.gulimall.com,gulimall.com,item.gulimall.com,auth.gulimall.com
 server:
   port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

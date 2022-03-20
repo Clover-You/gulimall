@@ -13,6 +13,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   cloud:
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
@@ -62,3 +65,8 @@ gulimall:
     core-pool-size: 20
     maximum-pool-size: 200
     keep-alive-time: 10
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

@@ -1,6 +1,9 @@
 
 spring:
   cloud:
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
     nacos:
       discovery:
         server-addr: 172.16.156.128:8848
@@ -13,3 +16,8 @@ spring:
     store-type: redis
 server:
   port: 12000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

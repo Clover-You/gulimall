@@ -78,6 +78,9 @@
                     <h2>恭喜秒杀成功，订单号：[[${orderSn}]]</h2>
                     <a th:href="'http://order.gulimall.com/payOrder?orderSn=' + ${orderSn}">去支付</a>
                 </div>
+                <div th:if="${orderSn == null}" class="mc success-cont">
+                    <h2>秒杀失败</h2>
+                </div>
             </div>
         </div>
     </div>
