@@ -1,5 +1,7 @@
 package top.ctong.gulimall.member.web;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +62,13 @@ public class MemberWebController {
             }
         );
 
+        List<OrderVo> o = JSONObject.parseObject(
+            JSON.toJSONString(pageUtils.getList()), new TypeReference<List<OrderVo>>() {
+            }.getType()
+        );
 
-        log.info("data: ====>>> {}", pageUtils);
+        pageUtils.setList(o);
+        log.info("data: ====>>> {}", JSON.toJSONString(pageUtils));
 
         model.addAttribute("list", pageUtils);
         return "orderList";

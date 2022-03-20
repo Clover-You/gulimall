@@ -210,13 +210,18 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         // 获取商品秒杀信息
         CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
-            RequestContextHolder.setRequestAttributes(requestAttributes);
-            R skuSeckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
-            if (skuSeckillInfo.getCode().equals(0)) {
-                SeckillSkuRedisTo data = skuSeckillInfo.getData(new TypeReference<SeckillSkuRedisTo>() {
-                });
-                skuItemVo.setSeckillInfo(data);
+            try {
+                RequestContextHolder.setRequestAttributes(requestAttributes);
+                R skuSeckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
+                if (skuSeckillInfo.getCode().equals(0)) {
+                    SeckillSkuRedisTo data = skuSeckillInfo.getData(new TypeReference<SeckillSkuRedisTo>() {
+                    });
+                    skuItemVo.setSeckillInfo(data);
+                }
+            } catch (Exception e) {
+
             }
+
         }, threadPoolExecutor);
 
         CompletableFuture.allOf(future, imgFuture, saleAttrFuture, spuDescFuture, attrGroupFuture, seckillFuture).join();

@@ -66,7 +66,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
-        log.warn("订单服务---登录拦截器触发");
+        log.warn("会员服务---登录拦截器触发");
         String uri = request.getRequestURI();
         if (isAllowUri(uri)){
             return true;
@@ -76,12 +76,12 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (attribute == null) {
             // 去登录
             response.sendRedirect("http://auth.gulimall.com/login.html");
-            log.warn("订单服务---登录拦截器拦截未登录用户");
+            log.warn("会员服务---登录拦截器拦截未登录用户");
             return false;
         }
 
         THREAD_LOCAL.set(attribute);
-        log.warn("订单服务---已登录");
+        log.warn("会员服务---已登录");
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
