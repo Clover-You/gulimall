@@ -59,8 +59,9 @@ gulimall:
     core-pool-size: 20
     maximum-pool-size: 200
     keep-alive-time: 10
+
 management:
   endpoints:
     web:
       exposure:
-        include: *
+        include: '*'

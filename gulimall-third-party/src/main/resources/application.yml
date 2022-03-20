@@ -23,3 +23,8 @@ alibaba:
       app-code: # 你的短信app-code
       sms-sign-id: # 你的短信sms-sign-id
       template-id: # 你的短信template-id
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
