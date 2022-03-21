@@ -3,6 +3,19 @@ server:
 
 
 spring:
+  # 服务链路追踪
+  zipkin:
+    # 服务名
+    base-url: http://172.16.156.128:9411/
+    # 关闭服务发现，否则 SpringCloud 会把 zipkin 的 url 当作服务名
+    discovery-client-enabled: false
+    sender:
+      # 使用http进行传输
+      type: web
+  sleuth:
+    sampler:
+      # 设置抽样采集器，1=100%
+      probability: 1
   profiles:
     active: dev
   datasource:

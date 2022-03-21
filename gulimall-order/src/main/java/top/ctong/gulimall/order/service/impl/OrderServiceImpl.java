@@ -434,6 +434,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             return new ArrayList<>(0);
         }
         return dataList.stream().map(data -> {
+            // 存在逻辑问题，异步等于没有
             OrderItemEntity itemEntity = buildOrderItem(data);
             itemEntity.setOrderSn(orderNo);
             return itemEntity;
