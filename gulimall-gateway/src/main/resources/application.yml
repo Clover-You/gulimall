@@ -112,7 +112,7 @@ spring:
           predicates:
             - Host=**.gulimall.com,gulimall.com,item.gulimall.com,auth.gulimall.com
 server:
-  port: 8080
+  port: 88
 
 management:
   endpoints:

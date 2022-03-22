@@ -1,4 +1,9 @@
+server:
+  port: 30000
 spring:
+  application:
+    name: gulimall-third-party
+
   # 服务链路追踪
   zipkin:
     # 服务名
@@ -12,14 +17,15 @@ spring:
     sampler:
       # 设置抽样采集器，1=100%
       probability: 1
-  application:
-    name: gulimall-third-party
+
   cloud:
     nacos:
       discovery:
+        # nacos 服务地址
         server-addr: 172.16.156.128:8848
     sentinel:
       transport:
+        # sentinel 地址
         dashboard: 172.16.156.128:8080
   profiles:
     active: private

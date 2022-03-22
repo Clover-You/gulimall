@@ -1,115 +1,133 @@
-drop table if exists wms_purchase;
+/*
+ Navicat Premium Data Transfer
 
-drop table if exists wms_purchase_detail;
+ Source Server         : local@172.16.156.128
+ Source Server Type    : MySQL
+ Source Server Version : 50736
+ Source Host           : 172.16.156.128:3306
+ Source Schema         : gulimall_wms
 
-drop table if exists wms_ware_info;
+ Target Server Type    : MySQL
+ Target Server Version : 50736
+ File Encoding         : 65001
 
-drop table if exists wms_ware_order_task;
+ Date: 22/03/2022 08:26:55
+*/
 
-drop table if exists wms_ware_order_task_detail;
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
-drop table if exists wms_ware_sku;
+-- ----------------------------
+-- Table structure for undo_log
+-- ----------------------------
+DROP TABLE IF EXISTS `undo_log`;
+CREATE TABLE `undo_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `branch_id` bigint(20) NOT NULL,
+  `xid` varchar(100) NOT NULL,
+  `context` varchar(128) NOT NULL,
+  `rollback_info` longblob NOT NULL,
+  `log_status` int(11) NOT NULL,
+  `log_created` datetime NOT NULL,
+  `log_modified` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*==============================================================*/
-/* Table: wms_purchase                                          */
-/*==============================================================*/
-create table wms_purchase
-(
-   id                   bigint not null auto_increment,
-   assignee_id          bigint,
-   assignee_name        varchar(255),
-   phone                char(13),
-   priority             int(4),
-   status               int(4),
-   ware_id              bigint,
-   amount               decimal(18,4),
-   create_time          datetime,
-   update_time          datetime,
-   primary key (id)
-);
+-- ----------------------------
+-- Table structure for wms_purchase
+-- ----------------------------
+DROP TABLE IF EXISTS `wms_purchase`;
+CREATE TABLE `wms_purchase` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `assignee_id` bigint(20) DEFAULT NULL,
+  `assignee_name` varchar(255) DEFAULT NULL,
+  `phone` char(13) DEFAULT NULL,
+  `priority` int(4) DEFAULT NULL,
+  `status` int(4) DEFAULT NULL,
+  `ware_id` bigint(20) DEFAULT NULL,
+  `amount` decimal(18,4) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='采购信息';
 
-alter table wms_purchase comment '采购信息';
+-- ----------------------------
+-- Table structure for wms_purchase_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `wms_purchase_detail`;
+CREATE TABLE `wms_purchase_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `purchase_id` bigint(20) DEFAULT NULL COMMENT '采购单id',
+  `sku_id` bigint(20) DEFAULT NULL COMMENT '采购商品id',
+  `sku_num` int(11) DEFAULT NULL COMMENT '采购数量',
+  `sku_price` decimal(18,4) DEFAULT NULL COMMENT '采购金额',
+  `ware_id` bigint(20) DEFAULT NULL COMMENT '仓库id',
+  `status` int(11) DEFAULT NULL COMMENT '状态[0新建，1已分配，2正在采购，3已完成，4采购失败]',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
 
-/*==============================================================*/
-/* Table: wms_purchase_detail                                   */
-/*==============================================================*/
-create table wms_purchase_detail
-(
-   id                   bigint not null auto_increment,
-   purchase_id          bigint comment '采购单id',
-   sku_id               bigint comment '采购商品id',
-   sku_num              int comment '采购数量',
-   sku_price            decimal(18,4) comment '采购金额',
-   ware_id              bigint comment '仓库id',
-   status               int comment '状态[0新建，1已分配，2正在采购，3已完成，4采购失败]',
-   primary key (id)
-);
+-- ----------------------------
+-- Table structure for wms_ware_info
+-- ----------------------------
+DROP TABLE IF EXISTS `wms_ware_info`;
+CREATE TABLE `wms_ware_info` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(255) DEFAULT NULL COMMENT '仓库名',
+  `address` varchar(255) DEFAULT NULL COMMENT '仓库地址',
+  `areacode` varchar(20) DEFAULT NULL COMMENT '区域编码',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='仓库信息';
 
-/*==============================================================*/
-/* Table: wms_ware_info                                         */
-/*==============================================================*/
-create table wms_ware_info
-(
-   id                   bigint not null auto_increment comment 'id',
-   name                 varchar(255) comment '仓库名',
-   address              varchar(255) comment '仓库地址',
-   areacode             varchar(20) comment '区域编码',
-   primary key (id)
-);
+-- ----------------------------
+-- Table structure for wms_ware_order_task
+-- ----------------------------
+DROP TABLE IF EXISTS `wms_ware_order_task`;
+CREATE TABLE `wms_ware_order_task` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `order_id` bigint(20) DEFAULT NULL COMMENT 'order_id',
+  `order_sn` varchar(255) DEFAULT NULL COMMENT 'order_sn',
+  `consignee` varchar(100) DEFAULT NULL COMMENT '收货人',
+  `consignee_tel` char(15) DEFAULT NULL COMMENT '收货人电话',
+  `delivery_address` varchar(500) DEFAULT NULL COMMENT '配送地址',
+  `order_comment` varchar(200) DEFAULT NULL COMMENT '订单备注',
+  `payment_way` tinyint(1) DEFAULT NULL COMMENT '付款方式【 1:在线付款 2:货到付款】',
+  `task_status` tinyint(2) DEFAULT NULL COMMENT '任务状态',
+  `order_body` varchar(255) DEFAULT NULL COMMENT '订单描述',
+  `tracking_no` char(30) DEFAULT NULL COMMENT '物流单号',
+  `create_time` datetime DEFAULT NULL COMMENT 'create_time',
+  `ware_id` bigint(20) DEFAULT NULL COMMENT '仓库id',
+  `task_comment` varchar(500) DEFAULT NULL COMMENT '工作单备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COMMENT='库存工作单';
 
-alter table wms_ware_info comment '仓库信息';
+-- ----------------------------
+-- Table structure for wms_ware_order_task_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `wms_ware_order_task_detail`;
+CREATE TABLE `wms_ware_order_task_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `sku_id` bigint(20) DEFAULT NULL COMMENT 'sku_id',
+  `sku_name` varchar(255) DEFAULT NULL COMMENT 'sku_name',
+  `sku_num` int(11) DEFAULT NULL COMMENT '购买个数',
+  `task_id` bigint(20) DEFAULT NULL COMMENT '工作单id',
+  `ware_id` bigint(20) DEFAULT NULL COMMENT '仓库id',
+  `lock_status` int(11) DEFAULT NULL COMMENT '1锁定 2解锁 3已扣减',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COMMENT='库存工作单';
 
-/*==============================================================*/
-/* Table: wms_ware_order_task                                   */
-/*==============================================================*/
-create table wms_ware_order_task
-(
-   id                   bigint not null auto_increment comment 'id',
-   order_id             bigint comment 'order_id',
-   order_sn             varchar(255) comment 'order_sn',
-   consignee            varchar(100) comment '收货人',
-   consignee_tel        char(15) comment '收货人电话',
-   delivery_address     varchar(500) comment '配送地址',
-   order_comment        varchar(200) comment '订单备注',
-   payment_way          tinyint(1) comment '付款方式【 1:在线付款 2:货到付款】',
-   task_status          tinyint(2) comment '任务状态',
-   order_body           varchar(255) comment '订单描述',
-   tracking_no          char(30) comment '物流单号',
-   create_time          datetime comment 'create_time',
-   ware_id              bigint comment '仓库id',
-   task_comment         varchar(500) comment '工作单备注',
-   primary key (id)
-);
+-- ----------------------------
+-- Table structure for wms_ware_sku
+-- ----------------------------
+DROP TABLE IF EXISTS `wms_ware_sku`;
+CREATE TABLE `wms_ware_sku` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `sku_id` bigint(20) DEFAULT NULL COMMENT 'sku_id',
+  `ware_id` bigint(20) DEFAULT NULL COMMENT '仓库id',
+  `stock` int(11) DEFAULT NULL COMMENT '库存数',
+  `sku_name` varchar(200) DEFAULT NULL COMMENT 'sku_name',
+  `stock_locked` int(11) DEFAULT '0' COMMENT '锁定库存',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COMMENT='商品库存';
 
-alter table wms_ware_order_task comment '库存工作单';
-
-/*==============================================================*/
-/* Table: wms_ware_order_task_detail                            */
-/*==============================================================*/
-create table wms_ware_order_task_detail
-(
-   id                   bigint not null auto_increment comment 'id',
-   sku_id               bigint comment 'sku_id',
-   sku_name             varchar(255) comment 'sku_name',
-   sku_num              int comment '购买个数',
-   task_id              bigint comment '工作单id',
-   primary key (id)
-);
-
-alter table wms_ware_order_task_detail comment '库存工作单';
-
-/*==============================================================*/
-/* Table: wms_ware_sku                                          */
-/*==============================================================*/
-create table wms_ware_sku
-(
-   id                   bigint not null auto_increment comment 'id',
-   sku_id               bigint comment 'sku_id',
-   ware_id              bigint comment '仓库id',
-   stock                int comment '库存数',
-   sku_name             varchar(200) comment 'sku_name',
-   stock_locked         int comment '锁定库存',
-   primary key (id)
-);
-
-alter table wms_ware_sku comment '商品库存';
+SET FOREIGN_KEY_CHECKS = 1;

@@ -1,28 +1,46 @@
-#spring:
-#  # 配置数据源
-#  datasource:
-#    username: root
-#    password: 123
-#    url: jdbc:mysql://172.16.156.128:3306/gulimall_sms
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#  cloud:
-#    nacos:
-#      discovery:
-#        # 配置nacos服务中心地址
-#        server-addr: 172.16.156.128:8848
-#
-#  application:
-#    # 注册nacos需要指定服务名
-#    name: gulimall-coupon
-#
-#server:
-#  port: 7500
-#
-#mybatis-plus:
-#  # 全局配置id类型为自增
-#  global-config:
-#    db-config:
-#      id-type: auto
-#  # 告诉mybatis-plus sql映射文件所在
-#  mapper-locations: classpath:/mapper/**/*Dao.xml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+server:
+  port: 7500
 
+spring:
+  application:
+    # 注册nacos需要指定服务名
+    name: gulimall-coupon
+  # 配置数据源
+  datasource:
+    username: root
+    password: 123
+    url: jdbc:mysql://172.16.156.128:3306/gulimall_sms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        # 配置nacos服务中心地址
+        server-addr: 172.16.156.128:8848
+    sentinel:
+      transport:
+        dashboard: 172.16.156.128:8080
+  zipkin:
+    # 服务地址
+    base-url: http://172.16.156.128:9411/
+    # 关闭服务发现，否则 SpringCloud 会把 zipkin 的 url 当作服务名
+    discovery-client-enabled: false
+    # 使用http进行传输
+    sender:
+      type: web
+    # 设置抽样采集器，1=100%
+  sleuth:
+    sampler:
+      probability: 1
+
+mybatis-plus:
+  # 全局配置id类型为自增
+  global-config:
+    db-config:
+      id-type: auto
+  # 告诉mybatis-plus sql映射文件所在
+  mapper-locations: classpath:/mapper/**/*Dao.xml
