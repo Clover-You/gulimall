@@ -4,6 +4,8 @@
 
 gulimall` 项目致力于打造一个完整的电商系统，采用现阶段流行技术来实现，采用前后端分离继续编写。
 
+> 学习项目
+
 ### 项目API接口文档
 
 - 文档地址：[https://easydoc.xyz/s/78237135/ZUqEdvA4/hKJTcbfd]()
@@ -48,7 +50,13 @@ gulimall
 ├── gulimall-seckill -- 秒杀服务
 ├── gulimall-third-party -- 第三方服务
 ├── gulimall-ware -- 仓储服务
-└── gulimall-member -- 会员服务
+├── gulimall-member -- 会员服务
+├── renren-fast-vue -- 前端项目
+└── resources -- 项目资源文件，例如：mysql、nginx配置、页面等等
+		├── mydata -- 数据文件，包含elasticsearch、nginx完整配置以及数据
+		├── gulimall.host -- 本地端口映射，存放gulimall.com域名映射规则
+		├── gulimall_product.es_mapping.json -- elasticsearch商品映射
+		└── sql -- 所有数据库文件
 
 ```
 
@@ -113,27 +121,28 @@ gulimall
 |     Mysql     |  5.7   |                    https://www.mysql.com                     |
 |     Redis     | Redis  |                  https://redis.io/download                   |
 | Elasticsearch | 7.6.2  |               https://www.elastic.co/downloads               |
-|    Kibana     | 7.6.2  |               https://www.elastic.co/cn/kibana               |
-|   RabbitMQ    | 3.8.5  |            http://www.rabbitmq.com/download.html             |
-|     Nginx     | 1.1.6  |              http://nginx.org/en/download.html               |
+|    Kibana     | 7.4.2  |               https://www.elastic.co/cn/kibana               |
+|   RabbitMQ    | 3.9.13 |            http://www.rabbitmq.com/download.html             |
+|     Nginx     |  1.10  |              http://nginx.org/en/download.html               |
 
-注意：以上的除了jdk都是采用docker方式进行安装，详细安装步骤可参考百度!!!
+注意：以上的除了jdk都是采用docker方式进行安装
 
 #### 搭建步骤
 
-> Windows环境部署
+> Mac OS环境部署
 
 - 修改本机的host文件，映射域名端口
 
 ```
-192.168.77.130	gulimall.com
-192.168.77.130	search.gulimall.com
-192.168.77.130  item.gulimall.com
-192.168.77.130  auth.gulimall.com
-192.168.77.130  cart.gulimall.com
-192.168.77.130  order.gulimall.com
-192.168.77.130  member.gulimall.com
-192.168.77.130  seckill.gulimall.com
+# 谷粒商城域名映射
+172.16.156.128 gulimall.com
+172.16.156.128 order.gulimall.com
+172.16.156.128 item.gulimall.com
+172.16.156.128 search.gulimall.com
+172.16.156.128 auth.gulimall.com
+172.16.156.128 cart.gulimall.com
+172.16.156.128 member.gulimall.com
+172.16.156.128 seckill.gulimall.com
 以上端口换成自己Linux的ip地址
 ```
 
@@ -142,40 +151,73 @@ gulimall
 ```
 1、在nginx.conf中添加负载均衡的配置    
 upstream gulimall {
-        server 192.168.43.182:88;
-    }
+		server 172.16.156.1:88;
+}
 2、在gulimall.conf中添加如下配置
 server {
     listen       80;
-    server_name  gulimall.com  *.gulimall.com hjl.mynatapp.cc;
+    # *.natappfree.cc 是natapp内网穿透地址，用于完成支付宝支付
+    server_name gulimall.com  *.gulimall.com *.natappfree.cc;
 
     #charset koi8-r;
     #access_log  /var/log/nginx/log/host.access.log  main;
 
     #配置静态资源的动态分离
     location /static/ {
-        root   /usr/share/nginx/html;
+        root /usr/share/nginx/html;
     }
 
     #支付异步回调的一个配置
-    location /payed/ {
-        proxy_set_header Host order.gulimall.com;        #不让请求头丢失
+    location /alipay/success {
         proxy_pass http://gulimall;
+        # 由于内网穿透域名问题，手动设置host，不让请求头丢失
+        proxy_set_header Host order.gulimall.com;
     }
 
     location / {
-        #root   /usr/share/nginx/html;
-        #index  index.html index.htm;
-        proxy_set_header Host $host;        #不让请求头丢失
         proxy_pass http://gulimall;
+        #不让请求头丢失
+        proxy_set_header Host $host;
     }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+
 ```
 
-- 克隆前端项目 `renren-fast-vue` 以 `npm run dev` 方式去运行
-- 克隆整个后端项目 `gulimall` ，并导入 IDEA 中完成编译
+- 前端项目是 `/gulimall/renren-fast-vue`，使用 `yarn dev` 或者 `npm run dev`，**注意该项目使用nodejs 10-12的版本**
+- `/gulimall/renren-fast` 是后台管理系统
 
-
-
-### 如果你喜欢，要是觉得对你有帮助的话，请点个赞是对我最大的支持！
 
 

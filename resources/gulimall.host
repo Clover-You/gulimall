@@ -1,0 +1,9 @@
+# 谷粒商城域名映射
+172.16.156.128 gulimall.com
+172.16.156.128 order.gulimall.com
+172.16.156.128 item.gulimall.com
+172.16.156.128 search.gulimall.com
+172.16.156.128 auth.gulimall.com
+172.16.156.128 cart.gulimall.com
+172.16.156.128 member.gulimall.com
+172.16.156.128 seckill.gulimall.com
